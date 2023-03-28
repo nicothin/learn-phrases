@@ -1,6 +1,14 @@
 .phrase-card {
   width: clamp(320px, 70vw, 860px);
 
+  .ant-collapse>.ant-collapse-item.ant-collapse-no-arrow >.ant-collapse-header {
+    padding-left: 24px;
+  }
+  .ant-collapse-ghost >.ant-collapse-item >.ant-collapse-content >.ant-collapse-content-box {
+    border-top: 1px solid #ebebeb;
+    padding-bottom: 16px;
+  }
+
   &__shown-phrase {
     font-size: clamp(24px, 4vw, 32px);
     line-height: 1.2;
@@ -9,5 +17,11 @@
   &__hidden-phrase {
     font-size: clamp(24px, 4vw, 32px);
     line-height: 1.2;
+  }
+
+  &__shown-phrase-description,
+  &__hidden-phrase-description {
+    display: block;
+    margin-top: 8px;
   }
 }

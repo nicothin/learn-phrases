@@ -20,6 +20,19 @@
       outline: none;
     }
   }
+
+  &__load {
+    position: absolute;
+    z-index: 666;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+  }
 }
 
 .ant-collapse-header-text {
@@ -36,7 +49,7 @@
   }
 }
 
-:where(.css-dev-only-do-not-override-mxhywb).ant-carousel .slick-dots li.slick-active button,
-:where(.css-dev-only-do-not-override-mxhywb).ant-carousel .slick-dots li button {
+.ant-carousel .slick-dots li.slick-active button,
+.ant-carousel .slick-dots li button {
   background-color: #000;
 }
