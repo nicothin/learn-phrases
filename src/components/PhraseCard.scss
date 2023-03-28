@@ -1,0 +1,13 @@
+.phrase-card {
+  width: clamp(320px, 70vw, 860px);
+
+  &__shown-phrase {
+    font-size: clamp(24px, 4vw, 32px);
+    line-height: 1.2;
+  }
+
+  &__hidden-phrase {
+    font-size: clamp(24px, 4vw, 32px);
+    line-height: 1.2;
+  }
+}

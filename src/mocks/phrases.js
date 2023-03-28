@@ -1,26 +1,29 @@
-export const phrases = new Map([
-  [1, {
+export const phrases = [
+  {
+    id: '0',
     cnt: {
-      ru: 'Эти вещи меняются очень быстро.',
-      en: 'This thinks change very quickly.',
+      ru: {cnt: 'Эти вещи меняются очень **быстро**.',dcr: 'Особое пояснение какое-то.',},
+      en: {cnt: 'These things change very **quickly**.',dcr: '**quickly** - быстро, быстрее, оперативно, стремительно.',},
     },
     lvl: 'a0',
     knlvl: 5,
-  }],
-  [2, {
+  },
+  {
+    id: '1',
     cnt: {
-      ru: 'Она сохранился этот секрет.',
-      en: 'She kept this secret.',
+      ru: {cnt: 'Она сохранился этот секрет.',dcr: '',},
+      en: {cnt: 'She kept this secret.',dcr: '',},
     },
     lvl: 'a0',
     knlvl: 5,
-  }],
-  [3, {
+  },
+  {
+    id: '2',
     cnt: {
-      ru: 'Он изменит свою точку зрения позже.',
-      en: 'He\'ll change his point of view later.',
+      ru: {cnt: 'Он изменит свою точку зрения позже.',dcr: ''},
+      en: { cnt: 'He\'ll change his point of view later.',dcr: ''},
     },
     lvl: 'a0',
     knlvl: 5,
-  }],
-]);
+  },
+];

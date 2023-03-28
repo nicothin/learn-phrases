@@ -1,9 +1,42 @@
-.App {}
+.app {
 
-.logo {
-  padding: 8px;
-  font-size: 2em;
-  font-weight: 900;
-  color: #fff;
-  text-align: center;
+  &__wrap {
+    min-height: 100vh;
+    padding: 8px;
+  }
+
+  &__carousel {
+    min-height: calc(100vh - 16px);
+  }
+
+
+  &__slide-wrap {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 16px);
+
+    &:focus-visible {
+      outline: none;
+    }
+  }
+}
+
+.ant-collapse-header-text {
+
+  p {
+    margin: 0;
+  }
+}
+
+.ant-collapse-content-box {
+
+  p {
+    margin: 0;
+  }
+}
+
+:where(.css-dev-only-do-not-override-mxhywb).ant-carousel .slick-dots li.slick-active button,
+:where(.css-dev-only-do-not-override-mxhywb).ant-carousel .slick-dots li button {
+  background-color: #000;
 }
