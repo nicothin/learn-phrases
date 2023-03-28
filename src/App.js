@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, useRef } from 'react';
-import { Layout, Carousel, Spin, FloatButton, Modal, Button } from 'antd';
-import { LoadingOutlined, RightOutlined, DownOutlined, LeftOutlined, UpOutlined, InfoOutlined, PlusOutlined } from '@ant-design/icons';
+import { Layout, Carousel, Spin, FloatButton, Modal, Button, Input } from 'antd';
+import { LoadingOutlined, RightOutlined, DownOutlined, LeftOutlined, UpOutlined, InfoOutlined, PlusOutlined, DeleteOutlined, MenuUnfoldOutlined, ExportOutlined } from '@ant-design/icons';
 import localforage from 'localforage';
 
 import './App.scss';
@@ -9,16 +9,23 @@ import PhraseCard from './components/PhraseCard';
 import { phrases as defaultPhrases } from './mocks/phrases';
 import { shuffleArray } from './utils/shuffleArray';
 
+const { TextArea } = Input;
+
 export const App = () => {
   const carouselRef = useRef(null);
   const [isModalAboutOpen, setIsModalAboutOpen] = useState(false);
+  const [isModalAddOpen, setIsModalAddOpen] = useState(false);
+  const [isModalExportOpen, setIsModalExportOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [phrases, setPhrases] = useState([]);
   const [openCardId, setOpenCardId] = useState(null);
   const [activeSlideId, setActiveSlideId] = useState(0);
+  const [exportedStorageText, setExportedStorageText] = useState('');
+
+  localforage.config({ name: 'LearnPhrases' });
 
   const carouselChange = (oldIndex, newIndex) => {
-    setActiveSlideId(phrases[newIndex].id);
+    setActiveSlideId(phrases[newIndex]?.id);
   };
 
   const keyUpHandler = useCallback((e) => {
@@ -36,9 +43,21 @@ export const App = () => {
     }
   }, [activeSlideId]);
 
+  const clearStorage = async () => {
+    await localforage.clear();
+    setPhrases([]);
+  };
+
+  const exportStorage = async () => {
+    const storagePhrases = await localforage.getItem('phrases');
+    setExportedStorageText(
+      JSON.stringify(storagePhrases, null, '  ')
+    );
+    setIsModalExportOpen(true);
+  };
+
   // Получить фразы из локального хранилища
   useEffect(() => {
-    localforage.config({ name: 'LearnPhrases' });
     async function fetchData() {
       try {
         const storagePhrases = await localforage.getItem('phrases');
@@ -69,7 +88,7 @@ export const App = () => {
 
   // Определить первый ID
   useEffect(() => {
-    if (!phrases.length) return;
+    if (!phrases?.length) return;
 
     setActiveSlideId(phrases[0].id);
   }, [phrases]);
@@ -86,7 +105,7 @@ export const App = () => {
           speed={200}
           accessibility={false}
         >
-          {phrases.map((phrase) => (
+          {phrases?.map((phrase) => (
             <div className="app__slide-wrap" key={phrase.id}>
               <PhraseCard cardData={phrase} openedCardId={openCardId} setOpenCardId={setOpenCardId} />
             </div>
@@ -131,15 +150,35 @@ export const App = () => {
         onClick={() => carouselRef?.current?.prev()}
       />
 
-      <FloatButton
-        shape="circle"
+      <FloatButton.Group
+        trigger="hover"
         style={{
           left: 34,
           bottom: 32,
         }}
-        icon={<InfoOutlined />}
-        onClick={() => setIsModalAboutOpen(true)}
-      />
+        icon={<MenuUnfoldOutlined />}
+      >
+        <FloatButton
+          icon={<InfoOutlined />}
+          onClick={() => setIsModalAboutOpen(true)}
+          tooltip="О проекте"
+        />
+        <FloatButton
+          icon={<DeleteOutlined />}
+          onClick={clearStorage}
+          tooltip="Очистить БД"
+        />
+        <FloatButton
+          icon={<ExportOutlined />}
+          onClick={exportStorage}
+          tooltip="Экспортировать БД"
+        />
+        <FloatButton
+          icon={<PlusOutlined />}
+          onClick={() => setIsModalAddOpen(true)}
+          tooltip="Добавить в БД"
+        />
+      </FloatButton.Group>
 
       <Modal
         open={isModalAboutOpen}
@@ -155,6 +194,37 @@ export const App = () => {
         <p>Учите язык с markdown-ом и блэкджеком!</p>
         <p>Автор: <a href="https://nicothin.pro/" target="_blank" rel="noreferrer">Николай Громов</a>.</p>
         <p>Вдохновлено видеокурсом <a href="https://www.youtube.com/watch?v=BAahBqreWZw&list=PLD6SPjEPomasNzHuJpcS1Fxa2PYf1Bm-x&index=1" target="_blank" rel="noreferrer">Английский язык по плейлистам</a>. </p>
+      </Modal>
+
+      <Modal
+        open={isModalAddOpen}
+        title="Добавить фразу"
+        footer={[
+          <Button key="back" onClick={() => setIsModalAddOpen(false)}>
+            Закрыть
+          </Button>,
+          <Button key="add" type="primary" onClick={() => setIsModalAddOpen(false)}>
+            Добавить
+          </Button>,
+        ]}
+        onCancel={() => setIsModalAddOpen(false)}
+        centered
+      >
+        111
+      </Modal>
+
+      <Modal
+        open={isModalExportOpen}
+        title="Экспорт фраз"
+        footer={[
+          <Button key="back" onClick={() => setIsModalExportOpen(false)}>
+            Закрыть
+          </Button>,
+        ]}
+        onCancel={() => setIsModalExportOpen(false)}
+        centered
+      >
+        <TextArea rows={16} value={exportedStorageText} />
       </Modal>
     </div>
   );

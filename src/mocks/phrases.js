@@ -1,27 +1,81 @@
 export const phrases = [
   {
     id: '0',
-    cnt: {
-      ru: {cnt: 'Эти вещи меняются очень **быстро**.',dcr: 'Особое пояснение какое-то.',},
-      en: {cnt: 'These things change very **quickly**.',dcr: '**quickly** - быстро, быстрее, оперативно, стремительно.',},
+    data: {
+      ru: { content: 'Эти вещи меняются очень **быстро**.', descr: '',},
+      en: { content: 'These things change very **quickly**.', descr: '**quickly** - быстро, быстрее, оперативно, стремительно.',},
     },
     lvl: 'a0',
     knlvl: 5,
   },
   {
     id: '1',
-    cnt: {
-      ru: {cnt: 'Она сохранился этот секрет.',dcr: '',},
-      en: {cnt: 'She kept this secret.',dcr: '',},
+    data: {
+      ru: { content: 'Она **сохранила** этот секрет.', descr: '',},
+      en: { content: 'She **kept** this secret.', descr: 'keep kept kept',},
     },
     lvl: 'a0',
     knlvl: 5,
   },
   {
     id: '2',
-    cnt: {
-      ru: {cnt: 'Он изменит свою точку зрения позже.',dcr: ''},
-      en: { cnt: 'He\'ll change his point of view later.',dcr: ''},
+    data: {
+      ru: { content: 'Он изменит свою **точку зрения** позже.', descr: ''},
+      en: { content: 'He\'ll change his **point of view** later.', descr: ''},
+    },
+    lvl: 'a0',
+    knlvl: 5,
+  },
+  {
+    id: '3',
+    data: {
+      ru: { content: 'Это случилось с ним.', descr: ''},
+      en: { content: 'It happend to him.', descr: ''},
+    },
+    lvl: 'a0',
+    knlvl: 5,
+  },
+  {
+    id: '4',
+    data: {
+      ru: { content: 'Некоторые, несколько.', descr: ''},
+      en: { content: 'some / a few / several', descr: ''},
+    },
+    lvl: 'a0',
+    knlvl: 5,
+  },
+  {
+    id: '5',
+    data: {
+      ru: { content: 'Я **посмотрел на** экран.', descr: ''},
+      en: { content: 'I **looked at** the screen', descr: ''},
+    },
+    lvl: 'a0',
+    knlvl: 5,
+  },
+  {
+    id: '6',
+    data: {
+      ru: { content: 'Тебе нужно быть более **осторожным**.', descr: ''},
+      en: { content: 'You need to be more **careful**.', descr: ''},
+    },
+    lvl: 'a0',
+    knlvl: 5,
+  },
+  {
+    id: '7',
+    data: {
+      ru: { content: 'Я **верю**, что это возможно.', descr: ''},
+      en: { content: 'I believe that is possible.', descr: ''},
+    },
+    lvl: 'a0',
+    knlvl: 5,
+  },
+  {
+    id: '8',
+    data: {
+      ru: { content: 'Он мне **очень** помог.', descr: ''},
+      en: { content: 'He helped me **a lot**.', descr: ''},
     },
     lvl: 'a0',
     knlvl: 5,

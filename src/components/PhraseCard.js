@@ -7,7 +7,7 @@ const { Panel } = Collapse;
 const { Text } = Typography;
 
 const PhraseCard = ({ cardData, openedCardId, setOpenCardId }) => {
-  const { id, cnt: content, } = cardData;
+  const { id, data, } = cardData;
 
   return (
     <Card className="phrase-card" bordered={false} bodyStyle={{ padding: 0 }}>
@@ -16,10 +16,10 @@ const PhraseCard = ({ cardData, openedCardId, setOpenCardId }) => {
           showArrow={false}
           header={(
             <div className="phrase-card__shown-phrase-wrap">
-              <ReactMarkdown className="phrase-card__shown-phrase">{content.ru.cnt}</ReactMarkdown>
-              {content.ru.dcr && (
+              <ReactMarkdown className="phrase-card__shown-phrase">{data.ru.content}</ReactMarkdown>
+              {data.ru.descr && (
                 <Text className="phrase-card__shown-phrase-description" type="secondary">
-                  <ReactMarkdown>{content.ru.dcr}</ReactMarkdown>
+                  <ReactMarkdown>{data.ru.descr}</ReactMarkdown>
                 </Text>
               )}
 
@@ -28,10 +28,10 @@ const PhraseCard = ({ cardData, openedCardId, setOpenCardId }) => {
           key={id}
         >
           <div className="phrase-card__hidden-phrase-wrap">
-            <ReactMarkdown className="phrase-card__hidden-phrase">{content.en.cnt}</ReactMarkdown>
-            {content.en.dcr && (
+            <ReactMarkdown className="phrase-card__hidden-phrase">{data.en.content}</ReactMarkdown>
+            {data.en.descr && (
               <Text className="phrase-card__hidden-phrase-description" type="secondary">
-                <ReactMarkdown>{content.en.dcr}</ReactMarkdown>
+                <ReactMarkdown>{data.en.descr}</ReactMarkdown>
               </Text>
             )}
           </div>
