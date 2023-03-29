@@ -1,8 +1,6 @@
-import { useEffect, useState } from 'react';
-import { Layout, FloatButton, Modal, Button, Form, Input } from 'antd';
+import { useState } from 'react';
+import { FloatButton, Modal, Button, } from 'antd';
 import { InfoOutlined, MenuUnfoldOutlined, EditOutlined, PlayCircleOutlined } from '@ant-design/icons';
-import localforage from 'localforage';
-import { nanoid } from 'nanoid'
 
 import './App.scss';
 
@@ -16,8 +14,6 @@ const MODE = {
 }
 
 export const App = () => {
-  // const [ form ] = Form.useForm();
-  // const [ modal, contextHolder ] = Modal.useModal();
   const [isModalAboutOpen, setIsModalAboutOpen] = useState(false);
   const [mode, setMode] = useState(MODE.LEARN);
 
@@ -76,52 +72,6 @@ export const App = () => {
         <p>Автор: <a href="https://nicothin.pro/" target="_blank" rel="noreferrer">Николай Громов</a>.</p>
         <p>Вдохновлено видеокурсом <a href="https://www.youtube.com/watch?v=BAahBqreWZw&list=PLD6SPjEPomasNzHuJpcS1Fxa2PYf1Bm-x&index=1" target="_blank" rel="noreferrer">Английский язык по плейлистам</a>. </p>
       </Modal>
-
-      {/* <Modal
-        open={isModalAddOpen}
-        title="Добавить фразу"
-        footer={[
-          <Button key="back" onClick={() => setIsModalAddOpen(false)}>
-            Закрыть
-          </Button>,
-          <Button key="add" type="primary" onClick={addPhraseConfirm}>
-            Добавить
-          </Button>,
-        ]}
-        onCancel={() => setIsModalAddOpen(false)}
-        centered
-      >
-        <p>Использовать markdown можешь ты, Люк.</p>
-        <Form form={form} layout="vertical" onFinish={(e) => { console.log(e) }}>
-          <Form.Item label="Фраза по-русски" name="ru" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item label="Любое пояснение к фразе" name="descr-ru">
-            <TextArea rows={2} />
-          </Form.Item>
-          <Form.Item label="Фраза по-английски" name="en" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item label="Любое пояснение к фразе" name="descr-en">
-            <TextArea rows={2} />
-          </Form.Item>
-          {contextHolder}
-        </Form>
-      </Modal>
-
-      <Modal
-        open={isModalExportOpen}
-        title="Экспорт фраз"
-        footer={[
-          <Button key="back" onClick={() => setIsModalExportOpen(false)}>
-            Закрыть
-          </Button>,
-        ]}
-        onCancel={() => setIsModalExportOpen(false)}
-        centered
-      >
-        <TextArea rows={16} value={exportedStorageText} />
-      </Modal> */}
     </div>
   );
 }
