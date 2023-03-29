@@ -24,4 +24,13 @@
     display: block;
     margin-top: 8px;
   }
+
+  &__counter {
+    width: clamp(320px, 70vw, 860px);
+    text-align: right;
+
+    * {
+      font-size: 0.8em;
+    }
+  }
 }

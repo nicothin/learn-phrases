@@ -88,10 +88,11 @@ const TrainArea = () => {
           beforeChange={carouselChange}
           speed={200}
           accessibility={false}
+          dots={false}
         >
-          {phrases?.map((phrase) => (
+          {phrases?.map((phrase, i) => (
             <div className="train-area__slide-wrap" key={phrase.id}>
-              <PhraseCard cardData={phrase} openedCardId={openCardId} setOpenCardId={setOpenCardId} />
+              <PhraseCard cardData={phrase} openedCardId={openCardId} setOpenCardId={setOpenCardId} thisNumber={i} counter={phrases.length} />
             </div>
           ))}
         </Carousel>
