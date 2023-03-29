@@ -566,4 +566,22 @@ export const phrases = [
     level: 'a0',
     myKnowledgeLvl: 5,
   },
+  {
+    id: '63',
+    data: {
+      ru: { content: 'Она была **испугана** этим.', descr: ''},
+      en: { content: 'She was **afraid of** it.', descr: ''},
+    },
+    level: 'a0',
+    myKnowledgeLvl: 5,
+  },
+  {
+    id: '64',
+    data: {
+      ru: { content: 'Почему это было так **необычно**?', descr: ''},
+      en: { content: 'Why was it so **unusual**?', descr: ''},
+    },
+    level: 'a0',
+    myKnowledgeLvl: 5,
+  },
 ];

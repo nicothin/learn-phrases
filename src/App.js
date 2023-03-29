@@ -29,7 +29,7 @@ export const App = () => {
       )}
 
       {mode === MODE.LEARN && (
-        Фрасработкэ
+        <p>Фрасработкэ</p>
       )}
 
       <FloatButton.Group
