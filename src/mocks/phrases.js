@@ -584,4 +584,13 @@ export const phrases = [
     level: 'a0',
     myKnowledgeLvl: 5,
   },
+  {
+    id: '65',
+    data: {
+      ru: { content: 'Грустный / Растроенный / Несчастный.', descr: ''},
+      en: { content: 'Sad / Upset / Unhappy', descr: ''},
+    },
+    level: 'a0',
+    myKnowledgeLvl: 5,
+  },
 ];

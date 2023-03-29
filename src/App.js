@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { FloatButton, Modal, Button, } from 'antd';
 import { InfoOutlined, MenuUnfoldOutlined, EditOutlined, PlayCircleOutlined } from '@ant-design/icons';
+import localforage from 'localforage';
 
 import './App.scss';
 
@@ -14,8 +15,14 @@ const MODE = {
 }
 
 export const App = () => {
+  localforage.config({ name: 'LearnPhrases' });
+
   const [isModalAboutOpen, setIsModalAboutOpen] = useState(false);
   const [mode, setMode] = useState(MODE.LEARN);
+
+  const refreshLocalforage = () => {
+    localforage.clear();
+  }
 
   return (
     <div className="app">
@@ -25,7 +32,9 @@ export const App = () => {
       )}
 
       {mode === MODE.EDIT && (
-        <p>Фрасработкэ</p>
+        <Button type="primary" onClick={refreshLocalforage} danger>
+          Обновить локальное хранилище фраз
+        </Button>
       )}
 
       <FloatButton.Group
