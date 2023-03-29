@@ -1,154 +1,36 @@
-import { useCallback, useEffect, useState, useRef } from 'react';
-import { Layout, Carousel, Spin, FloatButton, Modal, Button, Input } from 'antd';
-import { LoadingOutlined, RightOutlined, DownOutlined, LeftOutlined, UpOutlined, InfoOutlined, PlusOutlined, DeleteOutlined, MenuUnfoldOutlined, ExportOutlined } from '@ant-design/icons';
+import { useEffect, useState } from 'react';
+import { Layout, FloatButton, Modal, Button, Form, Input } from 'antd';
+import { InfoOutlined, MenuUnfoldOutlined, EditOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import localforage from 'localforage';
+import { nanoid } from 'nanoid'
 
 import './App.scss';
 
-import PhraseCard from './components/PhraseCard';
-import { phrases as defaultPhrases } from './mocks/phrases';
-import { shuffleArray } from './utils/shuffleArray';
+import TrainArea from './components/TrainArea/TrainArea';
 
-const { TextArea } = Input;
+// const { TextArea } = Input;
+
+const MODE = {
+  EDIT: 'edit',
+  LEARN: 'learn',
+}
 
 export const App = () => {
-  const carouselRef = useRef(null);
+  // const [ form ] = Form.useForm();
+  // const [ modal, contextHolder ] = Modal.useModal();
   const [isModalAboutOpen, setIsModalAboutOpen] = useState(false);
-  const [isModalAddOpen, setIsModalAddOpen] = useState(false);
-  const [isModalExportOpen, setIsModalExportOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [phrases, setPhrases] = useState([]);
-  const [openCardId, setOpenCardId] = useState(null);
-  const [activeSlideId, setActiveSlideId] = useState(0);
-  const [exportedStorageText, setExportedStorageText] = useState('');
-
-  localforage.config({ name: 'LearnPhrases' });
-
-  const carouselChange = (oldIndex, newIndex) => {
-    setActiveSlideId(phrases[newIndex]?.id);
-  };
-
-  const keyUpHandler = useCallback((e) => {
-    if (e.keyCode === 40) {
-      setOpenCardId(activeSlideId);
-    }
-    if (e.keyCode === 38) {
-      setOpenCardId(null);
-    }
-    if (e.keyCode === 39) {
-      carouselRef?.current?.next();
-    }
-    if (e.keyCode === 37) {
-      carouselRef?.current?.prev();
-    }
-  }, [activeSlideId]);
-
-  const clearStorage = async () => {
-    await localforage.clear();
-    setPhrases([]);
-  };
-
-  const exportStorage = async () => {
-    const storagePhrases = await localforage.getItem('phrases');
-    setExportedStorageText(
-      JSON.stringify(storagePhrases, null, '  ')
-    );
-    setIsModalExportOpen(true);
-  };
-
-  // Получить фразы из локального хранилища
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const storagePhrases = await localforage.getItem('phrases');
-        if (!storagePhrases?.length) {
-          localforage.setItem('phrases', defaultPhrases);
-          setPhrases(
-            shuffleArray(defaultPhrases)
-          );
-        }
-        else {
-          setPhrases(storagePhrases);
-          setPhrases(
-            shuffleArray(storagePhrases)
-          );
-        }
-        setIsLoading(false);
-      } catch (err) {
-        console.log('localforage error', err);
-      }
-    }
-    fetchData();
-  }, []);
-
-  // Навесить слушатели событий
-  useEffect(() => {
-    window.addEventListener('keydown', keyUpHandler);
-  }, [keyUpHandler]);
-
-  // Определить первый ID
-  useEffect(() => {
-    if (!phrases?.length) return;
-
-    setActiveSlideId(phrases[0].id);
-  }, [phrases]);
+  const [mode, setMode] = useState(MODE.LEARN);
 
   return (
     <div className="app">
-      {isLoading && <Spin indicator={<LoadingOutlined style={{ fontSize: 48, }} spin />} className="app__load" />}
-      <Layout className="app__wrap">
-        <Carousel
-          ref={carouselRef}
-          className="app__carousel"
-          effect="fade"
-          beforeChange={carouselChange}
-          speed={200}
-          accessibility={false}
-        >
-          {phrases?.map((phrase) => (
-            <div className="app__slide-wrap" key={phrase.id}>
-              <PhraseCard cardData={phrase} openedCardId={openCardId} setOpenCardId={setOpenCardId} />
-            </div>
-          ))}
-        </Carousel>
-      </Layout>
 
-      <FloatButton
-        shape="circle"
-        style={{
-          right: 32,
-          bottom: 32,
-        }}
-        icon={<RightOutlined />}
-        onClick={() => carouselRef?.current?.next()}
-      />
-      <FloatButton
-        shape="circle"
-        style={{
-          right: 92,
-          bottom: 92,
-        }}
-        icon={<UpOutlined />}
-        onClick={() => setOpenCardId(null)}
-      />
-      <FloatButton
-        shape="circle"
-        style={{
-          right: 92,
-          bottom: 32,
-        }}
-        icon={<DownOutlined />}
-        onClick={() => setOpenCardId(activeSlideId)}
-      />
-      <FloatButton
-        shape="circle"
-        style={{
-          right: 152,
-          bottom: 32,
-        }}
-        icon={<LeftOutlined />}
-        onClick={() => carouselRef?.current?.prev()}
-      />
+      {mode === MODE.LEARN && (
+        <TrainArea />
+      )}
+
+      {mode === MODE.LEARN && (
+        Фрасработкэ
+      )}
 
       <FloatButton.Group
         trigger="hover"
@@ -163,21 +45,20 @@ export const App = () => {
           onClick={() => setIsModalAboutOpen(true)}
           tooltip="О проекте"
         />
-        <FloatButton
-          icon={<DeleteOutlined />}
-          onClick={clearStorage}
-          tooltip="Очистить БД"
-        />
-        <FloatButton
-          icon={<ExportOutlined />}
-          onClick={exportStorage}
-          tooltip="Экспортировать БД"
-        />
-        <FloatButton
-          icon={<PlusOutlined />}
-          onClick={() => setIsModalAddOpen(true)}
-          tooltip="Добавить в БД"
-        />
+        {mode !== MODE.EDIT && (
+          <FloatButton
+            icon={<EditOutlined />}
+            onClick={() => { setMode(MODE.EDIT) }}
+            tooltip="Редактировать фразы"
+          />
+        )}
+        {mode !== MODE.LEARN && (
+          <FloatButton
+            icon={<PlayCircleOutlined />}
+            onClick={() => { setMode(MODE.LEARN) }}
+            tooltip="Учить фразы"
+          />
+        )}
       </FloatButton.Group>
 
       <Modal
@@ -191,26 +72,41 @@ export const App = () => {
         onCancel={() => setIsModalAboutOpen(false)}
         centered
       >
-        <p>Учите язык с markdown-ом и блэкджеком!</p>
+        <p>Учи язык с markdown-ом и блэкджеком!</p>
         <p>Автор: <a href="https://nicothin.pro/" target="_blank" rel="noreferrer">Николай Громов</a>.</p>
         <p>Вдохновлено видеокурсом <a href="https://www.youtube.com/watch?v=BAahBqreWZw&list=PLD6SPjEPomasNzHuJpcS1Fxa2PYf1Bm-x&index=1" target="_blank" rel="noreferrer">Английский язык по плейлистам</a>. </p>
       </Modal>
 
-      <Modal
+      {/* <Modal
         open={isModalAddOpen}
         title="Добавить фразу"
         footer={[
           <Button key="back" onClick={() => setIsModalAddOpen(false)}>
             Закрыть
           </Button>,
-          <Button key="add" type="primary" onClick={() => setIsModalAddOpen(false)}>
+          <Button key="add" type="primary" onClick={addPhraseConfirm}>
             Добавить
           </Button>,
         ]}
         onCancel={() => setIsModalAddOpen(false)}
         centered
       >
-        111
+        <p>Использовать markdown можешь ты, Люк.</p>
+        <Form form={form} layout="vertical" onFinish={(e) => { console.log(e) }}>
+          <Form.Item label="Фраза по-русски" name="ru" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item label="Любое пояснение к фразе" name="descr-ru">
+            <TextArea rows={2} />
+          </Form.Item>
+          <Form.Item label="Фраза по-английски" name="en" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item label="Любое пояснение к фразе" name="descr-en">
+            <TextArea rows={2} />
+          </Form.Item>
+          {contextHolder}
+        </Form>
       </Modal>
 
       <Modal
@@ -225,7 +121,7 @@ export const App = () => {
         centered
       >
         <TextArea rows={16} value={exportedStorageText} />
-      </Modal>
+      </Modal> */}
     </div>
   );
 }

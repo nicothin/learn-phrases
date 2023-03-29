@@ -1,0 +1,36 @@
+.train-area {
+
+  &__wrap {
+    min-height: 100vh;
+    padding: 8px;
+  }
+
+  &__carousel {
+    min-height: calc(100vh - 16px);
+  }
+
+
+  &__slide-wrap {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 16px);
+
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
+  &__load {
+    position: absolute;
+    z-index: 666;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+  }
+}
