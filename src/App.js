@@ -24,7 +24,7 @@ export const App = () => {
         <TrainArea />
       )}
 
-      {mode === MODE.LEARN && (
+      {mode === MODE.EDIT && (
         <p>Фрасработкэ</p>
       )}
 
