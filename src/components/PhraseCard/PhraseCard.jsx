@@ -1,4 +1,5 @@
-import { Card, Collapse, Typography } from 'antd';
+import { Card, Collapse, Typography, Segmented } from 'antd';
+import { CloseOutlined, MehOutlined, CheckOutlined } from '@ant-design/icons';
 import ReactMarkdown from 'react-markdown'
 
 import './PhraseCard.scss';
@@ -8,6 +9,16 @@ const { Text } = Typography;
 
 const PhraseCard = ({ cardData, openedCardId, setOpenCardId, thisNumber,  counter }) => {
   const { id, data, } = cardData;
+
+  const getKnowledgeLevel = () => {
+    if (cardData.myKnowledgeLvl === 5) return 5;
+    if (cardData.myKnowledgeLvl < 5) return 1;
+    return 9;
+  };
+
+  const onChangeKnowledgeLevel = (value) => {
+    console.log('value', value);
+  };
 
   return (
     <>
@@ -38,6 +49,17 @@ const PhraseCard = ({ cardData, openedCardId, setOpenCardId, thisNumber,  counte
             </div>
           </Panel>
         </Collapse>
+        <div className="phrase-card__my-knowledge-level">
+          <Segmented
+            options={[
+              { label: <CloseOutlined style={{ color: '#A9A9A9' }} />, value: 1 },
+              { label: <MehOutlined style={{ color: '#A9A9A9' }} />, value: 5 },
+              { label: <CheckOutlined style={{ color: '#A9A9A9' }} />, value: 9 },
+            ]}
+            defaultValue={getKnowledgeLevel()}
+            onChange={onChangeKnowledgeLevel}
+          />
+        </div>
       </Card>
       <div className="phrase-card__counter">
         <Text type="secondary">ID: {id}. &nbsp; {thisNumber}/{counter} </Text>

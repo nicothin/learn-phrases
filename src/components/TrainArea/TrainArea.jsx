@@ -52,9 +52,6 @@ const TrainArea = () => {
         }
         else {
           setPhrases(storagePhrases);
-          setPhrases(
-            shuffleArray(storagePhrases)
-          );
         }
         setIsLoading(false);
       } catch (err) {

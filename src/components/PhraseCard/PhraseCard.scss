@@ -33,4 +33,14 @@
       font-size: 0.8em;
     }
   }
+
+  &__my-knowledge-level {
+    display: flex;
+    gap: 8px;
+    padding: 8px 16px 16px;
+
+    p {
+      margin: 0;
+    }
+  }
 }
