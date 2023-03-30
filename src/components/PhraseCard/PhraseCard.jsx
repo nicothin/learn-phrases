@@ -28,10 +28,10 @@ const PhraseCard = ({ cardData, openedCardId, setOpenCardId, thisNumber,  counte
             showArrow={false}
             header={(
               <div className="phrase-card__shown-phrase-wrap">
-                <ReactMarkdown className="phrase-card__shown-phrase">{data.ru.content}</ReactMarkdown>
-                {data.ru.descr && (
+                <ReactMarkdown className="phrase-card__shown-phrase">{data.first.content}</ReactMarkdown>
+                {data.first.descr && (
                   <Text className="phrase-card__shown-phrase-description" type="secondary">
-                    <ReactMarkdown>{data.ru.descr}</ReactMarkdown>
+                    <ReactMarkdown>{data.first.descr}</ReactMarkdown>
                   </Text>
                 )}
 
@@ -40,10 +40,10 @@ const PhraseCard = ({ cardData, openedCardId, setOpenCardId, thisNumber,  counte
             key={id}
           >
             <div className="phrase-card__hidden-phrase-wrap">
-              <ReactMarkdown className="phrase-card__hidden-phrase">{data.en.content}</ReactMarkdown>
-              {data.en.descr && (
+              <ReactMarkdown className="phrase-card__hidden-phrase">{data.second.content}</ReactMarkdown>
+              {data.second.descr && (
                 <Text className="phrase-card__hidden-phrase-description" type="secondary">
-                  <ReactMarkdown>{data.en.descr}</ReactMarkdown>
+                  <ReactMarkdown>{data.second.descr}</ReactMarkdown>
                 </Text>
               )}
             </div>

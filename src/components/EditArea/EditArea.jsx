@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import { Layout, Spin, Button, Table, Form, Input, Popconfirm } from 'antd';
+import { Layout, Spin, Button, Table, Form, Input, Popconfirm, Space } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import localforage from 'localforage';
 
@@ -89,21 +89,8 @@ const EditArea = () => {
   localforage.config({ name: 'LearnPhrases' });
 
   const [isLoading, setIsLoading] = useState(true);
-  const [dataSource, setDataSource] = useState([
-    // {
-    //   key: '0',
-    //   name: 'Edward King 0',
-    //   age: '32',
-    //   address: 'London, Park Lane no. 0',
-    // },
-    // {
-    //   key: '1',
-    //   name: 'Edward King 1',
-    //   age: '32',
-    //   address: 'London, Park Lane no. 1',
-    // },
-  ]);
-  const [count, setCount] = useState(0);
+  const [dataSource, setDataSource] = useState([]);
+  // const [count, setCount] = useState(0);
 
   // Получить фразы из локального хранилища
   useEffect(() => {
@@ -113,14 +100,14 @@ const EditArea = () => {
         setDataSource(storagePhrases.map((phrase) => ({
           key: phrase.id,
           id: phrase.id,
-          ru: phrase.data.ru.content,
-          ruDescr: phrase.data.ru.descr,
-          en: phrase.data.en.content,
-          enDescr: phrase.data.en.descr,
+          first: phrase.data.first.content,
+          firstDescr: phrase.data.first.descr,
+          second: phrase.data.second.content,
+          secondDescr: phrase.data.second.descr,
           level: phrase.level,
           myKnowledgeLvl: phrase.myKnowledgeLvl,
         })));
-        setCount(storagePhrases.length);
+        // setCount(storagePhrases.length);
         setIsLoading(false);
       } catch (err) {
         console.log('localforage error', err);
@@ -141,14 +128,14 @@ const EditArea = () => {
     },
     {
       title: 'Native',
-      dataIndex: 'ru',
+      dataIndex: 'first',
       width: '30%',
       editable: true,
     },
     Table.EXPAND_COLUMN,
     {
       title: 'Translate',
-      dataIndex: 'en',
+      dataIndex: 'second',
       width: '30%',
       editable: true,
     },
@@ -164,18 +151,19 @@ const EditArea = () => {
     },
   ];
 
-  const handleAdd = () => {
-    const newData = {
-      key: count,
-      name: `Edward King ${count}`,
-      age: '32',
-      address: `London, Park Lane no. ${count}`,
-    };
-    setDataSource([...dataSource, newData]);
-    setCount(count + 1);
-  };
+  // const handleAdd = () => {
+  //   const newData = {
+  //     key: count,
+  //     name: `Edward King ${count}`,
+  //     age: '32',
+  //     address: `London, Park Lane no. ${count}`,
+  //   };
+  //   setDataSource([...dataSource, newData]);
+  //   setCount(count + 1);
+  // };
 
-  const handleSave = (row) => {
+  const onRowSave = (row) => {
+    console.log('row', row);
     const newData = [...dataSource];
     const index = newData.findIndex((item) => row.key === item.key);
     const item = newData[index];
@@ -184,6 +172,10 @@ const EditArea = () => {
       ...row,
     });
     setDataSource(newData);
+  };
+
+  const onClearPhrasesList = () => {
+    localforage.clear().then(() => setDataSource([]));
   };
 
   const components = {
@@ -204,7 +196,7 @@ const EditArea = () => {
         editable: col.editable,
         dataIndex: col.dataIndex,
         title: col.title,
-        handleSave,
+        handleSave: onRowSave,
       }),
     };
   });
@@ -213,16 +205,13 @@ const EditArea = () => {
     <div className="edit-area">
       {isLoading && <Spin indicator={<LoadingOutlined style={{ fontSize: 48, }} spin />} className="edit-area__load" />}
       <Layout className="train-area__wrap">
-        <Button
-          onClick={handleAdd}
-          type="primary"
-          style={{ marginBottom: 16,}}
-        >
-          Add a row
-        </Button>
+        <Space style={{ marginBottom: '16px'}} wrap>
+          <Popconfirm title="Are you sure? This will clear all saved phrases." onConfirm={onClearPhrasesList}>
+            <Button type="primary" danger>Clear Phrases list</Button>
+          </Popconfirm>
+        </Space>
 
         <Table
-          // showHeader={false}
           size="small"
           components={components}
           rowClassName={() => 'editable-row'}
@@ -243,14 +232,13 @@ const EditArea = () => {
             rowExpandable: (record) => record.name !== 'Not Expandable',
           }}
           pagination={{
-            pageSize: 10,
+            pageSize: 18,
             showSizeChanger: false,
           }}
           scroll={{
-            y: 240,
+            y: 'calc(100vh - 154px)',
           }}
         />
-        {/* https://ant.design/components/table#examples */}
       </Layout>
     </div>
   );

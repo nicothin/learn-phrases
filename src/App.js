@@ -21,10 +21,6 @@ export const App = () => {
   const [isModalAboutOpen, setIsModalAboutOpen] = useState(false);
   const [mode, setMode] = useState(MODE.LEARN);
 
-  // const refreshLocalforage = () => {
-  //   localforage.clear();
-  // }
-
   return (
     <div className="app">
 
