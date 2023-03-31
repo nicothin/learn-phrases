@@ -1,5 +1,9 @@
 .app {
 
+  .no-wrap {
+    white-space: nowrap;
+  }
+
   &__wrap {
     min-height: 100vh;
     padding: 8px;

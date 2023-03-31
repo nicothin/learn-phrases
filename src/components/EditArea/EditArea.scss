@@ -1,0 +1,32 @@
+.edit-area {
+
+  &__wrap {
+    min-height: 100vh;
+    min-height: calc(var(--vh, 1vh) * 100);
+    padding: 8px;
+  }
+
+  &__load {
+    position: absolute;
+    z-index: 666;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+  }
+
+  &__inactive-filter {
+    color: #D9D9D9;
+  }
+
+  &__upload {
+
+    .ant-upload-list {
+      display: none;
+    }
+  }
+}
