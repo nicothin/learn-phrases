@@ -1,18 +1,27 @@
 import React, { useState, useEffect, } from 'react';
-import { Layout, Spin, Button, Input, Popconfirm, Row, Col, notification, Space, Upload } from 'antd';
+import { Layout, Spin, Button, Input, Popconfirm, Row, Col, notification, Space, Upload, Modal, Form } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import localforage from 'localforage';
 
 import './EditArea.scss';
+
 import PhraseEditCard from '../PhraseEditCard/PhraseEditCard';
+import { checkData } from '../../utils/checkData';
+import { nanoid } from 'nanoid';
+
+const { confirm } = Modal;
+const { TextArea } = Input;
 
 const EditArea = () => {
   localforage.config({ name: 'LearnPhrases' });
+
+  const formRef = React.useRef(null);
 
   const [isLoading, setIsLoading] = useState(true);
   const [phrases, setPhrases] = useState([]);
   const [filterValue, setFilterValue] = useState('');
   const [isPhrasesFiltered, setIsPhrasesFiltered] = useState(false);
+  const [isModalAddOpen, setIsModalAddOpen] = useState(false);
 
   const [api, contextHolder] = notification.useNotification();
 
@@ -29,18 +38,23 @@ const EditArea = () => {
     document.body.removeChild(element);
   }
 
-  const readFile = () => {
-    let fileInput = document.getElementById('fileInput');
-    let file = fileInput.files[0];
+  const readFile = (file) => {
     let reader = new FileReader();
 
     reader.readAsText(file);
 
-    reader.onload = function () {
+    reader.onload = async function () {
       let content = reader.result;
-      let data = JSON.parse(content);
-      console.log(data);
-      // дальнейшая обработка данных
+      try {
+        let data = JSON.parse(content);
+        const result = checkData(data);
+        await localforage.setItem('phrases', result);
+        setPhrases(result);
+        openImportNotification();
+      } catch (error) {
+        console.log('error', error);
+        openErrorImportNotification();
+      }
     };
   };
 
@@ -67,9 +81,23 @@ const EditArea = () => {
     });
   };
 
+  const openImportNotification = () => {
+    api.success({
+      message: `Import complete.`,
+      placement: 'bottomRight',
+    });
+  };
+
   const openErrorImportNotification = () => {
     api.error({
       message: `Import not possible.`,
+      placement: 'bottomRight',
+    });
+  };
+
+  const openAddNotification = () => {
+    api.success({
+      message: `Phrase added successfully.`,
       placement: 'bottomRight',
     });
   };
@@ -146,6 +174,44 @@ const EditArea = () => {
     }
   };
 
+  const showDeleteConfirm = (file) => {
+    confirm({
+      title: 'Are you sure?',
+      content: 'This will permanently overwrite the current list of phrases.',
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk() {
+        readFile(file)
+      },
+    });
+  }
+
+  const onAddPhrase = async (data) => {
+    const id = nanoid(6);
+    const newPhrase = checkData([{
+      id,
+      languages: {
+        first: { content: data?.first, descr: data?.firstDescr },
+        second: { content: data?.second, descr: data?.secondDescr },
+      },
+    }]);
+
+    if (!newPhrase.length) {
+      return;
+    }
+    try {
+      const storagePhrases = await localforage.getItem('phrases');
+      const newPhrases = [...storagePhrases, ...newPhrase];
+      await localforage.setItem('phrases', newPhrases);
+      setPhrases(newPhrases);
+      setIsModalAddOpen(false);
+      openAddNotification();
+    } catch (err) {
+      console.log('localforage error', err);
+    }
+  };
+
   // Получить фразы из локального хранилища
   useEffect(() => {
     async function fetchData() {
@@ -176,11 +242,15 @@ const EditArea = () => {
           </Col>
           <Col style={{ marginLeft: 'auto', marginBottom: '16px' }}>
             <Space wrap>
-              <label>
-                <span className="ant-btn">1111</span>
-                <input type="file" id="fileInput" onChange={readFile} />
-                <Button type="link">Import</Button>
-              </label>
+              <Button onClick={() => setIsModalAddOpen(true)}>Add</Button>
+              <Upload
+                className="edit-area__upload"
+                customRequest={(e) => {
+                  showDeleteConfirm(e.file);
+                }}
+              >
+                <Button>Import</Button>
+              </Upload>
               <Button onClick={onExport}>Export</Button>
               <Popconfirm
                 title="Are you sure? This will clear all saved phrases."
@@ -203,6 +273,35 @@ const EditArea = () => {
         </Row>
         {contextHolder}
       </Layout>
+
+      <Modal
+        title="Add phrase"
+        open={isModalAddOpen}
+        onOk={() => formRef?.current?.submit()}
+        onCancel={() => setIsModalAddOpen(false)}
+      >
+        <Form ref={formRef} onFinish={onAddPhrase}>
+          <Form.Item
+            name="first"
+            rules={[{ required: true, message: 'Please input phrase.', },]}
+          >
+            <Input placeholder="First language" />
+          </Form.Item>
+          <Form.Item name="firstDescr">
+            <TextArea rows={2} placeholder="Description" />
+          </Form.Item>
+
+          <Form.Item
+            name="second"
+            rules={[{ required: true, message: 'Please input phrase.', },]}
+          >
+            <Input placeholder="Second language" />
+          </Form.Item>
+          <Form.Item name="secondDescr">
+            <TextArea rows={2} placeholder="Description" />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 }
