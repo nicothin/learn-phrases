@@ -1,5 +1,5 @@
 import React, { useState, useEffect, } from 'react';
-import { Layout, Spin, Button, Input, Popconfirm, Row, Col, notification } from 'antd';
+import { Layout, Spin, Button, Input, Popconfirm, Row, Col, notification, Space, Upload } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import localforage from 'localforage';
 
@@ -16,6 +16,43 @@ const EditArea = () => {
 
   const [api, contextHolder] = notification.useNotification();
 
+  const downloadFile = (filename, text) => {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+  }
+
+  const readFile = () => {
+    let fileInput = document.getElementById('fileInput');
+    let file = fileInput.files[0];
+    let reader = new FileReader();
+
+    reader.readAsText(file);
+
+    reader.onload = function () {
+      let content = reader.result;
+      let data = JSON.parse(content);
+      console.log(data);
+      // дальнейшая обработка данных
+    };
+  };
+
+  const onExport = async () => {
+    try {
+      const storagePhrases = await localforage.getItem('phrases');
+      downloadFile('phrases.json', JSON.stringify(storagePhrases, null, 2));
+    } catch (err) {
+      console.log('localforage error', err);
+    }
+  };
+
   const openDeleteNotification = () => {
     api.warning({
       message: `Phrase deleted.`,
@@ -26,6 +63,13 @@ const EditArea = () => {
   const openEditNotification = () => {
     api.success({
       message: `Phrase updated.`,
+      placement: 'bottomRight',
+    });
+  };
+
+  const openErrorImportNotification = () => {
+    api.error({
+      message: `Import not possible.`,
       placement: 'bottomRight',
     });
   };
@@ -44,8 +88,8 @@ const EditArea = () => {
       const newItem = {
         id: data.id,
         languages: {
-          first: { content: data.first, descr: data.firstDescr || '' },
-          second: { content: data.second, descr: data.secondDescr || '' },
+          first: { content: data.first?.trim(), descr: data.firstDescr?.trim() || '' },
+          second: { content: data.second?.trim(), descr: data.secondDescr?.trim() || '' },
         },
         level: 'a0',
         myKnowledgeLvl: 5,
@@ -130,15 +174,23 @@ const EditArea = () => {
               className={isPhrasesFiltered ? '' : 'edit-area__inactive-filter'}
             />
           </Col>
-          <Col flex="100px" style={{ marginLeft: 'auto', marginBottom: '16px' }}>
-            <Popconfirm
-              title="Are you sure? This will clear all saved phrases."
-              onConfirm={onClearPhrasesList}
-              okText="Yes"
-              cancelText="No"
-            >
-              <Button type="primary" danger>Clear Phrases list</Button>
-            </Popconfirm>
+          <Col style={{ marginLeft: 'auto', marginBottom: '16px' }}>
+            <Space wrap>
+              <label>
+                <span className="ant-btn">1111</span>
+                <input type="file" id="fileInput" onChange={readFile} />
+                <Button type="link">Import</Button>
+              </label>
+              <Button onClick={onExport}>Export</Button>
+              <Popconfirm
+                title="Are you sure? This will clear all saved phrases."
+                onConfirm={onClearPhrasesList}
+                okText="Yes"
+                cancelText="No"
+              >
+                <Button type="primary" danger>Clear Phrases list</Button>
+              </Popconfirm>
+            </Space>
           </Col>
         </Row>
 
