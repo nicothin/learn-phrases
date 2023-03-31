@@ -1,5 +1,7 @@
 # Учи фразы
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/7b464bf5-9b1d-477d-855f-3affb5584f9b/deploy-status)](https://app.netlify.com/sites/learn-phrases/deploys)
+
 `npm start`
 
 Вводить фразу/слово и ее перевод на 3 языка
