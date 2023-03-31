@@ -1,3 +1,4 @@
+
 import { Card, Collapse, Typography } from 'antd';
 // import { CloseOutlined, MehOutlined, CheckOutlined } from '@ant-design/icons';
 import ReactMarkdown from 'react-markdown'
@@ -8,7 +9,7 @@ const { Panel } = Collapse;
 const { Text } = Typography;
 
 const PhraseCard = ({ cardData, openedCardId, setOpenCardId, thisNumber,  counter }) => {
-  const { id, data, } = cardData;
+  const { id, languages, } = cardData;
 
   // const getKnowledgeLevel = () => {
   //   if (cardData.myKnowledgeLvl === 5) return 5;
@@ -28,10 +29,10 @@ const PhraseCard = ({ cardData, openedCardId, setOpenCardId, thisNumber,  counte
             showArrow={false}
             header={(
               <div className="phrase-card__shown-phrase-wrap">
-                <ReactMarkdown className="phrase-card__shown-phrase">{data.ru.content}</ReactMarkdown>
-                {data.ru.descr && (
+                <ReactMarkdown className="phrase-card__shown-phrase">{languages.first.content}</ReactMarkdown>
+                {languages.first.descr && (
                   <Text className="phrase-card__shown-phrase-description" type="secondary">
-                    <ReactMarkdown>{data.ru.descr}</ReactMarkdown>
+                    <ReactMarkdown>{languages.first.descr}</ReactMarkdown>
                   </Text>
                 )}
 
@@ -40,10 +41,10 @@ const PhraseCard = ({ cardData, openedCardId, setOpenCardId, thisNumber,  counte
             key={id}
           >
             <div className="phrase-card__hidden-phrase-wrap">
-              <ReactMarkdown className="phrase-card__hidden-phrase">{data.en.content}</ReactMarkdown>
-              {data.en.descr && (
+              <ReactMarkdown className="phrase-card__hidden-phrase">{languages.second.content}</ReactMarkdown>
+              {languages.second.descr && (
                 <Text className="phrase-card__hidden-phrase-description" type="secondary">
-                  <ReactMarkdown>{data.en.descr}</ReactMarkdown>
+                  <ReactMarkdown>{languages.second.descr}</ReactMarkdown>
                 </Text>
               )}
             </div>

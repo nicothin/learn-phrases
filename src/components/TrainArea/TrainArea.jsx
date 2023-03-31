@@ -44,17 +44,13 @@ const TrainArea = () => {
       try {
         const storagePhrases = await localforage.getItem('phrases');
         if (!storagePhrases?.length) {
-          console.log('Заполнение');
           localforage.setItem('phrases', defaultPhrases);
           setPhrases(
-            shuffleArray(defaultPhrases)
+            shuffleArray(structuredClone(defaultPhrases))
           );
         }
         else {
           setPhrases(storagePhrases);
-          setPhrases(
-            shuffleArray(storagePhrases)
-          );
         }
         setIsLoading(false);
       } catch (err) {

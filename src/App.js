@@ -6,6 +6,7 @@ import localforage from 'localforage';
 import './App.scss';
 
 import TrainArea from './components/TrainArea/TrainArea';
+import EditArea from './components/EditArea/EditArea';
 
 // const { TextArea } = Input;
 
@@ -20,10 +21,6 @@ export const App = () => {
   const [isModalAboutOpen, setIsModalAboutOpen] = useState(false);
   const [mode, setMode] = useState(MODE.LEARN);
 
-  const refreshLocalforage = () => {
-    localforage.clear();
-  }
-
   return (
     <div className="app">
 
@@ -32,9 +29,7 @@ export const App = () => {
       )}
 
       {mode === MODE.EDIT && (
-        <Button type="primary" onClick={refreshLocalforage} danger>
-          Обновить локальное хранилище фраз
-        </Button>
+        <EditArea />
       )}
 
       <FloatButton.Group
