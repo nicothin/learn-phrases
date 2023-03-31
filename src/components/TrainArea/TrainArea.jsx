@@ -46,7 +46,7 @@ const TrainArea = () => {
         if (!storagePhrases?.length) {
           localforage.setItem('phrases', defaultPhrases);
           setPhrases(
-            shuffleArray(defaultPhrases)
+            shuffleArray(structuredClone(defaultPhrases))
           );
         }
         else {

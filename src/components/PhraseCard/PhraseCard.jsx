@@ -8,7 +8,7 @@ const { Panel } = Collapse;
 const { Text } = Typography;
 
 const PhraseCard = ({ cardData, openedCardId, setOpenCardId, thisNumber,  counter }) => {
-  const { id, data, } = cardData;
+  const { id, languages, } = cardData;
 
   const getKnowledgeLevel = () => {
     if (cardData.myKnowledgeLvl === 5) return 5;
@@ -28,10 +28,10 @@ const PhraseCard = ({ cardData, openedCardId, setOpenCardId, thisNumber,  counte
             showArrow={false}
             header={(
               <div className="phrase-card__shown-phrase-wrap">
-                <ReactMarkdown className="phrase-card__shown-phrase">{data.first.content}</ReactMarkdown>
-                {data.first.descr && (
+                <ReactMarkdown className="phrase-card__shown-phrase">{languages.first.content}</ReactMarkdown>
+                {languages.first.descr && (
                   <Text className="phrase-card__shown-phrase-description" type="secondary">
-                    <ReactMarkdown>{data.first.descr}</ReactMarkdown>
+                    <ReactMarkdown>{languages.first.descr}</ReactMarkdown>
                   </Text>
                 )}
 
@@ -40,10 +40,10 @@ const PhraseCard = ({ cardData, openedCardId, setOpenCardId, thisNumber,  counte
             key={id}
           >
             <div className="phrase-card__hidden-phrase-wrap">
-              <ReactMarkdown className="phrase-card__hidden-phrase">{data.second.content}</ReactMarkdown>
-              {data.second.descr && (
+              <ReactMarkdown className="phrase-card__hidden-phrase">{languages.second.content}</ReactMarkdown>
+              {languages.second.descr && (
                 <Text className="phrase-card__hidden-phrase-description" type="secondary">
-                  <ReactMarkdown>{data.second.descr}</ReactMarkdown>
+                  <ReactMarkdown>{languages.second.descr}</ReactMarkdown>
                 </Text>
               )}
             </div>

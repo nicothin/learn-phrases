@@ -1,0 +1,37 @@
+.phrase-edit-card {
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  background: #fff;
+
+  .ant-collapse-header {
+
+    .ant-collapse-expand-icon {
+      justify-content: center;
+      width: 32px;
+      height: 32px !important;
+      margin-left: 8px;
+      padding: 0 !important;
+    }
+
+    .ant-form-item:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .ant-collapse-content {
+
+    .ant-form-item:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 8px 12px;
+  }
+
+  &__action {
+    margin-left: auto;
+  }
+}

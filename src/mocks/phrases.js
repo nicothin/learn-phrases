@@ -1,7 +1,7 @@
 export const phrases = [
   {
     id: '0',
-    data: {
+    languages: {
       first: { content: 'Эти вещи меняются очень **быстро**.', descr: '',},
       second: { content: 'These things change very **quickly**.', descr: '**quickly** - быстро, быстрее, оперативно, стремительно.',},
     },
@@ -10,7 +10,7 @@ export const phrases = [
   },
   {
     id: '1',
-    data: {
+    languages: {
       first: { content: 'Она **сохранила** этот секрет.', descr: '',},
       second: { content: 'She **kept** this secret.', descr: 'keep kept kept',},
     },
@@ -19,7 +19,7 @@ export const phrases = [
   },
   {
     id: '2',
-    data: {
+    languages: {
       first: { content: 'Он изменит свою **точку зрения** позже.', descr: ''},
       second: { content: 'He\'ll change his **point of view** later.', descr: ''},
     },
@@ -28,7 +28,7 @@ export const phrases = [
   },
   {
     id: '3',
-    data: {
+    languages: {
       first: { content: 'Это **случилось** с ним.', descr: ''},
       second: { content: 'It **happend** to him.', descr: ''},
     },
@@ -37,7 +37,7 @@ export const phrases = [
   },
   {
     id: '4',
-    data: {
+    languages: {
       first: { content: 'Некоторые, несколько.', descr: ''},
       second: { content: 'some / a few / several', descr: ''},
     },
@@ -46,7 +46,7 @@ export const phrases = [
   },
   {
     id: '5',
-    data: {
+    languages: {
       first: { content: 'Я **посмотрел на** экран.', descr: ''},
       second: { content: 'I **looked at** the screen', descr: ''},
     },
@@ -55,7 +55,7 @@ export const phrases = [
   },
   {
     id: '6',
-    data: {
+    languages: {
       first: { content: 'Тебе нужно быть более **осторожным**.', descr: ''},
       second: { content: 'You need to be more **careful**.', descr: ''},
     },
@@ -64,7 +64,7 @@ export const phrases = [
   },
   {
     id: '7',
-    data: {
+    languages: {
       first: { content: 'Я **верю**, что это возможно.', descr: ''},
       second: { content: 'I believe that is possible.', descr: ''},
     },
@@ -73,7 +73,7 @@ export const phrases = [
   },
   {
     id: '8',
-    data: {
+    languages: {
       first: { content: 'Он мне **очень** помог.', descr: ''},
       second: { content: 'He helped me **a lot**.', descr: ''},
     },
@@ -82,7 +82,7 @@ export const phrases = [
   },
   {
     id: '9',
-    data: {
+    languages: {
       first: { content: '...несколько раз...', descr: ''},
       second: { content: '...several times...', descr: ''},
     },
@@ -91,7 +91,7 @@ export const phrases = [
   },
   {
     id: '10',
-    data: {
+    languages: {
       first: { content: 'Это может **упасть**.', descr: ''},
       second: { content: 'It can **fall**.', descr: ''},
     },
@@ -100,7 +100,7 @@ export const phrases = [
   },
   {
     id: '11',
-    data: {
+    languages: {
       first: { content: 'Я, **в основном**, пользовался тем словарем.', descr: ''},
       second: { content: 'I **mostly** used that dictionary.', descr: ''},
     },
@@ -109,7 +109,7 @@ export const phrases = [
   },
   {
     id: '12',
-    data: {
+    languages: {
       first: { content: 'Как долго это **длилось**?', descr: ''},
       second: { content: 'How long did it **last**?', descr: ''},
     },
@@ -118,7 +118,7 @@ export const phrases = [
   },
   {
     id: '13',
-    data: {
+    languages: {
       first: { content: 'Я **не мог** понять эту речь.', descr: ''},
       second: { content: 'I couldn\'t understand this speech.', descr: ''},
     },
@@ -127,7 +127,7 @@ export const phrases = [
   },
   {
     id: '14',
-    data: {
+    languages: {
       first: { content: 'Я мог учить английский **часами**.', descr: ''},
       second: { content: 'I could learn English **for hours**.', descr: ''},
     },
@@ -136,7 +136,7 @@ export const phrases = [
   },
   {
     id: '15',
-    data: {
+    languages: {
       first: { content: 'Они строят **очень модный** дом.', descr: ''},
       second: { content: 'They build **a very fashionable** house.', descr: ''},
     },
@@ -145,7 +145,7 @@ export const phrases = [
   },
   {
     id: '16',
-    data: {
+    languages: {
       first: { content: 'Я не думаю, что **цена упадёт**.', descr: ''},
       second: { content: 'I don\'t think that **price will fall**.', descr: ''},
     },
@@ -154,7 +154,7 @@ export const phrases = [
   },
   {
     id: '17',
-    data: {
+    languages: {
       first: { content: '**Время проходит** очень быстро.', descr: ''},
       second: { content: '**Time passes** very quickly.', descr: ''},
     },
@@ -163,7 +163,7 @@ export const phrases = [
   },
   {
     id: '18',
-    data: {
+    languages: {
       first: { content: 'Она **улыбнулась мне**.', descr: ''},
       second: { content: 'She **smiled at me**.', descr: ''},
     },
@@ -172,7 +172,7 @@ export const phrases = [
   },
   {
     id: '19',
-    data: {
+    languages: {
       first: { content: '**Сколько** денег? **Сколько** друзей?', descr: ''},
       second: { content: '**How much** money? **How many** friends?', descr: ''},
     },
@@ -181,7 +181,7 @@ export const phrases = [
   },
   {
     id: '20',
-    data: {
+    languages: {
       first: { content: 'Это **не то же самое**.', descr: ''},
       second: { content: 'It **isn\'t the same**.', descr: ''},
     },
@@ -190,7 +190,7 @@ export const phrases = [
   },
   {
     id: '21',
-    data: {
+    languages: {
       first: { content: 'Он **носит** формальную одежду?', descr: ''},
       second: { content: 'Does he **wear** formal clothes?', descr: ''},
     },
@@ -199,7 +199,7 @@ export const phrases = [
   },
   {
     id: '22',
-    data: {
+    languages: {
       first: { content: 'Кто **против** этого решения?', descr: ''},
       second: { content: 'Who is **against** this desition?', descr: ''},
     },
@@ -208,7 +208,7 @@ export const phrases = [
   },
   {
     id: '23',
-    data: {
+    languages: {
       first: { content: 'Почему ты так **волнуешься** сейчас?', descr: ''},
       second: { content: 'Why **are** you so **worried** now?', descr: ''},
     },
@@ -217,7 +217,7 @@ export const phrases = [
   },
   {
     id: '24',
-    data: {
+    languages: {
       first: { content: 'Я могу купить... / Я мог бы купить...', descr: ''},
       second: { content: 'I can buy... / I could buy...', descr: ''},
     },
@@ -226,7 +226,7 @@ export const phrases = [
   },
   {
     id: '25',
-    data: {
+    languages: {
       first: { content: 'Я бы купил / Я хотел бы купить...', descr: ''},
       second: { content: 'I would buy... / I\'d like to buy...', descr: 'I would like to buy...'},
     },
@@ -235,7 +235,7 @@ export const phrases = [
   },
   {
     id: '26',
-    data: {
+    languages: {
       first: { content: 'Нам это нужно **срочно**.', descr: ''},
       second: { content: 'We need it **urgently**.', descr: ''},
     },
@@ -244,7 +244,7 @@ export const phrases = [
   },
   {
     id: '27',
-    data: {
+    languages: {
       first: { content: 'Нам **придётся** взять **ответственность**.', descr: 'Не по своей воле.'},
       second: { content: 'We will **have to take** the **responsibility**.', descr: ''},
     },
@@ -253,7 +253,7 @@ export const phrases = [
   },
   {
     id: '28',
-    data: {
+    languages: {
       first: { content: 'Тебе **не нужно** слушать Грету.', descr: 'Не обязательно.'},
       second: { content: 'You **needn\'t** listen to Greta.', descr: ''},
     },
@@ -262,7 +262,7 @@ export const phrases = [
   },
   {
     id: '29',
-    data: {
+    languages: {
       first: { content: 'Тебе **следует вернуться** в школу.', descr: ''},
       second: { content: 'You **should be back** in school.', descr: ''},
     },
@@ -271,7 +271,7 @@ export const phrases = [
   },
   {
     id: '30',
-    data: {
+    languages: {
       first: { content: 'Вы можете **потерять** своё время.', descr: ''},
       second: { content: 'You can **lose** your time.', descr: ''},
     },
@@ -280,7 +280,7 @@ export const phrases = [
   },
   {
     id: '31',
-    data: {
+    languages: {
       first: { content: 'Ты **должен** быть более осторожен.', descr: 'Не через **need**'},
       second: { content: 'You **should** be more careful.', descr: ''},
     },
@@ -289,7 +289,7 @@ export const phrases = [
   },
   {
     id: '32',
-    data: {
+    languages: {
       first: { content: 'Ты **можешь** водить машину?', descr: ''},
       second: { content: '**Can you** drive a car?', descr: ''},
     },
@@ -298,7 +298,7 @@ export const phrases = [
   },
   {
     id: '33',
-    data: {
+    languages: {
       first: { content: 'Я люблю **такого рода** еду.', descr: ''},
       second: { content: 'I like **this kind of** food.', descr: ''},
     },
@@ -307,7 +307,7 @@ export const phrases = [
   },
   {
     id: '34',
-    data: {
+    languages: {
       first: { content: '**Почти** каждый день.', descr: ''},
       second: { content: '**Almost** every day.', descr: ''},
     },
@@ -316,7 +316,7 @@ export const phrases = [
   },
   {
     id: '35',
-    data: {
+    languages: {
       first: { content: 'Я **последую** этому **совету**.', descr: ''},
       second: { content: 'I\'ll **follow** this **advice**.', descr: ''},
     },
@@ -325,7 +325,7 @@ export const phrases = [
   },
   {
     id: '36',
-    data: {
+    languages: {
       first: { content: 'Я **не буду** делать эти упражнения.', descr: ''},
       second: { content: 'I **won\'t** do these exercises.', descr: ''},
     },
@@ -334,7 +334,7 @@ export const phrases = [
   },
   {
     id: '37',
-    data: {
+    languages: {
       first: { content: 'Они **присоединятся** к нам?', descr: ''},
       second: { content: 'Will they **join us**?', descr: ''},
     },
@@ -343,7 +343,7 @@ export const phrases = [
   },
   {
     id: '38',
-    data: {
+    languages: {
       first: { content: 'Что привело вас сюда?', descr: ''},
       second: { content: 'What brings you here?', descr: ''},
     },
@@ -352,7 +352,7 @@ export const phrases = [
   },
   {
     id: '39',
-    data: {
+    languages: {
       first: { content: 'Вы впервые здесь?', descr: ''},
       second: { content: 'Is this your first time here?', descr: ''},
     },
@@ -361,7 +361,7 @@ export const phrases = [
   },
   {
     id: '40',
-    data: {
+    languages: {
       first: { content: '**Прекрасный** день / **Ужасный** день.', descr: ''},
       second: { content: '**Beautiful** day / **Miserable** day.', descr: ''},
     },
@@ -370,7 +370,7 @@ export const phrases = [
   },
   {
     id: '41',
-    data: {
+    languages: {
       first: { content: 'Сколько это будет **длиться**?', descr: ''},
       second: { content: 'How long will it **last**?', descr: ''},
     },
@@ -379,7 +379,7 @@ export const phrases = [
   },
   {
     id: '42',
-    data: {
+    languages: {
       first: { content: 'Как ты **решишь** эту проблему?', descr: ''},
       second: { content: 'How will you **solve** this problem?', descr: ''},
     },
@@ -388,7 +388,7 @@ export const phrases = [
   },
   {
     id: '43',
-    data: {
+    languages: {
       first: { content: 'Какое время будет более **удобно** для тебя?', descr: ''},
       second: { content: 'What time will be more **convenient** for you?', descr: ''},
     },
@@ -397,7 +397,7 @@ export const phrases = [
   },
   {
     id: '44',
-    data: {
+    languages: {
       first: { content: 'Присутствовать / Отсутствовать.', descr: ''},
       second: { content: 'To be present / To be absent.', descr: ''},
     },
@@ -406,7 +406,7 @@ export const phrases = [
   },
   {
     id: '45',
-    data: {
+    languages: {
       first: { content: 'Когда ты **доберешься до дома**?', descr: ''},
       second: { content: 'When will you **get home**?', descr: ''},
     },
@@ -415,7 +415,7 @@ export const phrases = [
   },
   {
     id: '46',
-    data: {
+    languages: {
       first: { content: 'Когда она **доберется до того места**?', descr: ''},
       second: { content: 'When will she **get to that place**?', descr: ''},
     },
@@ -424,7 +424,7 @@ export const phrases = [
   },
   {
     id: '47',
-    data: {
+    languages: {
       first: { content: 'Ты **ответил** на это сообщение?', descr: ''},
       second: { content: 'Did you **answer** this message?', descr: ''},
     },
@@ -433,7 +433,7 @@ export const phrases = [
   },
   {
     id: '48',
-    data: {
+    languages: {
       first: { content: 'Где ты работал **раньше**?', descr: ''},
       second: { content: 'Where did you work **earlier**?', descr: ''},
     },
@@ -442,7 +442,7 @@ export const phrases = [
   },
   {
     id: '49',
-    data: {
+    languages: {
       first: { content: '**Что ещё** ты **оставил** дома?', descr: ''},
       second: { content: '**What else** did you **leave** at home?', descr: ''},
     },
@@ -451,7 +451,7 @@ export const phrases = [
   },
   {
     id: '50',
-    data: {
+    languages: {
       first: { content: 'Как ты **оказался здесь**?', descr: 'Как ты **добрался сюда**?'},
       second: { content: 'How did you **get here**?', descr: ''},
     },
@@ -460,7 +460,7 @@ export const phrases = [
   },
   {
     id: '51',
-    data: {
+    languages: {
       first: { content: 'Я решил **поискать** работу.', descr: ''},
       second: { content: 'I decided to **look for** a job.', descr: ''},
     },
@@ -469,7 +469,7 @@ export const phrases = [
   },
   {
     id: '52',
-    data: {
+    languages: {
       first: { content: 'Я не мог вспомнить это.', descr: ''},
       second: { content: 'I couldn\'t remember it.', descr: ''},
     },
@@ -478,7 +478,7 @@ export const phrases = [
   },
   {
     id: '53',
-    data: {
+    languages: {
       first: { content: 'Она заплакала **внезапно**.', descr: ''},
       second: { content: 'She cryed **suddenly**.', descr: ''},
     },
@@ -487,7 +487,7 @@ export const phrases = [
   },
   {
     id: '54',
-    data: {
+    languages: {
       first: { content: 'Как долго **длился** урок?', descr: ''},
       second: { content: 'How long did a lesson **last**?', descr: ''},
     },
@@ -496,7 +496,7 @@ export const phrases = [
   },
   {
     id: '55',
-    data: {
+    languages: {
       first: { content: 'Я хотел **достигнуть** этой **цели**.', descr: ''},
       second: { content: 'I wanted to **achive** this **aim**.', descr: ''},
     },
@@ -505,7 +505,7 @@ export const phrases = [
   },
   {
     id: '56',
-    data: {
+    languages: {
       first: { content: 'Я не **праздновал** этот **праздник**.', descr: ''},
       second: { content: 'I didn\'t **celebrate** this **holiday**.', descr: ''},
     },
@@ -514,7 +514,7 @@ export const phrases = [
   },
   {
     id: '57',
-    data: {
+    languages: {
       first: { content: '**Однажды** это произошло со мной.', descr: ''},
       second: { content: 'It happend to me **one day**.', descr: ''},
     },
@@ -523,7 +523,7 @@ export const phrases = [
   },
   {
     id: '58',
-    data: {
+    languages: {
       first: { content: 'Он сказал это очень **громко** / **тихо**.', descr: ''},
       second: { content: 'He said it very **loudly** / **quietly**.', descr: ''},
     },
@@ -532,7 +532,7 @@ export const phrases = [
   },
   {
     id: '59',
-    data: {
+    languages: {
       first: { content: 'Он был **известен** / **болен**.', descr: ''},
       second: { content: 'He was **famuos** / **ill**.', descr: ''},
     },
@@ -541,7 +541,7 @@ export const phrases = [
   },
   {
     id: '60',
-    data: {
+    languages: {
       first: { content: 'Это было **ужасно**.', descr: ''},
       second: { content: 'It was **terrible**.', descr: ''},
     },
@@ -550,7 +550,7 @@ export const phrases = [
   },
   {
     id: '61',
-    data: {
+    languages: {
       first: { content: 'Я подготовил **нечто особенное**.', descr: ''},
       second: { content: 'I prepared **something special**.', descr: ''},
     },
@@ -559,7 +559,7 @@ export const phrases = [
   },
   {
     id: '62',
-    data: {
+    languages: {
       first: { content: 'Лучшее / Худшее.', descr: ''},
       second: { content: 'The best / The worst.', descr: ''},
     },
@@ -568,7 +568,7 @@ export const phrases = [
   },
   {
     id: '63',
-    data: {
+    languages: {
       first: { content: 'Она была **испугана** этим.', descr: ''},
       second: { content: 'She was **afraid of** it.', descr: ''},
     },
@@ -577,7 +577,7 @@ export const phrases = [
   },
   {
     id: '64',
-    data: {
+    languages: {
       first: { content: 'Почему это было так **необычно**?', descr: ''},
       second: { content: 'Why was it so **unusual**?', descr: ''},
     },
@@ -586,7 +586,7 @@ export const phrases = [
   },
   {
     id: '65',
-    data: {
+    languages: {
       first: { content: 'Грустный / Растроенный / Несчастный.', descr: ''},
       second: { content: 'Sad / Upset / Unhappy', descr: ''},
     },
