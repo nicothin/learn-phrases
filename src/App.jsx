@@ -7,16 +7,11 @@ import './App.scss';
 
 import TrainArea from './components/TrainArea/TrainArea';
 import EditArea from './components/EditArea/EditArea';
-
-// const { TextArea } = Input;
-
-const MODE = {
-  EDIT: 'edit',
-  LEARN: 'learn',
-}
+import { STORAGE_NAME } from './enums/storage';
+import { MODE } from './enums/mode';
 
 export const App = () => {
-  localforage.config({ name: 'LearnPhrases' });
+  localforage.config({ name: STORAGE_NAME });
 
   const [isModalAboutOpen, setIsModalAboutOpen] = useState(false);
   const [mode, setMode] = useState(MODE.LEARN);
@@ -24,13 +19,8 @@ export const App = () => {
   return (
     <div className="app">
 
-      {mode === MODE.LEARN && (
-        <TrainArea />
-      )}
-
-      {mode === MODE.EDIT && (
-        <EditArea />
-      )}
+      {mode === MODE.LEARN && <TrainArea />}
+      {mode === MODE.EDIT && <EditArea />}
 
       <FloatButton.Group
         trigger="hover"

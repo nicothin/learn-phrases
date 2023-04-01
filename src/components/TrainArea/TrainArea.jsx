@@ -8,9 +8,10 @@ import './TrainArea.scss';
 import { phrases as defaultPhrases } from '../../mocks/phrases';
 import PhraseCard from '../PhraseCard/PhraseCard';
 import { shuffleArray } from '../../utils/shuffleArray';
+import { STORAGE_NAME } from '../../enums/storage';
 
 const TrainArea = () => {
-  localforage.config({ name: 'LearnPhrases' });
+  localforage.config({ name: STORAGE_NAME });
 
   const carouselRef = useRef(null);
 
@@ -19,7 +20,7 @@ const TrainArea = () => {
   const [activeSlideId, setActiveSlideId] = useState(0);
   const [openCardId, setOpenCardId] = useState(null);
 
-  const carouselChange = (oldIndex, newIndex) => {
+  const carouselChange = (_, newIndex) => {
     setActiveSlideId(phrases[newIndex]?.id);
   };
 

@@ -1,21 +1,26 @@
-import React, { useState, useEffect, } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Layout, Spin, Button, Input, Popconfirm, Row, Col, notification, Space, Upload, Modal, Form } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import localforage from 'localforage';
+import { nanoid } from 'nanoid';
 
 import './EditArea.scss';
 
 import PhraseEditCard from '../PhraseEditCard/PhraseEditCard';
 import { checkData } from '../../utils/checkData';
-import { nanoid } from 'nanoid';
+import { downloadFile } from '../../utils/downloadFile';
+import { NOTIFICATION_TYPE } from '../../enums/notification';
+import { STORAGE_NAME, STORAGE_PHRASES_NAME } from '../../enums/storage';
+import { formatDate } from '../../utils/formateDate';
+import { createItem } from '../../utils/createItem';
 
 const { confirm } = Modal;
 const { TextArea } = Input;
 
 const EditArea = () => {
-  localforage.config({ name: 'LearnPhrases' });
+  localforage.config({ name: STORAGE_NAME });
 
-  const formRef = React.useRef(null);
+  const formRef = useRef(null);
 
   const [isLoading, setIsLoading] = useState(true);
   const [phrases, setPhrases] = useState([]);
@@ -23,124 +28,92 @@ const EditArea = () => {
   const [isPhrasesFiltered, setIsPhrasesFiltered] = useState(false);
   const [isModalAddOpen, setIsModalAddOpen] = useState(false);
 
-  const [api, contextHolder] = notification.useNotification();
+  const [showNotification, contextHolder] = notification.useNotification();
 
-  const downloadFile = (filename, text) => {
-    var element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-    element.setAttribute('download', filename);
+  const openNotification = useCallback((type = 'info', message, description) => {
+    if (!message && !description) return;
 
-    element.style.display = 'none';
-    document.body.appendChild(element);
+    showNotification[type]({
+      message,
+      description,
+    });
+  }, [showNotification]);
 
-    element.click();
-
-    document.body.removeChild(element);
-  }
-
-  const readFile = (file) => {
-    let reader = new FileReader();
-
+  const onImportFile = (file) => {
+    const reader = new FileReader();
     reader.readAsText(file);
 
     reader.onload = async function () {
-      let content = reader.result;
+      const content = reader.result;
       try {
-        let data = JSON.parse(content);
+        const data = JSON.parse(content);
         const result = checkData(data);
-        await localforage.setItem('phrases', result);
+        if (!result.length) {
+          throw new Error('Checking the imported file did not reveal phrases in it.');
+        }
+        await localforage.setItem(STORAGE_PHRASES_NAME, result);
         setPhrases(result);
-        openImportNotification();
+        openNotification(NOTIFICATION_TYPE.SUCCESS, 'Import completed successfully', `Imported ${result.length} phrases.`)
       } catch (error) {
-        console.log('error', error);
-        openErrorImportNotification();
+        console.error(error);
+        openNotification(NOTIFICATION_TYPE.ERROR, 'Import failed with an error', error);
       }
     };
   };
 
-  const onExport = async () => {
+  const onExportFile = async () => {
     try {
-      const storagePhrases = await localforage.getItem('phrases');
-      downloadFile('phrases.json', JSON.stringify(storagePhrases, null, 2));
-    } catch (err) {
-      console.log('localforage error', err);
+      const storagePhrases = await localforage.getItem(STORAGE_PHRASES_NAME);
+      const timeStamp = formatDate(new Date());
+      downloadFile(`phrases_${timeStamp}.json`, JSON.stringify(storagePhrases, null, 2));
+      openNotification(NOTIFICATION_TYPE.SUCCESS, 'Export completed successfully');
+    } catch (error) {
+      console.error(error);
+      openNotification(NOTIFICATION_TYPE.ERROR, 'Export failed with an error', error);
     }
-  };
-
-  const openDeleteNotification = () => {
-    api.warning({
-      message: `Phrase deleted.`,
-      placement: 'bottomRight',
-    });
-  };
-
-  const openEditNotification = () => {
-    api.success({
-      message: `Phrase updated.`,
-      placement: 'bottomRight',
-    });
-  };
-
-  const openImportNotification = () => {
-    api.success({
-      message: `Import complete.`,
-      placement: 'bottomRight',
-    });
-  };
-
-  const openErrorImportNotification = () => {
-    api.error({
-      message: `Import not possible.`,
-      placement: 'bottomRight',
-    });
-  };
-
-  const openAddNotification = () => {
-    api.success({
-      message: `Phrase added successfully.`,
-      placement: 'bottomRight',
-    });
   };
 
   const onClearPhrasesList = async () => {
     try {
       await localforage.clear();
       setPhrases([]);
-    } catch (err) {
-      console.log('localforage error', err);
+      openNotification(NOTIFICATION_TYPE.SUCCESS, 'Phrase list cleared');
+    } catch (error) {
+      console.error(error);
+      openNotification(NOTIFICATION_TYPE.ERROR, 'Phrase list not cleared', error);
     }
   };
 
   const onEditPhraseFinish = async (data) => {
     try {
-      const newItem = {
+      const newItem = createItem({
         id: data.id,
-        languages: {
-          first: { content: data.first?.trim(), descr: data.firstDescr?.trim() || '' },
-          second: { content: data.second?.trim(), descr: data.secondDescr?.trim() || '' },
-        },
-        level: 'a0',
-        myKnowledgeLvl: 5,
-      };
-      const storagePhrases = await localforage.getItem('phrases');
+        first: data.first,
+        second: data.second,
+        firstDescr: data.firstDescr,
+        secondDescr: data.secondDescr,
+      });
+      const storagePhrases = await localforage.getItem(STORAGE_PHRASES_NAME);
       const newPhrases = storagePhrases.map((phrase) => phrase.id === data.id ? newItem : phrase);
-      await localforage.setItem('phrases', newPhrases);
+      await localforage.setItem(STORAGE_PHRASES_NAME, newPhrases);
       setPhrases(newPhrases);
-      openEditNotification();
-    } catch (err) {
-      console.log('localforage error', err);
+      openNotification(NOTIFICATION_TYPE.SUCCESS, 'Phrase updated');
+    } catch (error) {
+      console.error(error);
+      openNotification(NOTIFICATION_TYPE.ERROR, 'Phrase not updated', error);
     }
   };
 
   const onDeletePhrase = async (id) => {
     try {
-      const storagePhrases = await localforage.getItem('phrases');
+      const storagePhrases = await localforage.getItem(STORAGE_PHRASES_NAME);
       const newPhrases = storagePhrases.filter((phrase) => phrase.id !== id);
-      await localforage.setItem('phrases', newPhrases);
+      await localforage.setItem(STORAGE_PHRASES_NAME, newPhrases);
       setPhrases(newPhrases);
-      openDeleteNotification();
-    } catch (err) {
-      console.log('localforage error', err);
+      openNotification(NOTIFICATION_TYPE.SUCCESS, 'Phrase deleted');
+    } catch (error) {
+      console.error(error);
+      openNotification(NOTIFICATION_TYPE.ERROR, 'Phrase not deleted', error);
     }
   };
 
@@ -151,7 +124,7 @@ const EditArea = () => {
     if (search.length > 2) {
       setIsPhrasesFiltered(true);
       try {
-        const storagePhrases = await localforage.getItem('phrases');
+        const storagePhrases = await localforage.getItem(STORAGE_PHRASES_NAME);
         const filteredPhrases = storagePhrases.filter((phrase) => (
           phrase?.languages?.first?.content?.toLowerCase().includes(str) ||
           phrase?.languages?.second?.content?.toLowerCase().includes(str) ||
@@ -159,17 +132,19 @@ const EditArea = () => {
           phrase?.languages?.second?.descr?.toLowerCase().includes(str)
         ));
         setPhrases(filteredPhrases);
-      } catch (err) {
-        console.log('localforage error', err);
+      } catch (error) {
+        console.error(error);
+        openNotification(NOTIFICATION_TYPE.ERROR, 'Phrase not filtered', error);
       }
     }
     else if (isPhrasesFiltered) {
       setIsPhrasesFiltered(false);
       try {
-        const storagePhrases = await localforage.getItem('phrases');
+        const storagePhrases = await localforage.getItem(STORAGE_PHRASES_NAME);
         setPhrases(storagePhrases);
-      } catch (err) {
-        console.log('localforage error', err);
+      } catch (error) {
+        console.error(error);
+        openNotification(NOTIFICATION_TYPE.ERROR, 'Phrase not filtered', error);
       }
     }
   };
@@ -182,33 +157,29 @@ const EditArea = () => {
       okType: 'danger',
       cancelText: 'No',
       onOk() {
-        readFile(file)
+        onImportFile(file)
       },
     });
   }
 
   const onAddPhrase = async (data) => {
-    const id = nanoid(6);
-    const newPhrase = checkData([{
-      id,
-      languages: {
-        first: { content: data?.first, descr: data?.firstDescr },
-        second: { content: data?.second, descr: data?.secondDescr },
-      },
-    }]);
-
-    if (!newPhrase.length) {
-      return;
-    }
+    console.log('data', data);
     try {
-      const storagePhrases = await localforage.getItem('phrases');
-      const newPhrases = [...storagePhrases, ...newPhrase];
-      await localforage.setItem('phrases', newPhrases);
+      const newPhrase = createItem({
+        first: data.first,
+        second: data.second,
+        firstDescr: data.firstDescr,
+        secondDescr: data.secondDescr,
+      });
+      const storagePhrases = await localforage.getItem(STORAGE_PHRASES_NAME);
+      const newPhrases = [...storagePhrases, newPhrase];
+      await localforage.setItem(STORAGE_PHRASES_NAME, newPhrases);
       setPhrases(newPhrases);
-      setIsModalAddOpen(false);
-      openAddNotification();
-    } catch (err) {
-      console.log('localforage error', err);
+      openNotification(NOTIFICATION_TYPE.SUCCESS, 'Phrase successfully added to the end of the list');
+      formRef.current.resetFields();
+    } catch (error) {
+      console.error(error);
+      openNotification(NOTIFICATION_TYPE.ERROR, 'Phrase not added', error);
     }
   };
 
@@ -216,19 +187,22 @@ const EditArea = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const storagePhrases = await localforage.getItem('phrases');
+        const storagePhrases = await localforage.getItem(STORAGE_PHRASES_NAME);
         setPhrases(storagePhrases);
         setIsLoading(false);
-      } catch (err) {
-        console.log('localforage error', err);
+      } catch (error) {
+        console.error(error);
+        openNotification(NOTIFICATION_TYPE.ERROR, 'Phrase list reading error', error);
       }
     }
     fetchData();
-  }, []);
+  }, [openNotification]);
 
   return (
     <div className="edit-area">
+
       {isLoading && <Spin indicator={<LoadingOutlined style={{ fontSize: 48, }} spin />} className="edit-area__load" />}
+
       <Layout className="edit-area__wrap">
         <Row gutter={[16, 0]} style={{ }}>
           <Col flex="1 0 auto" style={{ maxWidth: '240px', marginBottom: '16px' }}>
@@ -240,6 +214,7 @@ const EditArea = () => {
               className={isPhrasesFiltered ? '' : 'edit-area__inactive-filter'}
             />
           </Col>
+
           <Col style={{ marginLeft: 'auto', marginBottom: '16px' }}>
             <Space wrap>
               <Button onClick={() => setIsModalAddOpen(true)}>Add</Button>
@@ -251,7 +226,7 @@ const EditArea = () => {
               >
                 <Button>Import</Button>
               </Upload>
-              <Button onClick={onExport}>Export</Button>
+              <Button onClick={onExportFile}>Export</Button>
               <Popconfirm
                 title="Are you sure? This will clear all saved phrases."
                 onConfirm={onClearPhrasesList}
