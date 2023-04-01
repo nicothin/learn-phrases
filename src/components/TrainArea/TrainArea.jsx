@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Layout, Carousel, Spin, FloatButton } from 'antd';
-import { LoadingOutlined, ArrowRightOutlined, ArrowUpOutlined, ArrowDownOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import { LoadingOutlined, ArrowRightOutlined, ArrowUpOutlined, ArrowDownOutlined, ArrowLeftOutlined, ReloadOutlined } from '@ant-design/icons';
 import localforage from 'localforage';
 
 import './TrainArea.scss';
@@ -19,6 +19,12 @@ const TrainArea = () => {
   const [phrases, setPhrases] = useState([]);
   const [activeSlideId, setActiveSlideId] = useState(0);
   const [openCardId, setOpenCardId] = useState(null);
+
+  const shufflePhrases = () => {
+    setPhrases(
+      shuffleArray(structuredClone(phrases))
+    );
+  };
 
   const carouselChange = (_, newIndex) => {
     setActiveSlideId(phrases[newIndex]?.id);
@@ -51,7 +57,9 @@ const TrainArea = () => {
           );
         }
         else {
-          setPhrases(storagePhrases);
+          setPhrases(
+            shuffleArray(structuredClone(storagePhrases))
+          );
         }
         setIsLoading(false);
       } catch (err) {
@@ -131,6 +139,15 @@ const TrainArea = () => {
         }}
         icon={<ArrowLeftOutlined />}
         onClick={() => carouselRef?.current?.prev()}
+      />
+      <FloatButton
+        shape="circle"
+        style={{
+          right: 212,
+          bottom: 32,
+        }}
+        icon={<ReloadOutlined />}
+        onClick={shufflePhrases}
       />
     </div>
   );

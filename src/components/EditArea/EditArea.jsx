@@ -98,6 +98,7 @@ const EditArea = () => {
       await localforage.setItem(STORAGE_PHRASES_NAME, newPhrases);
       setPhrases(newPhrases);
       openNotification(NOTIFICATION_TYPE.SUCCESS, 'Phrase updated');
+      setFilterValue('');
     } catch (error) {
       console.error(error);
       openNotification(NOTIFICATION_TYPE.ERROR, 'Phrase not updated', error);
@@ -176,10 +177,10 @@ const EditArea = () => {
         secondDescr: data.secondDescr,
       });
       const storagePhrases = await localforage.getItem(STORAGE_PHRASES_NAME);
-      const newPhrases = [...storagePhrases, newPhrase];
+      const newPhrases = [newPhrase, ...storagePhrases];
       await localforage.setItem(STORAGE_PHRASES_NAME, newPhrases);
       setPhrases(newPhrases);
-      openNotification(NOTIFICATION_TYPE.SUCCESS, 'Phrase successfully added to the end of the list');
+      openNotification(NOTIFICATION_TYPE.SUCCESS, 'Phrase successfully added to the top of the list');
       formRef.current?.resetFields();
       setTimeout(() => firstInputRef.current.focus({ cursor: 'start', }), 0);
       setFilterValue('');
@@ -203,6 +204,23 @@ const EditArea = () => {
     }
     fetchData();
   }, [openNotification]);
+
+  // Отправка формы из модального окна
+  useEffect(() => {
+    if (!isModalAddOpen) return;
+
+    const handleKeyDown = (event) => {
+      if (event.ctrlKey && event.key === 'Enter') {
+        formRef?.current?.submit();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isModalAddOpen]);
 
   return (
     <div className="edit-area">

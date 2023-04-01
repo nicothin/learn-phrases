@@ -1,13 +1,19 @@
 export const formatDate = (date) => {
 
-  var dd = date.getDate();
+  let dd = date.getDate();
   if (dd < 10) dd = '0' + dd;
 
-  var mm = date.getMonth() + 1;
+  let mm = date.getMonth() + 1;
   if (mm < 10) mm = '0' + mm;
 
-  var yy = date.getFullYear() % 100;
+  let yy = date.getFullYear() % 100;
   if (yy < 10) yy = '0' + yy;
 
-  return `${yy}-${mm}-${dd}_${date.getHours()}-${date.getMinutes()}`;
+  let hr = date.getHours();
+  if (hr < 10) hr = '0' + hr;
+
+  let mi = date.getMinutes();
+  if (mi < 10) mi = '0' + mi;
+
+  return `${yy}-${mm}-${dd}_${hr}-${mi}`;
 }
