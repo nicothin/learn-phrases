@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Layout, Spin, Button, Input, Popconfirm, Row, Col, notification, Space, Upload, Modal, Form } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import localforage from 'localforage';
-import { nanoid } from 'nanoid';
 
 import './EditArea.scss';
 
