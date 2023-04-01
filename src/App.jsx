@@ -63,6 +63,7 @@ export const App = () => {
         centered
       >
         <p>Учи язык с markdown-ом и блэкджеком!</p>
+        <p>Осторожно: данные сохраняются в браузере, никакого обмена данными с сервером нет.</p>
         <p>Автор: <a href="https://nicothin.pro/" target="_blank" rel="noreferrer">Николай Громов</a>.</p>
         <p>Вдохновлено видеокурсом <a href="https://www.youtube.com/watch?v=BAahBqreWZw&list=PLD6SPjEPomasNzHuJpcS1Fxa2PYf1Bm-x&index=1" target="_blank" rel="noreferrer">Английский язык по плейлистам</a>. </p>
       </Modal>

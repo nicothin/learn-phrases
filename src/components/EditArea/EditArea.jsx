@@ -20,6 +20,7 @@ const EditArea = () => {
   localforage.config({ name: STORAGE_NAME });
 
   const formRef = useRef(null);
+  const firstInputRef = useRef(null);
 
   const [isLoading, setIsLoading] = useState(true);
   const [phrases, setPhrases] = useState([]);
@@ -161,8 +162,12 @@ const EditArea = () => {
     });
   }
 
+  const showAddModal = () => {
+    setIsModalAddOpen(true);
+    setTimeout(() => firstInputRef.current.focus({ cursor: 'start', }), 0);
+  };
+
   const onAddPhrase = async (data) => {
-    console.log('data', data);
     try {
       const newPhrase = createItem({
         first: data.first,
@@ -175,7 +180,9 @@ const EditArea = () => {
       await localforage.setItem(STORAGE_PHRASES_NAME, newPhrases);
       setPhrases(newPhrases);
       openNotification(NOTIFICATION_TYPE.SUCCESS, 'Phrase successfully added to the end of the list');
-      formRef.current.resetFields();
+      formRef.current?.resetFields();
+      setTimeout(() => firstInputRef.current.focus({ cursor: 'start', }), 0);
+      setFilterValue('');
     } catch (error) {
       console.error(error);
       openNotification(NOTIFICATION_TYPE.ERROR, 'Phrase not added', error);
@@ -216,7 +223,7 @@ const EditArea = () => {
 
           <Col style={{ marginLeft: 'auto', marginBottom: '16px' }}>
             <Space wrap>
-              <Button onClick={() => setIsModalAddOpen(true)}>Add</Button>
+              <Button onClick={showAddModal}>Add</Button>
               <Upload
                 className="edit-area__upload"
                 customRequest={(e) => {
@@ -259,7 +266,7 @@ const EditArea = () => {
             name="first"
             rules={[{ required: true, message: 'Please input phrase.', },]}
           >
-            <Input placeholder="First language" />
+            <Input placeholder="First language" ref={firstInputRef} />
           </Form.Item>
           <Form.Item name="firstDescr">
             <TextArea rows={2} placeholder="Description" />
