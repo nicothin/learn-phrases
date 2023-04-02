@@ -9,6 +9,7 @@ import { phrases as defaultPhrases } from '../../mocks/phrases';
 import PhraseCard from '../PhraseCard/PhraseCard';
 import { shuffleArray } from '../../utils/shuffleArray';
 import { STORAGE_NAME } from '../../enums/storage';
+import { getKnowledgeFilteredPhrases } from '../../utils/getKnowledgeFilteredPhrases';
 
 const TrainArea = () => {
   localforage.config({ name: STORAGE_NAME });
@@ -22,7 +23,9 @@ const TrainArea = () => {
 
   const shufflePhrases = () => {
     setPhrases(
-      shuffleArray(structuredClone(phrases))
+      shuffleArray(structuredClone(
+        getKnowledgeFilteredPhrases(phrases)
+      ))
     );
   };
 
@@ -53,12 +56,16 @@ const TrainArea = () => {
         if (!storagePhrases?.length) {
           localforage.setItem('phrases', defaultPhrases);
           setPhrases(
-            shuffleArray(structuredClone(defaultPhrases))
+            shuffleArray(structuredClone(
+              getKnowledgeFilteredPhrases(defaultPhrases)
+            ))
           );
         }
         else {
           setPhrases(
-            shuffleArray(structuredClone(storagePhrases))
+            shuffleArray(structuredClone(
+              getKnowledgeFilteredPhrases(storagePhrases)
+            ))
           );
         }
         setIsLoading(false);
