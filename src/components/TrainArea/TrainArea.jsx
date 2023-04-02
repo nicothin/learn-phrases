@@ -8,7 +8,7 @@ import './TrainArea.scss';
 import { phrases as defaultPhrases } from '../../mocks/phrases';
 import PhraseCard from '../PhraseCard/PhraseCard';
 import { shuffleArray } from '../../utils/shuffleArray';
-import { STORAGE_NAME } from '../../enums/storage';
+import { STORAGE_NAME, STORAGE_PHRASES_NAME } from '../../enums/storage';
 import { getKnowledgeFilteredPhrases } from '../../utils/getKnowledgeFilteredPhrases';
 
 const TrainArea = () => {
@@ -52,9 +52,9 @@ const TrainArea = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const storagePhrases = await localforage.getItem('phrases');
+        const storagePhrases = await localforage.getItem(STORAGE_PHRASES_NAME);
         if (!storagePhrases?.length) {
-          localforage.setItem('phrases', defaultPhrases);
+          localforage.setItem(STORAGE_PHRASES_NAME, defaultPhrases);
           setPhrases(
             shuffleArray(structuredClone(
               getKnowledgeFilteredPhrases(defaultPhrases)
@@ -93,6 +93,7 @@ const TrainArea = () => {
   return (
     <div className="train-area">
       {isLoading && <Spin indicator={<LoadingOutlined style={{ fontSize: 48, }} spin />} className="train-area__load" />}
+
       <Layout className="train-area__wrap">
         <Carousel
           ref={carouselRef}
@@ -105,7 +106,13 @@ const TrainArea = () => {
         >
           {phrases?.map((phrase, i) => (
             <div className="train-area__slide-wrap" key={phrase.id}>
-              <PhraseCard cardData={phrase} openedCardId={openCardId} setOpenCardId={setOpenCardId} thisNumber={i} counter={phrases.length} />
+              <PhraseCard
+                cardData={phrase}
+                openedCardId={openCardId}
+                setOpenCardId={setOpenCardId}
+                thisNumber={i}
+                counter={phrases.length}
+              />
             </div>
           ))}
         </Carousel>

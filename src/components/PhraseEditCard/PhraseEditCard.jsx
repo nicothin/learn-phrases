@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Button, Input, Popconfirm, Collapse, Typography, Form, Space } from 'antd';
+import { Button, Input, Popconfirm, Collapse, Typography, Form, Space, Rate } from 'antd';
+import { CheckCircleOutlined } from '@ant-design/icons';
 
 import './PhraseEditCard.scss';
 
@@ -7,7 +8,7 @@ const { Panel } = Collapse;
 const { TextArea } = Input;
 const { Text } = Typography;
 
-const PhraseEditCard = ({ phrase, onEditPhraseFinish, onDeletePhrase }) => {
+const PhraseEditCard = ({ phrase, onEditPhraseFinish, onDeletePhrase, onMyKnowledgeLvlChange }) => {
   const [openFirstPanel, setOpenFirstPanel] = useState(0);
   const [openSecondPanel, setOpenSecondPanel] = useState(0);
 
@@ -77,6 +78,14 @@ const PhraseEditCard = ({ phrase, onEditPhraseFinish, onDeletePhrase }) => {
             </Form.Item>
           </Panel>
         </Collapse>
+
+        <Rate
+          character={<CheckCircleOutlined />}
+          count={9}
+          defaultValue={phrase.myKnowledgeLvl}
+          onChange={(value) => onMyKnowledgeLvlChange(phrase.id, value)}
+          allowClear={false}
+        />
 
         <div className="phrase-edit-card__footer">
           <div className="phrase-edit-card__id">

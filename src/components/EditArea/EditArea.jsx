@@ -168,6 +168,25 @@ const EditArea = () => {
     setTimeout(() => firstInputRef.current.focus({ cursor: 'start', }), 0);
   };
 
+  const onMyKnowledgeLvlChange = async (id, value) => {
+    if (value === 0) return;
+
+    try {
+      const storagePhrases = await localforage.getItem(STORAGE_PHRASES_NAME);
+      const newPhrases = storagePhrases.map((phrase) => phrase.id === id
+        ? { ...phrase, myKnowledgeLvl: Number(value) }
+        : phrase
+      );
+      await localforage.setItem(STORAGE_PHRASES_NAME, newPhrases);
+      setPhrases(newPhrases);
+      openNotification(NOTIFICATION_TYPE.SUCCESS, 'Phrase updated');
+      setFilterValue('');
+    } catch (error) {
+      console.error(error);
+      openNotification(NOTIFICATION_TYPE.ERROR, 'Phrase not updated', error);
+    }
+  };
+
   const onAddPhrase = async (data) => {
     try {
       const newPhrase = createItem({
@@ -266,7 +285,12 @@ const EditArea = () => {
         <Row gutter={[{ xs: 8, md: 16 }, { xs: 8, sm: 16, md: 16 }]}>
           {phrases.map((phrase) => (
             <Col xs={24} md={12} xl={8} key={phrase.id}>
-              <PhraseEditCard phrase={phrase} onEditPhraseFinish={onEditPhraseFinish} onDeletePhrase={onDeletePhrase} />
+              <PhraseEditCard
+                phrase={phrase}
+                onEditPhraseFinish={onEditPhraseFinish}
+                onDeletePhrase={onDeletePhrase}
+                onMyKnowledgeLvlChange={onMyKnowledgeLvlChange}
+              />
             </Col>
           ))}
         </Row>

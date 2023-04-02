@@ -1,6 +1,6 @@
 
 import { Card, Collapse, Typography } from 'antd';
-// import { CloseOutlined, MehOutlined, CheckOutlined } from '@ant-design/icons';
+// import { CheckCircleOutlined } from '@ant-design/icons';
 import ReactMarkdown from 'react-markdown'
 
 import './PhraseCard.scss';
@@ -8,18 +8,8 @@ import './PhraseCard.scss';
 const { Panel } = Collapse;
 const { Text } = Typography;
 
-const PhraseCard = ({ cardData, openedCardId, setOpenCardId, thisNumber,  counter }) => {
-  const { id, languages, } = cardData;
-
-  // const getKnowledgeLevel = () => {
-  //   if (cardData.myKnowledgeLvl === 5) return 5;
-  //   if (cardData.myKnowledgeLvl < 5) return 1;
-  //   return 9;
-  // };
-
-  // const onChangeKnowledgeLevel = (value) => {
-  //   console.log('value', value);
-  // };
+const PhraseCard = ({ cardData, openedCardId, setOpenCardId, thisNumber, counter, onMyKnowledgeLvlChange }) => {
+  const { id, languages } = cardData;
 
   return (
     <>
@@ -50,18 +40,18 @@ const PhraseCard = ({ cardData, openedCardId, setOpenCardId, thisNumber,  counte
             </div>
           </Panel>
         </Collapse>
+
         {/* <div className="phrase-card__my-knowledge-level">
-          <Segmented
-            options={[
-              { label: <CloseOutlined style={{ color: '#A9A9A9' }} />, value: 1 },
-              { label: <MehOutlined style={{ color: '#A9A9A9' }} />, value: 5 },
-              { label: <CheckOutlined style={{ color: '#A9A9A9' }} />, value: 9 },
-            ]}
-            defaultValue={getKnowledgeLevel()}
-            onChange={onChangeKnowledgeLevel}
+          <Rate
+            character={<CheckCircleOutlined />}
+            count={9}
+            defaultValue={myKnowledgeLvl}
+            onChange={(value) => onMyKnowledgeLvlChange(id, value)}
+            allowClear={false}
           />
         </div> */}
       </Card>
+
       <div className="phrase-card__counter">
         <Text type="secondary">ID: {id}. &nbsp; {thisNumber}/{counter} </Text>
       </div>
