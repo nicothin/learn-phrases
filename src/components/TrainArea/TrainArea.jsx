@@ -56,16 +56,16 @@ const TrainArea = () => {
         if (!storagePhrases?.length) {
           localforage.setItem(STORAGE_PHRASES_NAME, defaultPhrases);
           setPhrases(
-            shuffleArray(structuredClone(
+            structuredClone(
               getKnowledgeFilteredPhrases(defaultPhrases)
-            ))
+            )
           );
         }
         else {
           setPhrases(
-            shuffleArray(structuredClone(
+            structuredClone(
               getKnowledgeFilteredPhrases(storagePhrases)
-            ))
+            )
           );
         }
         setIsLoading(false);
