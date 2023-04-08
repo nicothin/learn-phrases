@@ -1,6 +1,7 @@
+import { Phrase } from '../types';
 import { checkString } from './checkString';
 
-export const checkData = (dataArray) => {
+export const checkData = (dataArray: Phrase[]): Phrase[] => {
   if (!dataArray?.length) return [];
 
   return dataArray
