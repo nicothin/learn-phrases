@@ -11,11 +11,11 @@ const { Text } = Typography;
 
 type PhraseCardProps = {
   cardData: Phrase,
-  openedCardId: string,
+  openedCardId: string | undefined,
   setOpenCardId: Function,
   thisNumber: number,
   counter: number,
-  onMyKnowledgeLvlChange: Function,
+  onMyKnowledgeLvlChange?: Function,
 };
 
 const PhraseCard = ({
