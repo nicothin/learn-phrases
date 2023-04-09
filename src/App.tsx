@@ -3,8 +3,6 @@ import { FloatButton, Modal, Button, } from 'antd';
 import { InfoOutlined, MenuUnfoldOutlined, EditOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import localforage from 'localforage';
 
-import './App.scss';
-
 import TrainArea from './components/TrainArea/TrainArea';
 import EditArea from './components/EditArea/EditArea';
 import { STORAGE_NAME } from './enums/storage';

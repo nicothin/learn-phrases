@@ -1,5 +1,20 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Layout, Spin, Button, Input, Popconfirm, Row, Col, notification, Space, Upload, Modal, Form } from 'antd';
+import React, { useState, useEffect, useRef, useCallback, ChangeEvent } from 'react';
+import {
+  Layout,
+  Spin,
+  Button,
+  Input,
+  Popconfirm,
+  Row,
+  Col,
+  notification,
+  Space,
+  Upload,
+  Modal,
+  Form,
+  InputRef,
+  FormInstance,
+} from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import localforage from 'localforage';
 
@@ -8,10 +23,10 @@ import './EditArea.scss';
 import PhraseEditCard from '../PhraseEditCard/PhraseEditCard';
 import { checkData } from '../../utils/checkData';
 import { downloadFile } from '../../utils/downloadFile';
-import { NOTIFICATION_TYPE } from '../../enums/notification';
 import { STORAGE_NAME, STORAGE_PHRASES_NAME } from '../../enums/storage';
 import { formatDate } from '../../utils/formateDate';
 import { createItem } from '../../utils/createItem';
+import { CreatePhraseType, NotificationType, Phrase } from '../../types';
 
 const { confirm } = Modal;
 const { TextArea } = Input;
@@ -19,18 +34,18 @@ const { TextArea } = Input;
 const EditArea = () => {
   localforage.config({ name: STORAGE_NAME });
 
-  const formRef = useRef(null);
-  const firstInputRef = useRef(null);
+  const formRef = useRef<FormInstance>(null);
+  const firstInputRef = useRef<InputRef>(null);
 
   const [isLoading, setIsLoading] = useState(true);
-  const [phrases, setPhrases] = useState([]);
+  const [phrases, setPhrases] = useState<Phrase[]>([]);
   const [filterValue, setFilterValue] = useState('');
   const [isPhrasesFiltered, setIsPhrasesFiltered] = useState(false);
   const [isModalAddOpen, setIsModalAddOpen] = useState(false);
 
   const [showNotification, contextHolder] = notification.useNotification();
 
-  const openNotification = useCallback((type = 'info', message, description) => {
+  const openNotification = useCallback((type: NotificationType = 'info', message: string, description?: string) => {
     if (!message && !description) return;
 
     showNotification[type]({
@@ -39,24 +54,24 @@ const EditArea = () => {
     });
   }, [showNotification]);
 
-  const onImportFile = (file) => {
+  const onImportFile = (file: File) => {
     const reader = new FileReader();
     reader.readAsText(file);
 
     reader.onload = async function () {
       const content = reader.result;
       try {
-        const data = JSON.parse(content);
+        const data = JSON.parse(content as string);
         const result = checkData(data);
         if (!result.length) {
           throw new Error('Checking the imported file did not reveal phrases in it.');
         }
         await localforage.setItem(STORAGE_PHRASES_NAME, result);
         setPhrases(result);
-        openNotification(NOTIFICATION_TYPE.SUCCESS, 'Import completed successfully', `Imported ${result.length} phrases.`)
+        openNotification('success', 'Import completed successfully', `Imported ${result.length} phrases.`)
       } catch (error) {
         console.error(error);
-        openNotification(NOTIFICATION_TYPE.ERROR, 'Import failed with an error', error);
+        openNotification('error', 'Import failed with an error');
       }
     };
   };
@@ -66,10 +81,10 @@ const EditArea = () => {
       const storagePhrases = await localforage.getItem(STORAGE_PHRASES_NAME);
       const timeStamp = formatDate(new Date());
       downloadFile(`phrases_${timeStamp}.json`, JSON.stringify(storagePhrases, null, 2));
-      openNotification(NOTIFICATION_TYPE.SUCCESS, 'Export completed successfully');
+      openNotification('success', 'Export completed successfully');
     } catch (error) {
       console.error(error);
-      openNotification(NOTIFICATION_TYPE.ERROR, 'Export failed with an error', error);
+      openNotification('error', 'Export failed with an error');
     }
   };
 
@@ -77,55 +92,55 @@ const EditArea = () => {
     try {
       await localforage.clear();
       setPhrases([]);
-      openNotification(NOTIFICATION_TYPE.SUCCESS, 'Phrase list cleared');
+      openNotification('success', 'Phrase list cleared');
     } catch (error) {
       console.error(error);
-      openNotification(NOTIFICATION_TYPE.ERROR, 'Phrase list not cleared', error);
+      openNotification('error', 'Phrase list not cleared');
     }
   };
 
-  const onEditPhraseFinish = async (data) => {
+  const onEditPhraseFinish = async (data: CreatePhraseType) => {
     try {
       const newItem = createItem({
         id: data.id,
         first: data.first,
         second: data.second,
-        firstDescr: data.firstDescr,
-        secondDescr: data.secondDescr,
+        firstD: data.firstD,
+        secondD: data.secondD,
       });
-      const storagePhrases = await localforage.getItem(STORAGE_PHRASES_NAME);
-      const newPhrases = storagePhrases.map((phrase) => phrase.id === data.id ? newItem : phrase);
+      const storagePhrases: Phrase[] = await localforage.getItem(STORAGE_PHRASES_NAME) || [];
+      const newPhrases = storagePhrases.map((phrase: Phrase) => phrase.id === data.id ? newItem : phrase);
       await localforage.setItem(STORAGE_PHRASES_NAME, newPhrases);
       setPhrases(newPhrases);
-      openNotification(NOTIFICATION_TYPE.SUCCESS, 'Phrase updated');
+      openNotification('success', 'Phrase updated');
       setFilterValue('');
     } catch (error) {
       console.error(error);
-      openNotification(NOTIFICATION_TYPE.ERROR, 'Phrase not updated', error);
+      openNotification('error', 'Phrase not updated');
     }
   };
 
-  const onDeletePhrase = async (id) => {
+  const onDeletePhrase = async (id: string) => {
     try {
-      const storagePhrases = await localforage.getItem(STORAGE_PHRASES_NAME);
+      const storagePhrases: Phrase[] = await localforage.getItem(STORAGE_PHRASES_NAME) || [];
       const newPhrases = storagePhrases.filter((phrase) => phrase.id !== id);
       await localforage.setItem(STORAGE_PHRASES_NAME, newPhrases);
       setPhrases(newPhrases);
-      openNotification(NOTIFICATION_TYPE.SUCCESS, 'Phrase deleted');
+      openNotification('success', 'Phrase deleted');
     } catch (error) {
       console.error(error);
-      openNotification(NOTIFICATION_TYPE.ERROR, 'Phrase not deleted', error);
+      openNotification('error', 'Phrase not deleted');
     }
   };
 
-  const onFilterChange = async (value) => {
-    const search = value.target.value;
+  const onFilterChange = async (value: ChangeEvent<HTMLInputElement>) => {
+    const search = value?.target?.value;
     setFilterValue(search);
     const str = search.trim().toLowerCase();
     if (search.length > 2) {
       setIsPhrasesFiltered(true);
       try {
-        const storagePhrases = await localforage.getItem(STORAGE_PHRASES_NAME);
+        const storagePhrases: Phrase[] = await localforage.getItem(STORAGE_PHRASES_NAME) || [];
         const filteredPhrases = storagePhrases.filter((phrase) => (
           phrase?.languages?.first?.content?.toLowerCase().includes(str) ||
           phrase?.languages?.second?.content?.toLowerCase().includes(str) ||
@@ -135,22 +150,22 @@ const EditArea = () => {
         setPhrases(filteredPhrases);
       } catch (error) {
         console.error(error);
-        openNotification(NOTIFICATION_TYPE.ERROR, 'Phrase not filtered', error);
+        openNotification('error', 'Phrase not filtered');
       }
     }
     else if (isPhrasesFiltered) {
       setIsPhrasesFiltered(false);
       try {
-        const storagePhrases = await localforage.getItem(STORAGE_PHRASES_NAME);
+        const storagePhrases: Phrase[] = await localforage.getItem(STORAGE_PHRASES_NAME) || [];
         setPhrases(storagePhrases);
       } catch (error) {
         console.error(error);
-        openNotification(NOTIFICATION_TYPE.ERROR, 'Phrase not filtered', error);
+        openNotification('error', 'Phrase not filtered');
       }
     }
   };
 
-  const showDeleteConfirm = (file) => {
+  const showDeleteConfirm = (file: File) => {
     confirm({
       title: 'Are you sure?',
       content: 'This will permanently overwrite the current list of phrases.',
@@ -165,47 +180,47 @@ const EditArea = () => {
 
   const showAddModal = () => {
     setIsModalAddOpen(true);
-    setTimeout(() => firstInputRef.current.focus({ cursor: 'start', }), 0);
+    setTimeout(() => firstInputRef.current?.focus({ cursor: 'start', }), 0);
   };
 
-  const onMyKnowledgeLvlChange = async (id, value) => {
+  const onMyKnowledgeLvlChange = async (id: string, value: number) => {
     if (value === 0) return;
 
     try {
-      const storagePhrases = await localforage.getItem(STORAGE_PHRASES_NAME);
+      const storagePhrases: Phrase[] = await localforage.getItem(STORAGE_PHRASES_NAME) || [];
       const newPhrases = storagePhrases.map((phrase) => phrase.id === id
         ? { ...phrase, myKnowledgeLvl: Number(value) }
         : phrase
       );
       await localforage.setItem(STORAGE_PHRASES_NAME, newPhrases);
       setPhrases(newPhrases);
-      openNotification(NOTIFICATION_TYPE.SUCCESS, 'Phrase updated');
+      openNotification('success', 'Phrase updated');
       setFilterValue('');
     } catch (error) {
       console.error(error);
-      openNotification(NOTIFICATION_TYPE.ERROR, 'Phrase not updated', error);
+      openNotification('error', 'Phrase not updated');
     }
   };
 
-  const onAddPhrase = async (data) => {
+  const onAddPhrase = async (data: CreatePhraseType) => {
     try {
       const newPhrase = createItem({
         first: data.first,
         second: data.second,
-        firstDescr: data.firstDescr,
-        secondDescr: data.secondDescr,
+        firstD: data.firstD,
+        secondD: data.secondD,
       });
-      const storagePhrases = await localforage.getItem(STORAGE_PHRASES_NAME);
+      const storagePhrases: Phrase[] = await localforage.getItem(STORAGE_PHRASES_NAME) || [];
       const newPhrases = [newPhrase, ...storagePhrases];
       await localforage.setItem(STORAGE_PHRASES_NAME, newPhrases);
       setPhrases(newPhrases);
-      openNotification(NOTIFICATION_TYPE.SUCCESS, 'Phrase successfully added to the top of the list');
+      openNotification('success', 'Phrase successfully added to the top of the list');
       formRef.current?.resetFields();
-      setTimeout(() => firstInputRef.current.focus({ cursor: 'start', }), 0);
+      setTimeout(() => firstInputRef.current?.focus({ cursor: 'start', }), 0);
       setFilterValue('');
     } catch (error) {
       console.error(error);
-      openNotification(NOTIFICATION_TYPE.ERROR, 'Phrase not added', error);
+      openNotification('error', 'Phrase not added');
     }
   };
 
@@ -213,12 +228,12 @@ const EditArea = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const storagePhrases = await localforage.getItem(STORAGE_PHRASES_NAME);
+        const storagePhrases: Phrase[] = await localforage.getItem(STORAGE_PHRASES_NAME) || [];
         setPhrases(storagePhrases);
         setIsLoading(false);
       } catch (error) {
         console.error(error);
-        openNotification(NOTIFICATION_TYPE.ERROR, 'Phrase list reading error', error);
+        openNotification('error', 'Phrase list reading error');
       }
     }
     fetchData();
@@ -228,7 +243,7 @@ const EditArea = () => {
   useEffect(() => {
     if (!isModalAddOpen) return;
 
-    const handleKeyDown = (event) => {
+    const handleKeyDown = (event: KeyboardEvent) => {
       if (event.ctrlKey && event.key === 'Enter') {
         formRef?.current?.submit();
       }
@@ -263,8 +278,8 @@ const EditArea = () => {
               <Button onClick={showAddModal}>Add</Button>
               <Upload
                 className="edit-area__upload"
-                customRequest={(e) => {
-                  showDeleteConfirm(e.file);
+                customRequest={(event) => {
+                  showDeleteConfirm(event.file as File);
                 }}
               >
                 <Button>Import</Button>
