@@ -1,6 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Layout, Carousel, Spin, FloatButton } from 'antd';
-import { LoadingOutlined, ArrowRightOutlined, ArrowUpOutlined, ArrowDownOutlined, ArrowLeftOutlined, ReloadOutlined } from '@ant-design/icons';
+import { Layout, Carousel, Spin, FloatButton, notification } from 'antd';
+import {
+  LoadingOutlined,
+  ArrowRightOutlined,
+  ArrowUpOutlined,
+  ArrowDownOutlined,
+  ArrowLeftOutlined,
+  ReloadOutlined,
+} from '@ant-design/icons';
+import { CarouselRef } from 'antd/es/carousel';
 import localforage from 'localforage';
 
 import './TrainArea.scss';
@@ -10,40 +18,52 @@ import PhraseCard from '../PhraseCard/PhraseCard';
 import { shuffleArray } from '../../utils/shuffleArray';
 import { STORAGE_NAME, STORAGE_PHRASES_NAME } from '../../enums/storage';
 import { getKnowledgeFilteredPhrases } from '../../utils/getKnowledgeFilteredPhrases';
+import { NotificationType, Phrase } from '../../types';
 
 const TrainArea = () => {
   localforage.config({ name: STORAGE_NAME });
 
-  const carouselRef = useRef(null);
+  const carouselRef = useRef<CarouselRef | null>(null);
 
   const [isLoading, setIsLoading] = useState(true);
-  const [phrases, setPhrases] = useState([]);
-  const [activeSlideId, setActiveSlideId] = useState(0);
-  const [openCardId, setOpenCardId] = useState(null);
+  const [phrases, setPhrases] = useState<Phrase[]>([]);
+  const [activeSlideId, setActiveSlideId] = useState<string>('0');
+  const [openCardId, setOpenCardId] = useState<string | undefined>();
+
+  const [showNotification, contextHolder] = notification.useNotification();
+
+  const openNotification = useCallback((type: NotificationType = 'info', message: string, description?: string) => {
+    if (!message && !description) return;
+
+    showNotification[type]({
+      message,
+      description,
+    });
+  }, [showNotification]);
 
   const shufflePhrases = () => {
+    const filteredPhrases = structuredClone(getKnowledgeFilteredPhrases(phrases));
+    if (!filteredPhrases.length) return;
     setPhrases(
-      shuffleArray(structuredClone(
-        getKnowledgeFilteredPhrases(phrases)
-      ))
+      shuffleArray(filteredPhrases)
     );
   };
 
-  const carouselChange = (_, newIndex) => {
+  const carouselChange = (_: number, newIndex: number) => {
     setActiveSlideId(phrases[newIndex]?.id);
   };
 
-  const keyUpHandler = useCallback((e) => {
-    if (e.keyCode === 40) {
+  const keyUpHandler = useCallback((event: KeyboardEvent) => {
+    if (event.key === 'ArrowDown') {
       setOpenCardId(activeSlideId);
     }
-    if (e.keyCode === 38) {
-      setOpenCardId(null);
+    if (event.key === 'ArrowUp') {
+      setOpenCardId(undefined);
     }
-    if (e.keyCode === 39) {
+    if (event.key === 'ArrowRight') {
       carouselRef?.current?.next();
     }
-    if (e.keyCode === 37) {
+    if (event.key === 'ArrowLeft') {
       carouselRef?.current?.prev();
     }
   }, [activeSlideId]);
@@ -52,13 +72,11 @@ const TrainArea = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const storagePhrases = await localforage.getItem(STORAGE_PHRASES_NAME);
+        const storagePhrases: Phrase[] = await localforage.getItem(STORAGE_PHRASES_NAME) || [];
         if (!storagePhrases?.length) {
           localforage.setItem(STORAGE_PHRASES_NAME, defaultPhrases);
           setPhrases(
-            structuredClone(
-              getKnowledgeFilteredPhrases(defaultPhrases)
-            )
+            getKnowledgeFilteredPhrases(defaultPhrases)
           );
         }
         else {
@@ -69,10 +87,12 @@ const TrainArea = () => {
           );
         }
         setIsLoading(false);
-      } catch (err) {
-        console.log('localforage error', err);
+      } catch (error) {
+        openNotification('error', 'Localforage error');
+        console.log('Localforage error', error);
       }
     }
+
     fetchData();
   }, []);
 
@@ -134,7 +154,7 @@ const TrainArea = () => {
           bottom: 92,
         }}
         icon={<ArrowUpOutlined />}
-        onClick={() => setOpenCardId(null)}
+        onClick={() => setOpenCardId(undefined)}
       />
       <FloatButton
         shape="circle"

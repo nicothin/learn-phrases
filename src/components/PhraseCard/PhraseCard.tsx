@@ -4,11 +4,28 @@ import { Card, Collapse, Typography } from 'antd';
 import ReactMarkdown from 'react-markdown'
 
 import './PhraseCard.scss';
+import { Phrase } from '../../types';
 
 const { Panel } = Collapse;
 const { Text } = Typography;
 
-const PhraseCard = ({ cardData, openedCardId, setOpenCardId, thisNumber, counter, onMyKnowledgeLvlChange }) => {
+type PhraseCardProps = {
+  cardData: Phrase,
+  openedCardId: string,
+  setOpenCardId: Function,
+  thisNumber: number,
+  counter: number,
+  onMyKnowledgeLvlChange: Function,
+};
+
+const PhraseCard = ({
+  cardData,
+  openedCardId,
+  setOpenCardId,
+  thisNumber,
+  counter,
+  onMyKnowledgeLvlChange,
+}: PhraseCardProps) => {
   const { id, languages } = cardData;
 
   return (

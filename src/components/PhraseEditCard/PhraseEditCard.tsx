@@ -4,15 +4,29 @@ import { CheckCircleOutlined } from '@ant-design/icons';
 
 import './PhraseEditCard.scss';
 
+import { CreatePhraseType, Phrase } from '../../types';
+
 const { Panel } = Collapse;
 const { TextArea } = Input;
 const { Text } = Typography;
 
-const PhraseEditCard = ({ phrase, onEditPhraseFinish, onDeletePhrase, onMyKnowledgeLvlChange }) => {
+type PhraseEditCardProps = {
+  phrase: Phrase,
+  onEditPhraseFinish: Function,
+  onDeletePhrase: Function,
+  onMyKnowledgeLvlChange: Function,
+}
+
+const PhraseEditCard = ({
+  phrase,
+  onEditPhraseFinish,
+  onDeletePhrase,
+  onMyKnowledgeLvlChange,
+}: PhraseEditCardProps) => {
   const [openFirstPanel, setOpenFirstPanel] = useState(0);
   const [openSecondPanel, setOpenSecondPanel] = useState(0);
 
-  const onFinish = (data) => {
+  const onFinish = (data: CreatePhraseType) => {
     setOpenFirstPanel(0);
     setOpenSecondPanel(0);
     onEditPhraseFinish({ id: phrase.id, ...data });
@@ -24,8 +38,8 @@ const PhraseEditCard = ({ phrase, onEditPhraseFinish, onDeletePhrase, onMyKnowle
         initialValues={{
           first: phrase.languages.first.content,
           second: phrase.languages.second.content,
-          firstDescr: phrase.languages.first.descr,
-          secondDescr: phrase.languages.second.descr,
+          firstD: phrase.languages.first.descr,
+          secondD: phrase.languages.second.descr,
         }}
         onFinish={onFinish}
         autoComplete="off"
@@ -49,7 +63,7 @@ const PhraseEditCard = ({ phrase, onEditPhraseFinish, onDeletePhrase, onMyKnowle
             )}
             key={1}
           >
-            <Form.Item name="firstDescr">
+            <Form.Item name="firstD">
               <TextArea rows={2} placeholder="Description" />
             </Form.Item>
           </Panel>
@@ -73,7 +87,7 @@ const PhraseEditCard = ({ phrase, onEditPhraseFinish, onDeletePhrase, onMyKnowle
             )}
             key={1}
           >
-            <Form.Item name="secondDescr">
+            <Form.Item name="secondD">
               <TextArea rows={2} placeholder="Description" />
             </Form.Item>
           </Panel>
