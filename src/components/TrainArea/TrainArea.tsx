@@ -32,69 +32,66 @@ const TrainArea = () => {
 
   const [showNotification, contextHolder] = notification.useNotification();
 
-  const openNotification = useCallback((type: NotificationType = 'info', message: string, description?: string) => {
-    if (!message && !description) return;
+  const openNotification = useCallback(
+    (type: NotificationType = 'info', message: string, description?: string) => {
+      if (!message && !description) return;
 
-    showNotification[type]({
-      message,
-      description,
-    });
-  }, [showNotification]);
+      showNotification[type]({
+        message,
+        description,
+      });
+    },
+    [showNotification],
+  );
 
   const shufflePhrases = () => {
     const filteredPhrases = structuredClone(getKnowledgeFilteredPhrases(phrases));
     if (!filteredPhrases.length) return;
-    setPhrases(
-      shuffleArray(filteredPhrases)
-    );
+    setPhrases(shuffleArray(filteredPhrases));
   };
 
   const carouselChange = (_: number, newIndex: number) => {
     setActiveSlideId(phrases[newIndex]?.id);
   };
 
-  const keyUpHandler = useCallback((event: KeyboardEvent) => {
-    if (event.key === 'ArrowDown') {
-      setOpenCardId(activeSlideId);
-    }
-    if (event.key === 'ArrowUp') {
-      setOpenCardId(undefined);
-    }
-    if (event.key === 'ArrowRight') {
-      carouselRef?.current?.next();
-    }
-    if (event.key === 'ArrowLeft') {
-      carouselRef?.current?.prev();
-    }
-  }, [activeSlideId]);
+  const keyUpHandler = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === 'ArrowDown') {
+        setOpenCardId(activeSlideId);
+      }
+      if (event.key === 'ArrowUp') {
+        setOpenCardId(undefined);
+      }
+      if (event.key === 'ArrowRight') {
+        carouselRef?.current?.next();
+      }
+      if (event.key === 'ArrowLeft') {
+        carouselRef?.current?.prev();
+      }
+    },
+    [activeSlideId],
+  );
 
   // Получить фразы из локального хранилища
   useEffect(() => {
     async function fetchData() {
       try {
-        const storagePhrases: Phrase[] = await localforage.getItem(STORAGE_PHRASES_NAME) || [];
+        const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
         if (!storagePhrases?.length) {
           localforage.setItem(STORAGE_PHRASES_NAME, defaultPhrases);
-          setPhrases(
-            getKnowledgeFilteredPhrases(defaultPhrases)
-          );
-        }
-        else {
-          setPhrases(
-            structuredClone(
-              getKnowledgeFilteredPhrases(storagePhrases)
-            )
-          );
+          setPhrases(getKnowledgeFilteredPhrases(defaultPhrases));
+        } else {
+          setPhrases(structuredClone(getKnowledgeFilteredPhrases(storagePhrases)));
         }
         setIsLoading(false);
       } catch (error) {
         openNotification('error', 'Localforage error');
-        console.log('Localforage error', error);
+        console.error('Localforage error', error);
       }
     }
 
     fetchData();
-  }, []);
+  }, [openNotification]);
 
   // Навесить слушатели событий
   useEffect(() => {
@@ -112,7 +109,12 @@ const TrainArea = () => {
 
   return (
     <div className="train-area">
-      {isLoading && <Spin indicator={<LoadingOutlined style={{ fontSize: 48, }} spin />} className="train-area__load" />}
+      {isLoading && (
+        <Spin
+          indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />}
+          className="train-area__load"
+        />
+      )}
 
       <Layout className="train-area__wrap">
         <Carousel
@@ -183,8 +185,10 @@ const TrainArea = () => {
         icon={<ReloadOutlined />}
         onClick={shufflePhrases}
       />
+
+      {contextHolder}
     </div>
   );
-}
+};
 
 export default TrainArea;

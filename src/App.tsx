@@ -1,6 +1,11 @@
 import { useState } from 'react';
-import { FloatButton, Modal, Button, } from 'antd';
-import { InfoOutlined, MenuUnfoldOutlined, EditOutlined, PlayCircleOutlined } from '@ant-design/icons';
+import { FloatButton, Modal, Button } from 'antd';
+import {
+  InfoOutlined,
+  MenuUnfoldOutlined,
+  EditOutlined,
+  PlayCircleOutlined,
+} from '@ant-design/icons';
 import localforage from 'localforage';
 
 import TrainArea from './components/TrainArea/TrainArea';
@@ -16,7 +21,6 @@ export const App = () => {
 
   return (
     <div className="app">
-
       {mode === MODE.LEARN && <TrainArea />}
       {mode === MODE.EDIT && <EditArea />}
 
@@ -36,14 +40,18 @@ export const App = () => {
         {mode !== MODE.EDIT && (
           <FloatButton
             icon={<EditOutlined />}
-            onClick={() => { setMode(MODE.EDIT) }}
+            onClick={() => {
+              setMode(MODE.EDIT);
+            }}
             tooltip="Редактировать фразы"
           />
         )}
         {mode !== MODE.LEARN && (
           <FloatButton
             icon={<PlayCircleOutlined />}
-            onClick={() => { setMode(MODE.LEARN) }}
+            onClick={() => {
+              setMode(MODE.LEARN);
+            }}
             tooltip="Учить фразы"
           />
         )}
@@ -62,11 +70,27 @@ export const App = () => {
       >
         <p>Учи язык с markdown-ом и блэкджеком!</p>
         <p>Осторожно: данные сохраняются в браузере, никакого обмена данными с сервером нет.</p>
-        <p>Автор: <a href="https://nicothin.pro/" target="_blank" rel="noreferrer">Николай Громов</a>.</p>
-        <p>Вдохновлено видеокурсом <a href="https://www.youtube.com/watch?v=BAahBqreWZw&list=PLD6SPjEPomasNzHuJpcS1Fxa2PYf1Bm-x&index=1" target="_blank" rel="noreferrer">Английский язык по плейлистам</a>. </p>
+        <p>
+          Автор:{' '}
+          <a href="https://nicothin.pro/" target="_blank" rel="noreferrer">
+            Николай Громов
+          </a>
+          .
+        </p>
+        <p>
+          Вдохновлено видеокурсом{' '}
+          <a
+            href="https://www.youtube.com/watch?v=BAahBqreWZw&list=PLD6SPjEPomasNzHuJpcS1Fxa2PYf1Bm-x&index=1"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Английский язык по плейлистам
+          </a>
+          .{' '}
+        </p>
       </Modal>
     </div>
   );
-}
+};
 
 export default App;

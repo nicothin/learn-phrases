@@ -11,11 +11,11 @@ const { TextArea } = Input;
 const { Text } = Typography;
 
 type PhraseEditCardProps = {
-  phrase: Phrase,
-  onEditPhraseFinish: Function,
-  onDeletePhrase: Function,
-  onMyKnowledgeLvlChange: Function,
-}
+  phrase: Phrase;
+  onEditPhraseFinish: (args: CreatePhraseType) => void;
+  onDeletePhrase: (id: string) => void;
+  onMyKnowledgeLvlChange: (phraseId: string, value: number) => void;
+};
 
 const PhraseEditCard = ({
   phrase,
@@ -53,14 +53,11 @@ const PhraseEditCard = ({
           ghost
         >
           <Panel
-            header={(
-              <Form.Item
-                name="first"
-                rules={[{ required: true, message: 'Please input phrase.', },]}
-              >
+            header={
+              <Form.Item name="first" rules={[{ required: true, message: 'Please input phrase.' }]}>
                 <Input placeholder="First language" />
               </Form.Item>
-            )}
+            }
             key={1}
           >
             <Form.Item name="firstD">
@@ -77,14 +74,14 @@ const PhraseEditCard = ({
           ghost
         >
           <Panel
-            header={(
+            header={
               <Form.Item
                 name="second"
-                rules={[{ required: true, message: 'Please input phrase.', },]}
+                rules={[{ required: true, message: 'Please input phrase.' }]}
               >
                 <Input placeholder="Second language" />
               </Form.Item>
-            )}
+            }
             key={1}
           >
             <Form.Item name="secondD">
@@ -107,14 +104,18 @@ const PhraseEditCard = ({
           </div>
           <div className="phrase-edit-card__action">
             <Space wrap>
-              <Button size="small" htmlType="submit">Save</Button>
+              <Button size="small" htmlType="submit">
+                Save
+              </Button>
               <Popconfirm
                 title="Are you sure?"
                 okText="Yes"
                 cancelText="No"
                 onConfirm={() => onDeletePhrase(phrase.id)}
               >
-                <Button size="small" danger>Delete</Button>
+                <Button size="small" danger>
+                  Delete
+                </Button>
               </Popconfirm>
             </Space>
           </div>
@@ -122,6 +123,6 @@ const PhraseEditCard = ({
       </Form>
     </div>
   );
-}
+};
 
 export default PhraseEditCard;
