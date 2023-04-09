@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, ChangeEvent } from 'react';
+import { useState, useEffect, useRef, useCallback, ChangeEvent } from 'react';
 import {
   Layout,
   Spin,
@@ -45,20 +45,23 @@ const EditArea = () => {
 
   const [showNotification, contextHolder] = notification.useNotification();
 
-  const openNotification = useCallback((type: NotificationType = 'info', message: string, description?: string) => {
-    if (!message && !description) return;
+  const openNotification = useCallback(
+    (type: NotificationType = 'info', message: string, description?: string) => {
+      if (!message && !description) return;
 
-    showNotification[type]({
-      message,
-      description,
-    });
-  }, [showNotification]);
+      showNotification[type]({
+        message,
+        description,
+      });
+    },
+    [showNotification],
+  );
 
   const onImportFile = (file: File) => {
     const reader = new FileReader();
     reader.readAsText(file);
 
-    reader.onload = async function () {
+    reader.onload = async () => {
       const content = reader.result;
       try {
         const data = JSON.parse(content as string);
@@ -68,7 +71,11 @@ const EditArea = () => {
         }
         await localforage.setItem(STORAGE_PHRASES_NAME, result);
         setPhrases(result);
-        openNotification('success', 'Import completed successfully', `Imported ${result.length} phrases.`)
+        openNotification(
+          'success',
+          'Import completed successfully',
+          `Imported ${result.length} phrases.`,
+        );
       } catch (error) {
         console.error(error);
         openNotification('error', 'Import failed with an error');
@@ -108,8 +115,10 @@ const EditArea = () => {
         firstD: data.firstD,
         secondD: data.secondD,
       });
-      const storagePhrases: Phrase[] = await localforage.getItem(STORAGE_PHRASES_NAME) || [];
-      const newPhrases = storagePhrases.map((phrase: Phrase) => phrase.id === data.id ? newItem : phrase);
+      const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
+      const newPhrases = storagePhrases.map((phrase: Phrase) =>
+        phrase.id === data.id ? newItem : phrase,
+      );
       await localforage.setItem(STORAGE_PHRASES_NAME, newPhrases);
       setPhrases(newPhrases);
       openNotification('success', 'Phrase updated');
@@ -122,7 +131,7 @@ const EditArea = () => {
 
   const onDeletePhrase = async (id: string) => {
     try {
-      const storagePhrases: Phrase[] = await localforage.getItem(STORAGE_PHRASES_NAME) || [];
+      const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
       const newPhrases = storagePhrases.filter((phrase) => phrase.id !== id);
       await localforage.setItem(STORAGE_PHRASES_NAME, newPhrases);
       setPhrases(newPhrases);
@@ -140,23 +149,23 @@ const EditArea = () => {
     if (search.length > 2) {
       setIsPhrasesFiltered(true);
       try {
-        const storagePhrases: Phrase[] = await localforage.getItem(STORAGE_PHRASES_NAME) || [];
-        const filteredPhrases = storagePhrases.filter((phrase) => (
-          phrase?.languages?.first?.content?.toLowerCase().includes(str) ||
-          phrase?.languages?.second?.content?.toLowerCase().includes(str) ||
-          phrase?.languages?.first?.descr?.toLowerCase().includes(str) ||
-          phrase?.languages?.second?.descr?.toLowerCase().includes(str)
-        ));
+        const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
+        const filteredPhrases = storagePhrases.filter(
+          (phrase) =>
+            phrase?.languages?.first?.content?.toLowerCase().includes(str) ||
+            phrase?.languages?.second?.content?.toLowerCase().includes(str) ||
+            phrase?.languages?.first?.descr?.toLowerCase().includes(str) ||
+            phrase?.languages?.second?.descr?.toLowerCase().includes(str),
+        );
         setPhrases(filteredPhrases);
       } catch (error) {
         console.error(error);
         openNotification('error', 'Phrase not filtered');
       }
-    }
-    else if (isPhrasesFiltered) {
+    } else if (isPhrasesFiltered) {
       setIsPhrasesFiltered(false);
       try {
-        const storagePhrases: Phrase[] = await localforage.getItem(STORAGE_PHRASES_NAME) || [];
+        const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
         setPhrases(storagePhrases);
       } catch (error) {
         console.error(error);
@@ -173,24 +182,23 @@ const EditArea = () => {
       okType: 'danger',
       cancelText: 'No',
       onOk() {
-        onImportFile(file)
+        onImportFile(file);
       },
     });
-  }
+  };
 
   const showAddModal = () => {
     setIsModalAddOpen(true);
-    setTimeout(() => firstInputRef.current?.focus({ cursor: 'start', }), 0);
+    setTimeout(() => firstInputRef.current?.focus({ cursor: 'start' }), 0);
   };
 
   const onMyKnowledgeLvlChange = async (id: string, value: number) => {
     if (value === 0) return;
 
     try {
-      const storagePhrases: Phrase[] = await localforage.getItem(STORAGE_PHRASES_NAME) || [];
-      const newPhrases = storagePhrases.map((phrase) => phrase.id === id
-        ? { ...phrase, myKnowledgeLvl: Number(value) }
-        : phrase
+      const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
+      const newPhrases = storagePhrases.map((phrase) =>
+        phrase.id === id ? { ...phrase, myKnowledgeLvl: Number(value) } : phrase,
       );
       await localforage.setItem(STORAGE_PHRASES_NAME, newPhrases);
       setPhrases(newPhrases);
@@ -210,13 +218,13 @@ const EditArea = () => {
         firstD: data.firstD,
         secondD: data.secondD,
       });
-      const storagePhrases: Phrase[] = await localforage.getItem(STORAGE_PHRASES_NAME) || [];
+      const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
       const newPhrases = [newPhrase, ...storagePhrases];
       await localforage.setItem(STORAGE_PHRASES_NAME, newPhrases);
       setPhrases(newPhrases);
       openNotification('success', 'Phrase successfully added to the top of the list');
       formRef.current?.resetFields();
-      setTimeout(() => firstInputRef.current?.focus({ cursor: 'start', }), 0);
+      setTimeout(() => firstInputRef.current?.focus({ cursor: 'start' }), 0);
       setFilterValue('');
     } catch (error) {
       console.error(error);
@@ -228,7 +236,7 @@ const EditArea = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const storagePhrases: Phrase[] = await localforage.getItem(STORAGE_PHRASES_NAME) || [];
+        const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
         setPhrases(storagePhrases);
         setIsLoading(false);
       } catch (error) {
@@ -251,18 +259,21 @@ const EditArea = () => {
 
     window.addEventListener('keydown', handleKeyDown);
 
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
+    // eslint-disable-next-line consistent-return
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isModalAddOpen]);
 
   return (
     <div className="edit-area">
-
-      {isLoading && <Spin indicator={<LoadingOutlined style={{ fontSize: 48, }} spin />} className="edit-area__load" />}
+      {isLoading && (
+        <Spin
+          indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />}
+          className="edit-area__load"
+        />
+      )}
 
       <Layout className="edit-area__wrap">
-        <Row gutter={[16, 0]} style={{ }}>
+        <Row gutter={[16, 0]}>
           <Col flex="1 0 auto" style={{ maxWidth: '240px', marginBottom: '16px' }}>
             <Input
               style={{ width: '100%' }}
@@ -291,13 +302,20 @@ const EditArea = () => {
                 okText="Yes"
                 cancelText="No"
               >
-                <Button type="primary" danger>Clear Phrases list</Button>
+                <Button type="primary" danger>
+                  Clear Phrases list
+                </Button>
               </Popconfirm>
             </Space>
           </Col>
         </Row>
 
-        <Row gutter={[{ xs: 8, md: 16 }, { xs: 8, sm: 16, md: 16 }]}>
+        <Row
+          gutter={[
+            { xs: 8, md: 16 },
+            { xs: 8, sm: 16, md: 16 },
+          ]}
+        >
           {phrases.map((phrase) => (
             <Col xs={24} md={12} xl={8} key={phrase.id}>
               <PhraseEditCard
@@ -319,20 +337,14 @@ const EditArea = () => {
         onCancel={() => setIsModalAddOpen(false)}
       >
         <Form ref={formRef} onFinish={onAddPhrase}>
-          <Form.Item
-            name="first"
-            rules={[{ required: true, message: 'Please input phrase.', },]}
-          >
+          <Form.Item name="first" rules={[{ required: true, message: 'Please input phrase.' }]}>
             <Input placeholder="First language" ref={firstInputRef} />
           </Form.Item>
           <Form.Item name="firstDescr">
             <TextArea rows={2} placeholder="Description" />
           </Form.Item>
 
-          <Form.Item
-            name="second"
-            rules={[{ required: true, message: 'Please input phrase.', },]}
-          >
+          <Form.Item name="second" rules={[{ required: true, message: 'Please input phrase.' }]}>
             <Input placeholder="Second language" />
           </Form.Item>
           <Form.Item name="secondDescr">
@@ -342,6 +354,6 @@ const EditArea = () => {
       </Modal>
     </div>
   );
-}
+};
 
 export default EditArea;
