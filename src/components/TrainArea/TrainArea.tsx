@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Layout, Carousel, Spin, FloatButton, notification } from 'antd';
+import { Layout, Carousel, Spin, FloatButton, notification, Button } from 'antd';
 import {
   LoadingOutlined,
   ArrowRightOutlined,
@@ -9,29 +9,53 @@ import {
   ReloadOutlined,
 } from '@ant-design/icons';
 import { CarouselRef } from 'antd/es/carousel';
-import localforage from 'localforage';
+import { useLiveQuery } from 'dexie-react-hooks';
 
 import './TrainArea.scss';
 
-import { phrases as defaultPhrases } from '../../mocks/phrases';
+import { Mode, Phrase } from '../../types';
+import { db } from '../../db';
+import { STORAGE_TABLE_NAME } from '../../enums/storage';
 import PhraseCard from '../PhraseCard/PhraseCard';
 import { shuffleArray } from '../../utils/shuffleArray';
-import { STORAGE_NAME, STORAGE_PHRASES_NAME } from '../../enums/storage';
 import { getKnowledgeFilteredPhrases } from '../../utils/getKnowledgeFilteredPhrases';
-import { Phrase } from '../../types';
 import { openNotification } from '../../utils/openNotification';
 
-const TrainArea = () => {
-  localforage.config({ name: STORAGE_NAME });
+type TrainAreaProps = {
+  changeMode: (newMode: Mode) => void;
+};
 
+const TrainArea = ({ changeMode }: TrainAreaProps) => {
   const carouselRef = useRef<CarouselRef | null>(null);
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [phrases, setPhrases] = useState<Phrase[]>([]);
+  const [phrases, setPhrases] = useState<Phrase[]>(
+    useLiveQuery(() => db[STORAGE_TABLE_NAME].toArray()) || [],
+  );
   const [activeSlideId, setActiveSlideId] = useState<string>('0');
   const [openCardId, setOpenCardId] = useState<string | undefined>();
 
   const [showNotification, contextNotificationHolder] = notification.useNotification();
+
+  async function addFriend(name, age) {
+    try {
+      // Add the new friend!
+      // const id = await db.friends.add({
+      //   name,
+      //   age,
+      // });
+      const id1 = await db.phrases.add({
+        id: '123ddf',
+        first: 'qwert',
+        second: 'asdfg',
+        // firstD: '',
+        // secondD: '',
+        myKnowledgeLvl: 1,
+      });
+      console.log(`Friend ${name} successfully added. Got id ${id1}`);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   const shufflePhrases = () => {
     const filteredPhrases = structuredClone(getKnowledgeFilteredPhrases(phrases));
@@ -61,27 +85,6 @@ const TrainArea = () => {
     [activeSlideId],
   );
 
-  // Получить фразы из локального хранилища
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
-        if (!storagePhrases?.length) {
-          localforage.setItem(STORAGE_PHRASES_NAME, defaultPhrases);
-          setPhrases(getKnowledgeFilteredPhrases(defaultPhrases));
-        } else {
-          setPhrases(structuredClone(getKnowledgeFilteredPhrases(storagePhrases)));
-        }
-        setIsLoading(false);
-      } catch (error) {
-        openNotification(showNotification, 'error', 'Localforage error');
-        console.error('Localforage error', error);
-      }
-    }
-
-    fetchData();
-  }, [showNotification]);
-
   // Навесить слушатели событий
   useEffect(() => {
     window.addEventListener('keydown', keyUpHandler);
@@ -98,12 +101,14 @@ const TrainArea = () => {
 
   return (
     <div className="train-area">
-      {isLoading && (
-        <Spin
-          indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />}
-          className="train-area__load"
-        />
-      )}
+      {/* <button
+        type="button"
+        onClick={() => {
+          addFriend('TEST', 87);
+        }}
+      >
+        Add
+      </button> */}
 
       <Layout className="train-area__wrap">
         <Carousel
@@ -115,6 +120,17 @@ const TrainArea = () => {
           accessibility={false}
           dots={false}
         >
+          {!phrases.length && (
+            <div className="train-area__slide-wrap">
+              <p>
+                No phrases.
+                <Button type="link" onClick={() => changeMode('edit')}>
+                  Add or import some.
+                </Button>
+              </p>
+            </div>
+          )}
+
           {phrases?.map((phrase, i) => (
             <div className="train-area__slide-wrap" key={phrase.id}>
               <PhraseCard
@@ -129,51 +145,55 @@ const TrainArea = () => {
         </Carousel>
       </Layout>
 
-      <FloatButton
-        shape="circle"
-        style={{
-          right: 32,
-          bottom: 32,
-        }}
-        icon={<ArrowRightOutlined />}
-        onClick={() => carouselRef?.current?.next()}
-      />
-      <FloatButton
-        shape="circle"
-        style={{
-          right: 92,
-          bottom: 92,
-        }}
-        icon={<ArrowUpOutlined />}
-        onClick={() => setOpenCardId(undefined)}
-      />
-      <FloatButton
-        shape="circle"
-        style={{
-          right: 92,
-          bottom: 32,
-        }}
-        icon={<ArrowDownOutlined />}
-        onClick={() => setOpenCardId(activeSlideId)}
-      />
-      <FloatButton
-        shape="circle"
-        style={{
-          right: 152,
-          bottom: 32,
-        }}
-        icon={<ArrowLeftOutlined />}
-        onClick={() => carouselRef?.current?.prev()}
-      />
-      <FloatButton
-        shape="circle"
-        style={{
-          right: 212,
-          bottom: 32,
-        }}
-        icon={<ReloadOutlined />}
-        onClick={shufflePhrases}
-      />
+      {!!phrases.length && (
+        <>
+          <FloatButton
+            shape="circle"
+            style={{
+              right: 32,
+              bottom: 32,
+            }}
+            icon={<ArrowRightOutlined />}
+            onClick={() => carouselRef?.current?.next()}
+          />
+          <FloatButton
+            shape="circle"
+            style={{
+              right: 92,
+              bottom: 92,
+            }}
+            icon={<ArrowUpOutlined />}
+            onClick={() => setOpenCardId(undefined)}
+          />
+          <FloatButton
+            shape="circle"
+            style={{
+              right: 92,
+              bottom: 32,
+            }}
+            icon={<ArrowDownOutlined />}
+            onClick={() => setOpenCardId(activeSlideId)}
+          />
+          <FloatButton
+            shape="circle"
+            style={{
+              right: 152,
+              bottom: 32,
+            }}
+            icon={<ArrowLeftOutlined />}
+            onClick={() => carouselRef?.current?.prev()}
+          />
+          <FloatButton
+            shape="circle"
+            style={{
+              right: 212,
+              bottom: 32,
+            }}
+            icon={<ReloadOutlined />}
+            onClick={shufflePhrases}
+          />
+        </>
+      )}
 
       {contextNotificationHolder}
     </div>

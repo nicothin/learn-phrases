@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, ChangeEvent } from 'react';
 import {
   Layout,
-  Spin,
   Button,
   Input,
   Popconfirm,
@@ -15,32 +14,30 @@ import {
   InputRef,
   FormInstance,
 } from 'antd';
-import { LoadingOutlined } from '@ant-design/icons';
-import localforage from 'localforage';
+import { useLiveQuery } from 'dexie-react-hooks';
 
 import './EditArea.scss';
 
+import { Phrase } from '../../types';
+import { db } from '../../db';
 import PhraseEditCard from '../PhraseEditCard/PhraseEditCard';
 import { checkData } from '../../utils/checkData';
 import { downloadFile } from '../../utils/downloadFile';
-import { STORAGE_NAME, STORAGE_PHRASES_NAME } from '../../enums/storage';
+import { STORAGE_TABLE_NAME } from '../../enums/storage';
 import { formatDate } from '../../utils/formateDate';
 import { createItem } from '../../utils/createItem';
-import { CreatePhraseType, Phrase } from '../../types';
 import { openNotification } from '../../utils/openNotification';
+import Loader from '../Loader/Loader';
 
 const { TextArea } = Input;
 
 const EditArea = () => {
-  localforage.config({ name: STORAGE_NAME });
-
   const formRef = useRef<FormInstance>(null);
   const firstInputRef = useRef<InputRef>(null);
 
+  const phrases = useLiveQuery(() => db[STORAGE_TABLE_NAME].filter(() => true).toArray());
+
   const [isLoading, setIsLoading] = useState(true);
-  const [phrases, setPhrases] = useState<Phrase[]>([]);
-  const [filterValue, setFilterValue] = useState('');
-  const [isPhrasesFiltered, setIsPhrasesFiltered] = useState(false);
   const [isModalAddOpen, setIsModalAddOpen] = useState(false);
 
   const [showNotification, contextNotificationHolder] = notification.useNotification();
@@ -52,14 +49,16 @@ const EditArea = () => {
 
     reader.onload = async () => {
       const content = reader.result;
+      setIsLoading(true);
       try {
         const data = JSON.parse(content as string);
         const result = checkData(data);
         if (!result.length) {
           throw new Error('Checking the imported file did not reveal phrases in it.');
         }
-        await localforage.setItem(STORAGE_PHRASES_NAME, result);
-        setPhrases(result);
+
+        await db.phrases.bulkAdd(result);
+
         openNotification(
           showNotification,
           'success',
@@ -75,58 +74,58 @@ const EditArea = () => {
   };
 
   const onExportFile = async () => {
-    try {
-      const storagePhrases = await localforage.getItem(STORAGE_PHRASES_NAME);
-      const timeStamp = formatDate(new Date());
-      downloadFile(`phrases_${timeStamp}.json`, JSON.stringify(storagePhrases, null, 2));
-      openNotification(showNotification, 'success', 'Export completed successfully');
-    } catch (error) {
-      console.error(error);
-      openNotification(showNotification, 'error', 'Export failed with an error');
-    }
+    // try {
+    //   // const storagePhrases = await localforage.getItem(STORAGE_PHRASES_NAME);
+    //   // const timeStamp = formatDate(new Date());
+    //   // downloadFile(`phrases_${timeStamp}.json`, JSON.stringify(storagePhrases, null, 2));
+    //   // openNotification(showNotification, 'success', 'Export completed successfully');
+    // } catch (error) {
+    //   console.error(error);
+    //   openNotification(showNotification, 'error', 'Export failed with an error');
+    // }
   };
 
   const onClearPhrasesList = async () => {
-    try {
-      await localforage.clear();
-      setPhrases([]);
-      openNotification(showNotification, 'success', 'Phrase list cleared');
-    } catch (error) {
-      console.error(error);
-      openNotification(showNotification, 'error', 'Phrase list not cleared');
-    }
+    // try {
+    //   // await localforage.clear();
+    //   // setPhrases([]);
+    //   // openNotification(showNotification, 'success', 'Phrase list cleared');
+    // } catch (error) {
+    //   console.error(error);
+    //   openNotification(showNotification, 'error', 'Phrase list not cleared');
+    // }
   };
 
   const onFilterChange = async (value: ChangeEvent<HTMLInputElement>) => {
-    const search = value?.target?.value;
-    setFilterValue(search);
-    const str = search.trim().toLowerCase();
-    if (search.length > 2) {
-      setIsPhrasesFiltered(true);
-      try {
-        const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
-        const filteredPhrases = storagePhrases.filter(
-          (phrase) =>
-            phrase?.languages?.first?.content?.toLowerCase().includes(str) ||
-            phrase?.languages?.second?.content?.toLowerCase().includes(str) ||
-            phrase?.languages?.first?.descr?.toLowerCase().includes(str) ||
-            phrase?.languages?.second?.descr?.toLowerCase().includes(str),
-        );
-        setPhrases(filteredPhrases);
-      } catch (error) {
-        console.error(error);
-        openNotification(showNotification, 'error', 'Phrase not filtered');
-      }
-    } else if (isPhrasesFiltered) {
-      setIsPhrasesFiltered(false);
-      try {
-        const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
-        setPhrases(storagePhrases);
-      } catch (error) {
-        console.error(error);
-        openNotification(showNotification, 'error', 'Phrase not filtered');
-      }
-    }
+    // const search = value?.target?.value;
+    // setFilterValue(search);
+    // const str = search.trim().toLowerCase();
+    // if (search.length > 2) {
+    //   setIsPhrasesFiltered(true);
+    //   try {
+    //     // const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
+    //     // const filteredPhrases = storagePhrases.filter(
+    //     //   (phrase) =>
+    //     //     phrase?.languages?.first?.content?.toLowerCase().includes(str) ||
+    //     //     phrase?.languages?.second?.content?.toLowerCase().includes(str) ||
+    //     //     phrase?.languages?.first?.descr?.toLowerCase().includes(str) ||
+    //     //     phrase?.languages?.second?.descr?.toLowerCase().includes(str),
+    //     // );
+    //     // setPhrases(filteredPhrases);
+    //   } catch (error) {
+    //     console.error(error);
+    //     openNotification(showNotification, 'error', 'Phrase not filtered');
+    //   }
+    // } else if (isPhrasesFiltered) {
+    //   setIsPhrasesFiltered(false);
+    //   try {
+    //     // const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
+    //     // setPhrases(storagePhrases);
+    //   } catch (error) {
+    //     console.error(error);
+    //     openNotification(showNotification, 'error', 'Phrase not filtered');
+    //   }
+    // }
   };
 
   const showDeleteConfirm = (file: File) => {
@@ -149,45 +148,30 @@ const EditArea = () => {
   };
 
   const onAddPhrase = async (data: CreatePhraseType) => {
-    try {
-      const newPhrase = createItem({
-        first: data.first,
-        second: data.second,
-        firstD: data.firstD,
-        secondD: data.secondD,
-      });
-      const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
-      const newPhrases = [newPhrase, ...storagePhrases];
-      await localforage.setItem(STORAGE_PHRASES_NAME, newPhrases);
-      setPhrases(newPhrases);
-      openNotification(
-        showNotification,
-        'success',
-        'Phrase successfully added to the top of the list',
-      );
-      formRef.current?.resetFields();
-      setTimeout(() => firstInputRef.current?.focus({ cursor: 'start' }), 0);
-      setFilterValue('');
-    } catch (error) {
-      console.error(error);
-      openNotification(showNotification, 'error', 'Phrase not added');
-    }
+    // try {
+    //   const newPhrase = createItem({
+    //     first: data.first,
+    //     second: data.second,
+    //     firstD: data.firstD,
+    //     secondD: data.secondD,
+    //   });
+    //   // const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
+    //   // const newPhrases = [newPhrase, ...storagePhrases];
+    //   // await localforage.setItem(STORAGE_PHRASES_NAME, newPhrases);
+    //   // setPhrases(newPhrases);
+    //   // openNotification(
+    //   //   showNotification,
+    //   //   'success',
+    //   //   'Phrase successfully added to the top of the list',
+    //   // );
+    //   // formRef.current?.resetFields();
+    //   // setTimeout(() => firstInputRef.current?.focus({ cursor: 'start' }), 0);
+    //   // setFilterValue('');
+    // } catch (error) {
+    //   console.error(error);
+    //   openNotification(showNotification, 'error', 'Phrase not added');
+    // }
   };
-
-  // Получить фразы из локального хранилища
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
-        setPhrases(storagePhrases);
-        setIsLoading(false);
-      } catch (error) {
-        console.error(error);
-        openNotification(showNotification, 'error', 'Phrase list reading error');
-      }
-    }
-    fetchData();
-  }, [showNotification]);
 
   // Отправка формы из модального окна
   useEffect(() => {
@@ -205,25 +189,27 @@ const EditArea = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isModalAddOpen]);
 
+  // Скрыть лоадер, когда список фраз загружен
+  useEffect(() => {
+    if (phrases) {
+      setIsLoading(false);
+    }
+  }, [phrases]);
+
   return (
     <div className="edit-area">
-      {isLoading && (
-        <Spin
-          indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />}
-          className="edit-area__load"
-        />
-      )}
+      {isLoading && <Loader />}
 
       <Layout className="edit-area__wrap">
         <Row gutter={[16, 0]}>
           <Col flex="1 0 auto" style={{ maxWidth: '240px', marginBottom: '16px' }}>
-            <Input
+            {/* <Input
               style={{ width: '100%' }}
               placeholder="Search (3+ characters)"
               value={filterValue}
               onChange={onFilterChange}
               className={isPhrasesFiltered ? '' : 'edit-area__inactive-filter'}
-            />
+            /> */}
           </Col>
 
           <Col style={{ marginLeft: 'auto', marginBottom: '16px' }}>
@@ -258,7 +244,7 @@ const EditArea = () => {
             { xs: 8, sm: 16, md: 16 },
           ]}
         >
-          {phrases.map((phrase) => (
+          {phrases?.map((phrase) => (
             <Col xs={24} md={12} xl={8} key={phrase.id}>
               <PhraseEditCard phrase={phrase} />
             </Col>

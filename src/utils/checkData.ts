@@ -9,21 +9,15 @@ export const checkData = (dataArray: Phrase[]): Phrase[] => {
       (item) =>
         typeof item.id === 'string' &&
         checkString(item.id) &&
-        checkString(item.languages.first.content.trim()) &&
-        checkString(item.languages.second.content.trim()),
+        checkString(item.first.trim()) &&
+        checkString(item.second.trim()),
     )
     .map((item) => ({
       id: item.id,
-      languages: {
-        first: {
-          content: item.languages.first.content.trim(),
-          descr: item.languages.first?.descr?.trim() || '',
-        },
-        second: {
-          content: item.languages.second.content.trim(),
-          descr: item.languages.second?.descr?.trim() || '',
-        },
-      },
-      myKnowledgeLvl: item?.myKnowledgeLvl || 5,
+      first: item.first.trim(),
+      firstD: item.firstD?.trim() || '',
+      second: item.second.trim(),
+      secondD: item.secondD?.trim() || '',
+      myKnowledgeLvl: item?.myKnowledgeLvl || 1,
     }));
 };

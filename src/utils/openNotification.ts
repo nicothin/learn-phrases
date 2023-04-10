@@ -3,7 +3,7 @@ import { NotificationType } from '../types';
 
 export const openNotification = (
   showNotification: NotificationInstance,
-  type: NotificationType = 'info',
+  type: NotificationType,
   message: string,
   description?: string,
 ) => {

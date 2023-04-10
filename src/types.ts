@@ -1,24 +1,15 @@
-interface PhraseData {
-  content: string,
-  descr: string,
-}
-
-export interface Phrase {
-  id: string,
-  languages: {
-    first: PhraseData,
-    second: PhraseData,
-  },
-  myKnowledgeLvl: number,
-}
+export type Mode = 'edit' | 'learn';
 
 export type NotificationType = 'success' | 'info' | 'warning' | 'error';
 
-export type CreatePhraseType = {
-  id?: string;
+export type Phrase = {
+  id: string;
+
   first: string;
-  second: string;
   firstD?: string;
+
+  second: string;
   secondD?: string;
-  myKnowledgeLvl?: number;
-}
+
+  myKnowledgeLvl: number;
+};
