@@ -4,7 +4,7 @@
     min-height: 100vh;
     padding: 8px;
   }
-
+  // NOTE[@nicothin]: вынести лоадер в компонент уже
   &__load {
     position: absolute;
     z-index: 666;
@@ -15,7 +15,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #fff;
+    backdrop-filter: blur(4px);
   }
 
   &__inactive-filter {

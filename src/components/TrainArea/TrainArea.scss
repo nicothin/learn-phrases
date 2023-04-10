@@ -32,6 +32,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #fff;
+    backdrop-filter: blur(4px);
   }
 }

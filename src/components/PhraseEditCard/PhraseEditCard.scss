@@ -1,7 +1,8 @@
 .phrase-edit-card {
-  border: 1px solid #f0f0f0;
-  border-radius: 8px;
-  background: #fff;
+
+  & > .ant-card-body {
+    padding: 4px 0;
+  }
 
   .ant-collapse-header {
 

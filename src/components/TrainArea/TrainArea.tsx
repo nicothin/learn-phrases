@@ -18,7 +18,8 @@ import PhraseCard from '../PhraseCard/PhraseCard';
 import { shuffleArray } from '../../utils/shuffleArray';
 import { STORAGE_NAME, STORAGE_PHRASES_NAME } from '../../enums/storage';
 import { getKnowledgeFilteredPhrases } from '../../utils/getKnowledgeFilteredPhrases';
-import { NotificationType, Phrase } from '../../types';
+import { Phrase } from '../../types';
+import { openNotification } from '../../utils/openNotification';
 
 const TrainArea = () => {
   localforage.config({ name: STORAGE_NAME });
@@ -30,19 +31,7 @@ const TrainArea = () => {
   const [activeSlideId, setActiveSlideId] = useState<string>('0');
   const [openCardId, setOpenCardId] = useState<string | undefined>();
 
-  const [showNotification, contextHolder] = notification.useNotification();
-
-  const openNotification = useCallback(
-    (type: NotificationType = 'info', message: string, description?: string) => {
-      if (!message && !description) return;
-
-      showNotification[type]({
-        message,
-        description,
-      });
-    },
-    [showNotification],
-  );
+  const [showNotification, contextNotificationHolder] = notification.useNotification();
 
   const shufflePhrases = () => {
     const filteredPhrases = structuredClone(getKnowledgeFilteredPhrases(phrases));
@@ -85,13 +74,13 @@ const TrainArea = () => {
         }
         setIsLoading(false);
       } catch (error) {
-        openNotification('error', 'Localforage error');
+        openNotification(showNotification, 'error', 'Localforage error');
         console.error('Localforage error', error);
       }
     }
 
     fetchData();
-  }, [openNotification]);
+  }, [showNotification]);
 
   // Навесить слушатели событий
   useEffect(() => {
@@ -186,7 +175,7 @@ const TrainArea = () => {
         onClick={shufflePhrases}
       />
 
-      {contextHolder}
+      {contextNotificationHolder}
     </div>
   );
 };

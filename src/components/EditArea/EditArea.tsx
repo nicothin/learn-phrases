@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, ChangeEvent } from 'react';
+import { useState, useEffect, useRef, ChangeEvent } from 'react';
 import {
   Layout,
   Spin,
@@ -26,9 +26,9 @@ import { downloadFile } from '../../utils/downloadFile';
 import { STORAGE_NAME, STORAGE_PHRASES_NAME } from '../../enums/storage';
 import { formatDate } from '../../utils/formateDate';
 import { createItem } from '../../utils/createItem';
-import { CreatePhraseType, NotificationType, Phrase } from '../../types';
+import { CreatePhraseType, Phrase } from '../../types';
+import { openNotification } from '../../utils/openNotification';
 
-const { confirm } = Modal;
 const { TextArea } = Input;
 
 const EditArea = () => {
@@ -43,19 +43,8 @@ const EditArea = () => {
   const [isPhrasesFiltered, setIsPhrasesFiltered] = useState(false);
   const [isModalAddOpen, setIsModalAddOpen] = useState(false);
 
-  const [showNotification, contextHolder] = notification.useNotification();
-
-  const openNotification = useCallback(
-    (type: NotificationType = 'info', message: string, description?: string) => {
-      if (!message && !description) return;
-
-      showNotification[type]({
-        message,
-        description,
-      });
-    },
-    [showNotification],
-  );
+  const [showNotification, contextNotificationHolder] = notification.useNotification();
+  const [modal, contextModalHolder] = Modal.useModal();
 
   const onImportFile = (file: File) => {
     const reader = new FileReader();
@@ -72,14 +61,16 @@ const EditArea = () => {
         await localforage.setItem(STORAGE_PHRASES_NAME, result);
         setPhrases(result);
         openNotification(
+          showNotification,
           'success',
           'Import completed successfully',
           `Imported ${result.length} phrases.`,
         );
       } catch (error) {
         console.error(error);
-        openNotification('error', 'Import failed with an error');
+        openNotification(showNotification, 'error', 'Import failed with an error');
       }
+      setIsLoading(false);
     };
   };
 
@@ -88,10 +79,10 @@ const EditArea = () => {
       const storagePhrases = await localforage.getItem(STORAGE_PHRASES_NAME);
       const timeStamp = formatDate(new Date());
       downloadFile(`phrases_${timeStamp}.json`, JSON.stringify(storagePhrases, null, 2));
-      openNotification('success', 'Export completed successfully');
+      openNotification(showNotification, 'success', 'Export completed successfully');
     } catch (error) {
       console.error(error);
-      openNotification('error', 'Export failed with an error');
+      openNotification(showNotification, 'error', 'Export failed with an error');
     }
   };
 
@@ -99,46 +90,10 @@ const EditArea = () => {
     try {
       await localforage.clear();
       setPhrases([]);
-      openNotification('success', 'Phrase list cleared');
+      openNotification(showNotification, 'success', 'Phrase list cleared');
     } catch (error) {
       console.error(error);
-      openNotification('error', 'Phrase list not cleared');
-    }
-  };
-
-  const onEditPhraseFinish = async (data: CreatePhraseType) => {
-    try {
-      const newItem = createItem({
-        id: data.id,
-        first: data.first,
-        second: data.second,
-        firstD: data.firstD,
-        secondD: data.secondD,
-      });
-      const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
-      const newPhrases = storagePhrases.map((phrase: Phrase) =>
-        phrase.id === data.id ? newItem : phrase,
-      );
-      await localforage.setItem(STORAGE_PHRASES_NAME, newPhrases);
-      setPhrases(newPhrases);
-      openNotification('success', 'Phrase updated');
-      setFilterValue('');
-    } catch (error) {
-      console.error(error);
-      openNotification('error', 'Phrase not updated');
-    }
-  };
-
-  const onDeletePhrase = async (id: string) => {
-    try {
-      const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
-      const newPhrases = storagePhrases.filter((phrase) => phrase.id !== id);
-      await localforage.setItem(STORAGE_PHRASES_NAME, newPhrases);
-      setPhrases(newPhrases);
-      openNotification('success', 'Phrase deleted');
-    } catch (error) {
-      console.error(error);
-      openNotification('error', 'Phrase not deleted');
+      openNotification(showNotification, 'error', 'Phrase list not cleared');
     }
   };
 
@@ -160,7 +115,7 @@ const EditArea = () => {
         setPhrases(filteredPhrases);
       } catch (error) {
         console.error(error);
-        openNotification('error', 'Phrase not filtered');
+        openNotification(showNotification, 'error', 'Phrase not filtered');
       }
     } else if (isPhrasesFiltered) {
       setIsPhrasesFiltered(false);
@@ -169,19 +124,20 @@ const EditArea = () => {
         setPhrases(storagePhrases);
       } catch (error) {
         console.error(error);
-        openNotification('error', 'Phrase not filtered');
+        openNotification(showNotification, 'error', 'Phrase not filtered');
       }
     }
   };
 
   const showDeleteConfirm = (file: File) => {
-    confirm({
+    modal.confirm({
       title: 'Are you sure?',
       content: 'This will permanently overwrite the current list of phrases.',
       okText: 'Yes',
       okType: 'danger',
       cancelText: 'No',
       onOk() {
+        setIsLoading(true);
         onImportFile(file);
       },
     });
@@ -190,24 +146,6 @@ const EditArea = () => {
   const showAddModal = () => {
     setIsModalAddOpen(true);
     setTimeout(() => firstInputRef.current?.focus({ cursor: 'start' }), 0);
-  };
-
-  const onMyKnowledgeLvlChange = async (id: string, value: number) => {
-    if (value === 0) return;
-
-    try {
-      const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
-      const newPhrases = storagePhrases.map((phrase) =>
-        phrase.id === id ? { ...phrase, myKnowledgeLvl: Number(value) } : phrase,
-      );
-      await localforage.setItem(STORAGE_PHRASES_NAME, newPhrases);
-      setPhrases(newPhrases);
-      openNotification('success', 'Phrase updated');
-      setFilterValue('');
-    } catch (error) {
-      console.error(error);
-      openNotification('error', 'Phrase not updated');
-    }
   };
 
   const onAddPhrase = async (data: CreatePhraseType) => {
@@ -222,13 +160,17 @@ const EditArea = () => {
       const newPhrases = [newPhrase, ...storagePhrases];
       await localforage.setItem(STORAGE_PHRASES_NAME, newPhrases);
       setPhrases(newPhrases);
-      openNotification('success', 'Phrase successfully added to the top of the list');
+      openNotification(
+        showNotification,
+        'success',
+        'Phrase successfully added to the top of the list',
+      );
       formRef.current?.resetFields();
       setTimeout(() => firstInputRef.current?.focus({ cursor: 'start' }), 0);
       setFilterValue('');
     } catch (error) {
       console.error(error);
-      openNotification('error', 'Phrase not added');
+      openNotification(showNotification, 'error', 'Phrase not added');
     }
   };
 
@@ -241,11 +183,11 @@ const EditArea = () => {
         setIsLoading(false);
       } catch (error) {
         console.error(error);
-        openNotification('error', 'Phrase list reading error');
+        openNotification(showNotification, 'error', 'Phrase list reading error');
       }
     }
     fetchData();
-  }, [openNotification]);
+  }, [showNotification]);
 
   // Отправка формы из модального окна
   useEffect(() => {
@@ -318,17 +260,14 @@ const EditArea = () => {
         >
           {phrases.map((phrase) => (
             <Col xs={24} md={12} xl={8} key={phrase.id}>
-              <PhraseEditCard
-                phrase={phrase}
-                onEditPhraseFinish={onEditPhraseFinish}
-                onDeletePhrase={onDeletePhrase}
-                onMyKnowledgeLvlChange={onMyKnowledgeLvlChange}
-              />
+              <PhraseEditCard phrase={phrase} />
             </Col>
           ))}
         </Row>
-        {contextHolder}
       </Layout>
+
+      {contextNotificationHolder}
+      {contextModalHolder}
 
       <Modal
         title="Add phrase"
