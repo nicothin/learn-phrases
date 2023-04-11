@@ -1,94 +1,101 @@
-import React, { useState } from 'react';
-import { Button, Input, Popconfirm, Collapse, Typography, Form, Space, Rate } from 'antd';
+import React from 'react';
+import { Button, Input, Popconfirm, Typography, Form, Space, Rate, Card, notification } from 'antd';
 import { CheckCircleOutlined } from '@ant-design/icons';
 
 import './PhraseEditCard.scss';
 
-import { CreatePhraseType, Phrase } from '../../types';
+import { Phrase } from '../../types';
+import { db } from '../../db';
+import { openNotification } from '../../utils/openNotification';
 
-const { Panel } = Collapse;
 const { TextArea } = Input;
 const { Text } = Typography;
 
 type PhraseEditCardProps = {
   phrase: Phrase;
-  onEditPhraseFinish: (args: CreatePhraseType) => void;
-  onDeletePhrase: (id: string) => void;
-  onMyKnowledgeLvlChange: (phraseId: string, value: number) => void;
 };
 
-const PhraseEditCard = ({
-  phrase,
-  onEditPhraseFinish,
-  onDeletePhrase,
-  onMyKnowledgeLvlChange,
-}: PhraseEditCardProps) => {
-  const [openFirstPanel, setOpenFirstPanel] = useState(0);
-  const [openSecondPanel, setOpenSecondPanel] = useState(0);
+const PhraseEditCard = ({ phrase }: PhraseEditCardProps) => {
+  const [showNotification, contextNotificationHolder] = notification.useNotification();
 
-  const onFinish = (data: CreatePhraseType) => {
-    setOpenFirstPanel(0);
-    setOpenSecondPanel(0);
-    onEditPhraseFinish({ id: phrase.id, ...data });
+  const onEditPhraseFinish = async (data: Phrase) => {
+    try {
+      const newItem = {
+        id: data.id,
+        first: data.first,
+        second: data.second,
+        firstD: data.firstD,
+        secondD: data.secondD,
+        myKnowledgeLvl: phrase.myKnowledgeLvl,
+      };
+      await db.phrases.update(phrase.id, newItem);
+      openNotification(showNotification, 'success', 'Phrase updated');
+    } catch (error) {
+      console.error(error);
+      openNotification(showNotification, 'error', 'Phrase not updated');
+    }
+  };
+
+  const onDeletePhrase = async (id: number) => {
+    try {
+      await db.phrases.delete(id);
+      openNotification(showNotification, 'success', 'Phrase deleted');
+    } catch (error) {
+      console.error(error);
+      openNotification(showNotification, 'error', 'Phrase not deleted');
+    }
+  };
+
+  const onMyKnowledgeLvlChange = async (id: number, value: number) => {
+    if (value < 1 || value > 9) {
+      openNotification(showNotification, 'error', 'Phrase not updated');
+      return;
+    }
+
+    if (value === phrase.myKnowledgeLvl) {
+      openNotification(
+        showNotification,
+        'info',
+        'Phrase not updated: The level of knowledge has not changed.',
+      );
+      return;
+    }
+
+    try {
+      await db.phrases.update(id, {
+        myKnowledgeLvl: value,
+      });
+      openNotification(showNotification, 'success', 'Phrase updated');
+    } catch (error) {
+      console.error(error);
+      openNotification(showNotification, 'error', 'Phrase not updated');
+    }
   };
 
   return (
-    <div className="phrase-edit-card">
+    <Card className="phrase-edit-card" size="small">
       <Form
         initialValues={{
-          first: phrase.languages.first.content,
-          second: phrase.languages.second.content,
-          firstD: phrase.languages.first.descr,
-          secondD: phrase.languages.second.descr,
+          first: phrase.first,
+          second: phrase.second,
+          firstD: phrase.firstD,
+          secondD: phrase.secondD,
         }}
-        onFinish={onFinish}
+        onFinish={(data) => onEditPhraseFinish({ id: phrase.id, ...data })}
         autoComplete="off"
       >
-        <Collapse
-          expandIconPosition="end"
-          collapsible="icon"
-          size="small"
-          activeKey={openFirstPanel}
-          onChange={() => setOpenFirstPanel(openFirstPanel === 0 ? 1 : 0)}
-          ghost
-        >
-          <Panel
-            header={
-              <Form.Item name="first" rules={[{ required: true, message: 'Please input phrase.' }]}>
-                <Input placeholder="First language" />
-              </Form.Item>
-            }
-            key={1}
-          >
-            <Form.Item name="firstD">
-              <TextArea rows={2} placeholder="Description" />
-            </Form.Item>
-          </Panel>
-        </Collapse>
-        <Collapse
-          expandIconPosition="end"
-          collapsible="icon"
-          size="small"
-          activeKey={openSecondPanel}
-          onChange={() => setOpenSecondPanel(openSecondPanel === 0 ? 1 : 0)}
-          ghost
-        >
-          <Panel
-            header={
-              <Form.Item
-                name="second"
-                rules={[{ required: true, message: 'Please input phrase.' }]}
-              >
-                <Input placeholder="Second language" />
-              </Form.Item>
-            }
-            key={1}
-          >
-            <Form.Item name="secondD">
-              <TextArea rows={2} placeholder="Description" />
-            </Form.Item>
-          </Panel>
-        </Collapse>
+        <Form.Item name="first" rules={[{ required: true, message: 'Please input phrase.' }]}>
+          <Input placeholder="First language" />
+        </Form.Item>
+        <Form.Item name="firstD">
+          <TextArea placeholder="Description" autoSize />
+        </Form.Item>
+        <Form.Item name="second" rules={[{ required: true, message: 'Please input phrase.' }]}>
+          <Input placeholder="Second language" />
+        </Form.Item>
+        <Form.Item name="secondD">
+          <TextArea placeholder="Description" autoSize />
+        </Form.Item>
 
         <Rate
           character={<CheckCircleOutlined />}
@@ -105,7 +112,7 @@ const PhraseEditCard = ({
           <div className="phrase-edit-card__action">
             <Space wrap>
               <Button size="small" htmlType="submit">
-                Save
+                Save It
               </Button>
               <Popconfirm
                 title="Are you sure?"
@@ -121,7 +128,9 @@ const PhraseEditCard = ({
           </div>
         </div>
       </Form>
-    </div>
+
+      {contextNotificationHolder}
+    </Card>
   );
 };
 

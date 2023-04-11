@@ -1,34 +1,37 @@
 import { useState } from 'react';
-import { FloatButton, Modal, Button } from 'antd';
+import { FloatButton, Modal, Button, Typography } from 'antd';
 import {
   InfoOutlined,
   MenuUnfoldOutlined,
   EditOutlined,
   PlayCircleOutlined,
 } from '@ant-design/icons';
-import localforage from 'localforage';
 
 import TrainArea from './components/TrainArea/TrainArea';
 import EditArea from './components/EditArea/EditArea';
-import { STORAGE_NAME } from './enums/storage';
-import { MODE } from './enums/mode';
+import { Mode } from './types';
+
+const { Link } = Typography;
 
 export const App = () => {
-  localforage.config({ name: STORAGE_NAME });
-
   const [isModalAboutOpen, setIsModalAboutOpen] = useState(false);
-  const [mode, setMode] = useState(MODE.LEARN);
+  const [mode, setMode] = useState<Mode>('learn');
+
+  const onChangeMode = (newMode: Mode) => {
+    setMode(newMode);
+  };
 
   return (
     <div className="app">
-      {mode === MODE.LEARN && <TrainArea />}
-      {mode === MODE.EDIT && <EditArea />}
+      {mode === 'learn' && <TrainArea changeMode={onChangeMode} />}
+      {mode === 'edit' && <EditArea />}
 
       <FloatButton.Group
         trigger="hover"
         style={{
           left: 34,
           bottom: 32,
+          zIndex: 1000,
         }}
         icon={<MenuUnfoldOutlined />}
       >
@@ -37,20 +40,20 @@ export const App = () => {
           onClick={() => setIsModalAboutOpen(true)}
           tooltip="О проекте"
         />
-        {mode !== MODE.EDIT && (
+        {mode !== 'edit' && (
           <FloatButton
             icon={<EditOutlined />}
             onClick={() => {
-              setMode(MODE.EDIT);
+              setMode('edit');
             }}
             tooltip="Редактировать фразы"
           />
         )}
-        {mode !== MODE.LEARN && (
+        {mode !== 'learn' && (
           <FloatButton
             icon={<PlayCircleOutlined />}
             onClick={() => {
-              setMode(MODE.LEARN);
+              setMode('learn');
             }}
             tooltip="Учить фразы"
           />
@@ -59,32 +62,34 @@ export const App = () => {
 
       <Modal
         open={isModalAboutOpen}
-        title="О проекте Learn Phrases"
+        title="About Learn Phrases"
         footer={[
           <Button key="back" onClick={() => setIsModalAboutOpen(false)}>
-            Закрыть
+            Close
           </Button>,
         ]}
         onCancel={() => setIsModalAboutOpen(false)}
         centered
       >
-        <p>Учи язык с markdown-ом и блэкджеком!</p>
-        <p>Осторожно: данные сохраняются в браузере, никакого обмена данными с сервером нет.</p>
+        <p>Learn a language with markdown and blackjack!</p>
         <p>
-          Автор:{' '}
-          <a href="https://nicothin.pro/" target="_blank" rel="noreferrer">
-            Николай Громов
-          </a>
+          Caution: the data is stored in the browser, there is no data exchange with the server.
+        </p>
+        <p>
+          Author:{' '}
+          <Link href="https://nicothin.pro/" target="_blank">
+            Nikolay Gromov
+          </Link>
           .
         </p>
         <p>
-          Вдохновлено видеокурсом{' '}
+          Inspired by the video course{' '}
           <a
             href="https://www.youtube.com/watch?v=BAahBqreWZw&list=PLD6SPjEPomasNzHuJpcS1Fxa2PYf1Bm-x&index=1"
             target="_blank"
             rel="noreferrer"
           >
-            Английский язык по плейлистам
+            English by playlists
           </a>
           .{' '}
         </p>
