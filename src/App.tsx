@@ -15,7 +15,7 @@ const { Link } = Typography;
 
 export const App = () => {
   const [isModalAboutOpen, setIsModalAboutOpen] = useState(false);
-  const [mode, setMode] = useState<Mode>('edit');
+  const [mode, setMode] = useState<Mode>('learn');
 
   const onChangeMode = (newMode: Mode) => {
     setMode(newMode);

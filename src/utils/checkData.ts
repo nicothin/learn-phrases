@@ -7,8 +7,7 @@ export const checkData = (dataArray: Phrase[]): Phrase[] => {
   return dataArray
     .filter(
       (item) =>
-        typeof item.id === 'string' &&
-        checkString(item.id) &&
+        typeof item.id === 'number' &&
         checkString(item.first.trim()) &&
         checkString(item.second.trim()),
     )

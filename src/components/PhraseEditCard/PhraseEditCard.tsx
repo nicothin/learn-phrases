@@ -36,7 +36,7 @@ const PhraseEditCard = ({ phrase }: PhraseEditCardProps) => {
     }
   };
 
-  const onDeletePhrase = async (id: string) => {
+  const onDeletePhrase = async (id: number) => {
     try {
       await db.phrases.delete(id);
       openNotification(showNotification, 'success', 'Phrase deleted');
@@ -46,7 +46,7 @@ const PhraseEditCard = ({ phrase }: PhraseEditCardProps) => {
     }
   };
 
-  const onMyKnowledgeLvlChange = async (id: string, value: number) => {
+  const onMyKnowledgeLvlChange = async (id: number, value: number) => {
     if (value < 1 || value > 9) {
       openNotification(showNotification, 'error', 'Phrase not updated');
       return;

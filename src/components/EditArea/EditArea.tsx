@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, ChangeEvent } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Layout,
   Button,
@@ -13,6 +13,8 @@ import {
   Form,
   InputRef,
   FormInstance,
+  Pagination,
+  PaginationProps,
 } from 'antd';
 import { useLiveQuery } from 'dexie-react-hooks';
 
@@ -25,23 +27,40 @@ import { checkData } from '../../utils/checkData';
 import { downloadFile } from '../../utils/downloadFile';
 import { STORAGE_TABLE_NAME } from '../../enums/storage';
 import { formatDate } from '../../utils/formateDate';
-import { createItem } from '../../utils/createItem';
 import { openNotification } from '../../utils/openNotification';
 import Loader from '../Loader/Loader';
 
 const { TextArea } = Input;
 
 const EditArea = () => {
+  const PHRASES_ON_PAGE_COUNT = 9;
+
   const formRef = useRef<FormInstance>(null);
   const firstInputRef = useRef<InputRef>(null);
 
-  const phrases = useLiveQuery(() => db[STORAGE_TABLE_NAME].filter(() => true).toArray());
-
   const [isLoading, setIsLoading] = useState(true);
   const [isModalAddOpen, setIsModalAddOpen] = useState(false);
+  const [paginationPage, setPaginationPage] = useState(1);
+  const [phrasesCounterStart, setPhrasesCounterStart] = useState(0);
+  const [phrasesCounter, setPhrasesCounter] = useState(0);
 
   const [showNotification, contextNotificationHolder] = notification.useNotification();
   const [modal, contextModalHolder] = Modal.useModal();
+
+  const phrases = useLiveQuery(
+    () =>
+      db[STORAGE_TABLE_NAME].orderBy('id')
+        .reverse()
+        .offset(phrasesCounterStart)
+        .limit(PHRASES_ON_PAGE_COUNT)
+        .toArray(),
+    [phrasesCounterStart],
+  );
+
+  const onPaginationChange: PaginationProps['onChange'] = (page) => {
+    setPaginationPage(page);
+    setPhrasesCounterStart((page - 1) * PHRASES_ON_PAGE_COUNT);
+  };
 
   const onImportFile = (file: File) => {
     const reader = new FileReader();
@@ -57,7 +76,7 @@ const EditArea = () => {
           throw new Error('Checking the imported file did not reveal phrases in it.');
         }
 
-        await db.phrases.bulkAdd(result);
+        await db[STORAGE_TABLE_NAME].bulkAdd(result);
 
         openNotification(
           showNotification,
@@ -74,64 +93,64 @@ const EditArea = () => {
   };
 
   const onExportFile = async () => {
-    // try {
-    //   // const storagePhrases = await localforage.getItem(STORAGE_PHRASES_NAME);
-    //   // const timeStamp = formatDate(new Date());
-    //   // downloadFile(`phrases_${timeStamp}.json`, JSON.stringify(storagePhrases, null, 2));
-    //   // openNotification(showNotification, 'success', 'Export completed successfully');
-    // } catch (error) {
-    //   console.error(error);
-    //   openNotification(showNotification, 'error', 'Export failed with an error');
-    // }
+    try {
+      const data = await db.table(STORAGE_TABLE_NAME).toArray();
+      const text = JSON.stringify(data, null, 2);
+      const timeStamp = formatDate(new Date());
+      downloadFile(`phrases_${timeStamp}.json`, text);
+      openNotification(showNotification, 'success', 'Export completed successfully');
+    } catch (error) {
+      console.error(error);
+      openNotification(showNotification, 'error', 'Export failed with an error');
+    }
   };
 
   const onClearPhrasesList = async () => {
-    // try {
-    //   // await localforage.clear();
-    //   // setPhrases([]);
-    //   // openNotification(showNotification, 'success', 'Phrase list cleared');
-    // } catch (error) {
-    //   console.error(error);
-    //   openNotification(showNotification, 'error', 'Phrase list not cleared');
-    // }
+    try {
+      await db[STORAGE_TABLE_NAME].clear();
+      openNotification(showNotification, 'success', 'Phrase list cleared');
+    } catch (error) {
+      console.error(error);
+      openNotification(showNotification, 'error', 'Phrase list not cleared');
+    }
   };
 
-  const onFilterChange = async (value: ChangeEvent<HTMLInputElement>) => {
-    // const search = value?.target?.value;
-    // setFilterValue(search);
-    // const str = search.trim().toLowerCase();
-    // if (search.length > 2) {
-    //   setIsPhrasesFiltered(true);
-    //   try {
-    //     // const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
-    //     // const filteredPhrases = storagePhrases.filter(
-    //     //   (phrase) =>
-    //     //     phrase?.languages?.first?.content?.toLowerCase().includes(str) ||
-    //     //     phrase?.languages?.second?.content?.toLowerCase().includes(str) ||
-    //     //     phrase?.languages?.first?.descr?.toLowerCase().includes(str) ||
-    //     //     phrase?.languages?.second?.descr?.toLowerCase().includes(str),
-    //     // );
-    //     // setPhrases(filteredPhrases);
-    //   } catch (error) {
-    //     console.error(error);
-    //     openNotification(showNotification, 'error', 'Phrase not filtered');
-    //   }
-    // } else if (isPhrasesFiltered) {
-    //   setIsPhrasesFiltered(false);
-    //   try {
-    //     // const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
-    //     // setPhrases(storagePhrases);
-    //   } catch (error) {
-    //     console.error(error);
-    //     openNotification(showNotification, 'error', 'Phrase not filtered');
-    //   }
-    // }
-  };
+  // const onFilterChange = async (value: ChangeEvent<HTMLInputElement>) => {
+  //   const search = value?.target?.value;
+  //   setFilterValue(search);
+  //   const str = search.trim().toLowerCase();
+  //   if (search.length > 2) {
+  //     setIsPhrasesFiltered(true);
+  //     try {
+  //       // const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
+  //       // const filteredPhrases = storagePhrases.filter(
+  //       //   (phrase) =>
+  //       //     phrase?.languages?.first?.content?.toLowerCase().includes(str) ||
+  //       //     phrase?.languages?.second?.content?.toLowerCase().includes(str) ||
+  //       //     phrase?.languages?.first?.descr?.toLowerCase().includes(str) ||
+  //       //     phrase?.languages?.second?.descr?.toLowerCase().includes(str),
+  //       // );
+  //       // setPhrases(filteredPhrases);
+  //     } catch (error) {
+  //       console.error(error);
+  //       openNotification(showNotification, 'error', 'Phrase not filtered');
+  //     }
+  //   } else if (isPhrasesFiltered) {
+  //     setIsPhrasesFiltered(false);
+  //     try {
+  //       // const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
+  //       // setPhrases(storagePhrases);
+  //     } catch (error) {
+  //       console.error(error);
+  //       openNotification(showNotification, 'error', 'Phrase not filtered');
+  //     }
+  //   }
+  // };
 
-  const showDeleteConfirm = (file: File) => {
+  const showImportConfirm = (file: File) => {
     modal.confirm({
       title: 'Are you sure?',
-      content: 'This will permanently overwrite the current list of phrases.',
+      content: 'This may overwrite some of the data if the IDs of some phrases match.',
       okText: 'Yes',
       okType: 'danger',
       cancelText: 'No',
@@ -147,30 +166,22 @@ const EditArea = () => {
     setTimeout(() => firstInputRef.current?.focus({ cursor: 'start' }), 0);
   };
 
-  const onAddPhrase = async (data: CreatePhraseType) => {
-    // try {
-    //   const newPhrase = createItem({
-    //     first: data.first,
-    //     second: data.second,
-    //     firstD: data.firstD,
-    //     secondD: data.secondD,
-    //   });
-    //   // const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
-    //   // const newPhrases = [newPhrase, ...storagePhrases];
-    //   // await localforage.setItem(STORAGE_PHRASES_NAME, newPhrases);
-    //   // setPhrases(newPhrases);
-    //   // openNotification(
-    //   //   showNotification,
-    //   //   'success',
-    //   //   'Phrase successfully added to the top of the list',
-    //   // );
-    //   // formRef.current?.resetFields();
-    //   // setTimeout(() => firstInputRef.current?.focus({ cursor: 'start' }), 0);
-    //   // setFilterValue('');
-    // } catch (error) {
-    //   console.error(error);
-    //   openNotification(showNotification, 'error', 'Phrase not added');
-    // }
+  const onAddPhrase = async (data: Phrase) => {
+    try {
+      const lastItem = await db.table(STORAGE_TABLE_NAME).orderBy('id').last();
+      const newPhrase: Phrase = { ...data, myKnowledgeLvl: 1, id: lastItem.id + 1 };
+      await db[STORAGE_TABLE_NAME].add(newPhrase);
+      openNotification(
+        showNotification,
+        'success',
+        'Phrase successfully added to the top of the list',
+      );
+      formRef.current?.resetFields();
+      setTimeout(() => firstInputRef.current?.focus({ cursor: 'start' }), 0);
+    } catch (error) {
+      console.error(error);
+      openNotification(showNotification, 'error', 'Phrase not added');
+    }
   };
 
   // Отправка формы из модального окна
@@ -193,6 +204,13 @@ const EditArea = () => {
   useEffect(() => {
     if (phrases) {
       setIsLoading(false);
+
+      const checkCounter = async () => {
+        const counter = await db[STORAGE_TABLE_NAME].count();
+        setPhrasesCounter(counter);
+      };
+
+      checkCounter();
     }
   }, [phrases]);
 
@@ -218,7 +236,7 @@ const EditArea = () => {
               <Upload
                 className="edit-area__upload"
                 customRequest={(event) => {
-                  showDeleteConfirm(event.file as File);
+                  showImportConfirm(event.file as File);
                 }}
               >
                 <Button>Import</Button>
@@ -239,6 +257,7 @@ const EditArea = () => {
         </Row>
 
         <Row
+          className="edit-area__phrase-list"
           gutter={[
             { xs: 8, md: 16 },
             { xs: 8, sm: 16, md: 16 },
@@ -250,6 +269,15 @@ const EditArea = () => {
             </Col>
           ))}
         </Row>
+
+        <Pagination
+          className="edit-area__pagination"
+          current={paginationPage}
+          onChange={onPaginationChange}
+          total={phrasesCounter}
+          pageSize={PHRASES_ON_PAGE_COUNT}
+          simple
+        />
       </Layout>
 
       {contextNotificationHolder}
@@ -265,14 +293,14 @@ const EditArea = () => {
           <Form.Item name="first" rules={[{ required: true, message: 'Please input phrase.' }]}>
             <Input placeholder="First language" ref={firstInputRef} />
           </Form.Item>
-          <Form.Item name="firstDescr">
+          <Form.Item name="firstD">
             <TextArea rows={2} placeholder="Description" />
           </Form.Item>
 
           <Form.Item name="second" rules={[{ required: true, message: 'Please input phrase.' }]}>
             <Input placeholder="Second language" />
           </Form.Item>
-          <Form.Item name="secondDescr">
+          <Form.Item name="secondD">
             <TextArea rows={2} placeholder="Description" />
           </Form.Item>
         </Form>

@@ -3,7 +3,7 @@ export type Mode = 'edit' | 'learn';
 export type NotificationType = 'success' | 'info' | 'warning' | 'error';
 
 export type Phrase = {
-  id: string;
+  id: number;
 
   first: string;
   firstD?: string;

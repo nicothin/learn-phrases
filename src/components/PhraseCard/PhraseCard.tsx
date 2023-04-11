@@ -10,8 +10,8 @@ const { Text } = Typography;
 
 type PhraseCardProps = {
   cardData: Phrase;
-  openedCardId: string | undefined;
-  setOpenCardId: (id: string) => void;
+  openedCardId: number | undefined;
+  setOpenCardId: (id: number) => void;
   thisNumber: number;
   counter: number;
 };
@@ -23,8 +23,6 @@ const PhraseCard = ({
   thisNumber,
   counter,
 }: PhraseCardProps) => {
-  const { id, languages } = cardData;
-
   return (
     <>
       <Card className="phrase-card" bordered={false} bodyStyle={{ padding: 0 }}>
@@ -40,24 +38,24 @@ const PhraseCard = ({
             header={
               <div className="phrase-card__shown-phrase-wrap">
                 <ReactMarkdown className="phrase-card__shown-phrase">
-                  {languages.first.content}
+                  {cardData.first}
                 </ReactMarkdown>
-                {languages.first.descr && (
+                {cardData?.firstD && (
                   <Text className="phrase-card__shown-phrase-description" type="secondary">
-                    <ReactMarkdown>{languages.first.descr}</ReactMarkdown>
+                    <ReactMarkdown>{cardData?.firstD}</ReactMarkdown>
                   </Text>
                 )}
               </div>
             }
-            key={id}
+            key={cardData.id}
           >
             <div className="phrase-card__hidden-phrase-wrap">
               <ReactMarkdown className="phrase-card__hidden-phrase">
-                {languages.second.content}
+                {cardData.second}
               </ReactMarkdown>
-              {languages.second.descr && (
+              {cardData.secondD && (
                 <Text className="phrase-card__hidden-phrase-description" type="secondary">
-                  <ReactMarkdown>{languages.second.descr}</ReactMarkdown>
+                  <ReactMarkdown>{cardData.secondD}</ReactMarkdown>
                 </Text>
               )}
             </div>
@@ -67,7 +65,7 @@ const PhraseCard = ({
 
       <div className="phrase-card__counter">
         <Text type="secondary">
-          ID: {id}. &nbsp; {thisNumber}/{counter}{' '}
+          ID: {cardData.id}. &nbsp; {thisNumber}/{counter}{' '}
         </Text>
       </div>
     </>

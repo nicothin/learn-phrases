@@ -5,14 +5,29 @@
     padding: 8px;
   }
 
-  &__inactive-filter {
-    color: #D9D9D9;
-  }
-
   &__upload {
 
     .ant-upload-list {
       display: none;
     }
+  }
+
+  &__phrase-list {
+    padding-bottom: 96px;
+  }
+
+  &__pagination {
+    position: fixed;
+    bottom: 32px;
+    left: 96px;
+    // right: 34px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    max-width: calc(100vw - 96px - 32px);
+    min-height: 40px;
+    padding: 0 16px;
+    border-radius: 20px;
+    backdrop-filter: blur(4px);
   }
 }

@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Layout, Carousel, Spin, FloatButton, notification, Button } from 'antd';
+import { Layout, Carousel, FloatButton, Button } from 'antd';
 import {
-  LoadingOutlined,
+  // LoadingOutlined,
   ArrowRightOutlined,
   ArrowUpOutlined,
   ArrowDownOutlined,
   ArrowLeftOutlined,
-  ReloadOutlined,
+  // ReloadOutlined,
 } from '@ant-design/icons';
 import { CarouselRef } from 'antd/es/carousel';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -17,54 +17,37 @@ import { Mode, Phrase } from '../../types';
 import { db } from '../../db';
 import { STORAGE_TABLE_NAME } from '../../enums/storage';
 import PhraseCard from '../PhraseCard/PhraseCard';
-import { shuffleArray } from '../../utils/shuffleArray';
-import { getKnowledgeFilteredPhrases } from '../../utils/getKnowledgeFilteredPhrases';
-import { openNotification } from '../../utils/openNotification';
+import Loader from '../Loader/Loader';
+// import { shuffleArray } from '../../utils/shuffleArray';
+// import { getKnowledgeFilteredPhrases } from '../../utils/getKnowledgeFilteredPhrases';
+// import { openNotification } from '../../utils/openNotification';
 
 type TrainAreaProps = {
   changeMode: (newMode: Mode) => void;
 };
 
 const TrainArea = ({ changeMode }: TrainAreaProps) => {
+  const [isLoading, setIsLoading] = useState(true);
+
   const carouselRef = useRef<CarouselRef | null>(null);
 
-  const [phrases, setPhrases] = useState<Phrase[]>(
-    useLiveQuery(() => db[STORAGE_TABLE_NAME].toArray()) || [],
+  const [activeSlideId, setActiveSlideId] = useState<number>(0);
+  const [openCardId, setOpenCardId] = useState<number | undefined>();
+
+  // const [showNotification, contextNotificationHolder] = notification.useNotification();
+
+  const phrases: Phrase[] | undefined = useLiveQuery(() =>
+    db[STORAGE_TABLE_NAME].orderBy('id').reverse().toArray(),
   );
-  const [activeSlideId, setActiveSlideId] = useState<string>('0');
-  const [openCardId, setOpenCardId] = useState<string | undefined>();
 
-  const [showNotification, contextNotificationHolder] = notification.useNotification();
-
-  async function addFriend(name, age) {
-    try {
-      // Add the new friend!
-      // const id = await db.friends.add({
-      //   name,
-      //   age,
-      // });
-      const id1 = await db.phrases.add({
-        id: '123ddf',
-        first: 'qwert',
-        second: 'asdfg',
-        // firstD: '',
-        // secondD: '',
-        myKnowledgeLvl: 1,
-      });
-      console.log(`Friend ${name} successfully added. Got id ${id1}`);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  const shufflePhrases = () => {
-    const filteredPhrases = structuredClone(getKnowledgeFilteredPhrases(phrases));
-    if (!filteredPhrases.length) return;
-    setPhrases(shuffleArray(filteredPhrases));
-  };
+  // const shufflePhrases = () => {
+  //   const filteredPhrases = structuredClone(getKnowledgeFilteredPhrases(phrases));
+  //   if (!filteredPhrases.length) return;
+  //   setPhrases(shuffleArray(filteredPhrases));
+  // };
 
   const carouselChange = (_: number, newIndex: number) => {
-    setActiveSlideId(phrases[newIndex]?.id);
+    setActiveSlideId(phrases?.[newIndex]?.id);
   };
 
   const keyUpHandler = useCallback(
@@ -99,16 +82,16 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
     setActiveSlideId(phrases[0].id);
   }, [phrases]);
 
+  // Скрыть лоадер, когда список фраз загружен
+  useEffect(() => {
+    if (phrases) {
+      setIsLoading(false);
+    }
+  }, [phrases]);
+
   return (
     <div className="train-area">
-      {/* <button
-        type="button"
-        onClick={() => {
-          addFriend('TEST', 87);
-        }}
-      >
-        Add
-      </button> */}
+      {isLoading && <Loader />}
 
       <Layout className="train-area__wrap">
         <Carousel
@@ -120,7 +103,7 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
           accessibility={false}
           dots={false}
         >
-          {!phrases.length && (
+          {!phrases?.length && (
             <div className="train-area__slide-wrap">
               <p>
                 No phrases.
@@ -138,14 +121,14 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
                 openedCardId={openCardId}
                 setOpenCardId={setOpenCardId}
                 thisNumber={i}
-                counter={phrases.length}
+                counter={phrases?.length}
               />
             </div>
           ))}
         </Carousel>
       </Layout>
 
-      {!!phrases.length && (
+      {!!phrases?.length && (
         <>
           <FloatButton
             shape="circle"
@@ -183,7 +166,7 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
             icon={<ArrowLeftOutlined />}
             onClick={() => carouselRef?.current?.prev()}
           />
-          <FloatButton
+          {/* <FloatButton
             shape="circle"
             style={{
               right: 212,
@@ -191,7 +174,7 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
             }}
             icon={<ReloadOutlined />}
             onClick={shufflePhrases}
-          />
+          /> */}
         </>
       )}
 
