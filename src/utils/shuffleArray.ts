@@ -1,9 +1,15 @@
-/* eslint-disable no-param-reassign */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const shuffleArray = (array: any[]): any[] => {
-  for (let i = array.length - 1; i > 0; i -= i) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
+export function shuffleArray(array: unknown[]) {
+  let currentIndex = array.length;
+  let randomIndex;
+
+  while (currentIndex !== 0) {
+    // Pick a remaining element.
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // eslint-disable-next-line no-param-reassign
+    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
   }
+
   return array;
-};
+}

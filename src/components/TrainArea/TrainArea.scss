@@ -1,24 +1,11 @@
 .train-area {
 
   &__wrap {
-    height: 100vh;
-    padding: 8px;
-  }
-
-  &__carousel {
-    min-height: calc(100vh - 16px);
-  }
-
-
-  &__slide-wrap {
     display: flex !important;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 16px);
-
-    &:focus-visible {
-      outline: none;
-    }
+    height: 100vh;
+    padding: 8px;
   }
 }
