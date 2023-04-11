@@ -31,7 +31,7 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
 
   const carouselRef = useRef<CarouselRef | null>(null);
 
-  const [activeSlideId, setActiveSlideId] = useState<number>(0);
+  const [activeSlideId, setActiveSlideId] = useState<number | undefined>(0);
   const [openCardId, setOpenCardId] = useState<number | undefined>();
 
   // const [showNotification, contextNotificationHolder] = notification.useNotification();
@@ -177,8 +177,6 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
           /> */}
         </>
       )}
-
-      {contextNotificationHolder}
     </div>
   );
 };

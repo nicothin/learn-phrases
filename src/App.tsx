@@ -24,7 +24,7 @@ export const App = () => {
   return (
     <div className="app">
       {mode === 'learn' && <TrainArea changeMode={onChangeMode} />}
-      {mode === 'edit' && <EditArea changeMode={onChangeMode} />}
+      {mode === 'edit' && <EditArea />}
 
       <FloatButton.Group
         trigger="hover"
