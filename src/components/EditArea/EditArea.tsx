@@ -30,7 +30,13 @@ import { formatDate } from '../../utils/formateDate';
 import { openNotification } from '../../utils/openNotification';
 import Loader from '../Loader/Loader';
 
+type FilterFunction = {
+  func: (phrase: Phrase) => boolean;
+};
+
 const { TextArea } = Input;
+
+const DEFAULT_FILTER_FUNC_OBJ = { func: () => true };
 
 const EditArea = () => {
   const PHRASES_ON_PAGE_COUNT = 9;
@@ -47,14 +53,17 @@ const EditArea = () => {
   const [showNotification, contextNotificationHolder] = notification.useNotification();
   const [modal, contextModalHolder] = Modal.useModal();
 
+  const [filter, setFilter] = useState<FilterFunction>(DEFAULT_FILTER_FUNC_OBJ);
+
   const phrases = useLiveQuery(
     () =>
       db[STORAGE_TABLE_NAME].orderBy('id')
         .reverse()
+        .filter(filter.func)
         .offset(phrasesCounterStart)
         .limit(PHRASES_ON_PAGE_COUNT)
         .toArray(),
-    [phrasesCounterStart],
+    [phrasesCounterStart, filter],
   );
 
   const onPaginationChange: PaginationProps['onChange'] = (page) => {
@@ -115,37 +124,56 @@ const EditArea = () => {
     }
   };
 
-  // const onFilterChange = async (value: ChangeEvent<HTMLInputElement>) => {
-  //   const search = value?.target?.value;
-  //   setFilterValue(search);
-  //   const str = search.trim().toLowerCase();
-  //   if (search.length > 2) {
-  //     setIsPhrasesFiltered(true);
-  //     try {
-  //       // const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
-  //       // const filteredPhrases = storagePhrases.filter(
-  //       //   (phrase) =>
-  //       //     phrase?.languages?.first?.content?.toLowerCase().includes(str) ||
-  //       //     phrase?.languages?.second?.content?.toLowerCase().includes(str) ||
-  //       //     phrase?.languages?.first?.descr?.toLowerCase().includes(str) ||
-  //       //     phrase?.languages?.second?.descr?.toLowerCase().includes(str),
-  //       // );
-  //       // setPhrases(filteredPhrases);
-  //     } catch (error) {
-  //       console.error(error);
-  //       openNotification(showNotification, 'error', 'Phrase not filtered');
-  //     }
-  //   } else if (isPhrasesFiltered) {
-  //     setIsPhrasesFiltered(false);
-  //     try {
-  //       // const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
-  //       // setPhrases(storagePhrases);
-  //     } catch (error) {
-  //       console.error(error);
-  //       openNotification(showNotification, 'error', 'Phrase not filtered');
-  //     }
-  //   }
-  // };
+  const onFilterSubmit = async (value: any) => {
+    const search = value?.search?.toLowerCase();
+
+    if (!search || (search && search?.length < 3)) {
+      openNotification(showNotification, 'info', 'Enter 3+ characters.');
+      setFilter(DEFAULT_FILTER_FUNC_OBJ);
+      return;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    setFilter({ func: (phrase: Phrase) => true }); // NOTE[@nicothin]: todo
+
+    // try {
+    //   const data = await db.table(STORAGE_TABLE_NAME).toArray();
+    //   setPhrases(getShufflePhrases(data.reverse()));
+    //   setIsLoading(false);
+    // } catch (error) {
+    //   console.error(error);
+    // }
+
+    //   const search = value?.target?.value;
+    //   setFilterValue(search);
+    //   const str = search.trim().toLowerCase();
+    //   if (search.length > 2) {
+    //     setIsPhrasesFiltered(true);
+    //     try {
+    //       // const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
+    //       // const filteredPhrases = storagePhrases.filter(
+    //       //   (phrase) =>
+    //       //     phrase?.languages?.first?.content?.toLowerCase().includes(str) ||
+    //       //     phrase?.languages?.second?.content?.toLowerCase().includes(str) ||
+    //       //     phrase?.languages?.first?.descr?.toLowerCase().includes(str) ||
+    //       //     phrase?.languages?.second?.descr?.toLowerCase().includes(str),
+    //       // );
+    //       // setPhrases(filteredPhrases);
+    //     } catch (error) {
+    //       console.error(error);
+    //       openNotification(showNotification, 'error', 'Phrase not filtered');
+    //     }
+    //   } else if (isPhrasesFiltered) {
+    //     setIsPhrasesFiltered(false);
+    //     try {
+    //       // const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
+    //       // setPhrases(storagePhrases);
+    //     } catch (error) {
+    //       console.error(error);
+    //       openNotification(showNotification, 'error', 'Phrase not filtered');
+    //     }
+    //   }
+  };
 
   const showImportConfirm = (file: File) => {
     modal.confirm({
@@ -221,13 +249,11 @@ const EditArea = () => {
       <Layout className="edit-area__wrap">
         <Row gutter={[16, 0]}>
           <Col flex="1 0 auto" style={{ maxWidth: '240px', marginBottom: '16px' }}>
-            {/* <Input
-              style={{ width: '100%' }}
-              placeholder="Search (3+ characters)"
-              value={filterValue}
-              onChange={onFilterChange}
-              className={isPhrasesFiltered ? '' : 'edit-area__inactive-filter'}
-            /> */}
+            <Form onFinish={onFilterSubmit} autoComplete="on">
+              <Form.Item name="search">
+                <Input style={{ width: '100%' }} placeholder="Search (3+ characters)" />
+              </Form.Item>
+            </Form>
           </Col>
 
           <Col style={{ marginLeft: 'auto', marginBottom: '16px' }}>
