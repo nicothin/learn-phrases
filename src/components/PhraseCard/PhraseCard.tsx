@@ -1,4 +1,5 @@
-import { Card, Collapse, Typography } from 'antd';
+import { Card, Collapse, Typography, Rate } from 'antd';
+import { CheckCircleOutlined } from '@ant-design/icons';
 import ReactMarkdown from 'react-markdown';
 
 import './PhraseCard.scss';
@@ -58,6 +59,14 @@ const PhraseCard = ({
                   <ReactMarkdown>{cardData.secondD}</ReactMarkdown>
                 </Text>
               )}
+
+              <Rate
+                className="phrase-card__rate"
+                character={<CheckCircleOutlined />}
+                count={9}
+                value={cardData.myKnowledgeLvl}
+                disabled
+              />
             </div>
           </Panel>
         </Collapse>

@@ -2,10 +2,10 @@
   width: clamp(320px, 70vw, 860px);
 
   .ant-collapse>.ant-collapse-item.ant-collapse-no-arrow >.ant-collapse-header {
-    padding-left: 24px;
+    padding-left: 1.5em;
   }
   .ant-collapse-ghost >.ant-collapse-item >.ant-collapse-content >.ant-collapse-content-box {
-    padding-bottom: 16px;
+    padding-bottom: 1em;
   }
 
   &__shown-phrase,
@@ -21,7 +21,7 @@
   &__shown-phrase-description,
   &__hidden-phrase-description {
     display: block;
-    margin-top: 8px;
+    margin-top: 0.5em;
 
     p {
       margin: 0;
@@ -37,7 +37,7 @@
     }
   }
 
-  &__my-knowledge-level {
-    padding: 0 24px 16px;
+  &__rate {
+    margin-top: 1em;
   }
 }
