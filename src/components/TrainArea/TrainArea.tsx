@@ -35,14 +35,12 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
     setShownPhraseIndex((prevShownPhraseIndex: number): number =>
       phrases[prevShownPhraseIndex + 1] ? prevShownPhraseIndex + 1 : 0,
     );
-    setOpenCardId(undefined);
   }, [phrases]);
 
   const showPrewPhrase = useCallback(() => {
     setShownPhraseIndex((prevShownPhraseIndex: number): number =>
       phrases[prevShownPhraseIndex - 1] ? prevShownPhraseIndex - 1 : phrases.length - 1,
     );
-    setOpenCardId(undefined);
   }, [phrases]);
 
   const openPhrase = useCallback(() => {
@@ -53,30 +51,38 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
     setOpenCardId(undefined);
   };
 
+  const changeMyKnownLevel = useCallback(
+    (phrase: Phrase, iKnowIt: boolean) => {
+      const change = async (thisPhrase: Phrase, iKnowThisPhrase: boolean) => {
+        let newKnowledgeLvl = thisPhrase.myKnowledgeLvl;
+        if (iKnowThisPhrase && thisPhrase.myKnowledgeLvl < 9) newKnowledgeLvl += 1;
+        if (!iKnowThisPhrase && thisPhrase.myKnowledgeLvl > 1) newKnowledgeLvl -= 1;
+        try {
+          const newPhrase = { ...thisPhrase, myKnowledgeLvl: newKnowledgeLvl };
+          await db.phrases.update(thisPhrase.id, newPhrase);
+          const newPhrases = phrases.map((item) => (item.id === thisPhrase.id ? newPhrase : item));
+          setPhrases(newPhrases);
+        } catch (error) {
+          console.error(error);
+        }
+        showNextPhrase();
+      };
+      change(phrase, iKnowIt);
+    },
+    [phrases, showNextPhrase],
+  );
+
   const keyUpHandler = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === 'ArrowDown') openPhrase();
       if (event.key === 'ArrowUp') closePhrase();
       if (event.key === 'ArrowRight') showNextPhrase();
       if (event.key === 'ArrowLeft') showPrewPhrase();
+      if (event.key === 'Enter') changeMyKnownLevel(phrases[shownPhraseIndex], true);
+      if (event.key === 'Escape') changeMyKnownLevel(phrases[shownPhraseIndex], false);
     },
-    [openPhrase, showNextPhrase, showPrewPhrase],
+    [changeMyKnownLevel, openPhrase, phrases, showNextPhrase, showPrewPhrase, shownPhraseIndex],
   );
-
-  const changeMyKnownLevel = async (phrase: Phrase, iKnowIt: boolean) => {
-    let newKnowledgeLvl = phrase.myKnowledgeLvl;
-    if (iKnowIt && phrase.myKnowledgeLvl < 9) newKnowledgeLvl += 1;
-    if (!iKnowIt && phrase.myKnowledgeLvl > 1) newKnowledgeLvl -= 1;
-    try {
-      const newPhrase = { ...phrase, myKnowledgeLvl: newKnowledgeLvl };
-      await db.phrases.update(phrase.id, newPhrase);
-      const newPhrases = phrases.map((item) => (item.id === phrase.id ? newPhrase : item));
-      setPhrases(newPhrases);
-    } catch (error) {
-      console.error(error);
-    }
-    showNextPhrase();
-  };
 
   const getShufflePhrases = (list: Phrase[]) => {
     const result = [];
