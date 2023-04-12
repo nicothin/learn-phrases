@@ -5,8 +5,10 @@ import {
   ArrowUpOutlined,
   ArrowDownOutlined,
   ArrowLeftOutlined,
+  CloseOutlined,
+  CheckOutlined,
+  ReloadOutlined,
 } from '@ant-design/icons';
-import { useLiveQuery } from 'dexie-react-hooks';
 
 import './TrainArea.scss';
 
@@ -24,44 +26,23 @@ type TrainAreaProps = {
 type PhraseGroupsType = Record<number, Phrase[]>;
 
 const TrainArea = ({ changeMode }: TrainAreaProps) => {
-  const dbPhrases: Phrase[] | undefined = useLiveQuery(() =>
-    db[STORAGE_TABLE_NAME].orderBy('id').reverse().toArray(),
-  );
-
   const [isLoading, setIsLoading] = useState(true);
   const [shownPhraseIndex, setShownPhraseIndex] = useState<number>(0);
   const [phrases, setPhrases] = useState<Phrase[]>([]);
   const [openCardId, setOpenCardId] = useState<number | undefined>();
 
-  useEffect(() => {
-    if (dbPhrases?.length) {
-      setIsLoading(false);
-
-      const result = [];
-      const phraseGroups: PhraseGroupsType = {};
-      dbPhrases.forEach((phrase: Phrase) => {
-        if (!phraseGroups[phrase.myKnowledgeLvl]) phraseGroups[phrase.myKnowledgeLvl] = [];
-        phraseGroups[phrase.myKnowledgeLvl].push(phrase);
-      });
-      for (let i = 1; i < 10; i += 1) {
-        if (phraseGroups[i]) {
-          result.push(shuffleArray(phraseGroups[i]));
-        }
-      }
-      setPhrases(result.flat() as Phrase[]);
-    }
-  }, [dbPhrases]);
-
   const showNextPhrase = useCallback(() => {
     setShownPhraseIndex((prevShownPhraseIndex: number): number =>
       phrases[prevShownPhraseIndex + 1] ? prevShownPhraseIndex + 1 : 0,
     );
+    setOpenCardId(undefined);
   }, [phrases]);
 
   const showPrewPhrase = useCallback(() => {
     setShownPhraseIndex((prevShownPhraseIndex: number): number =>
       phrases[prevShownPhraseIndex - 1] ? prevShownPhraseIndex - 1 : phrases.length - 1,
     );
+    setOpenCardId(undefined);
   }, [phrases]);
 
   const openPhrase = useCallback(() => {
@@ -81,6 +62,54 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
     },
     [openPhrase, showNextPhrase, showPrewPhrase],
   );
+
+  const changeMyKnownLevel = async (phrase: Phrase, iKnowIt: boolean) => {
+    let newKnowledgeLvl = phrase.myKnowledgeLvl;
+    if (iKnowIt && phrase.myKnowledgeLvl < 9) newKnowledgeLvl += 1;
+    if (!iKnowIt && phrase.myKnowledgeLvl > 1) newKnowledgeLvl -= 1;
+    try {
+      const newPhrase = { ...phrase, myKnowledgeLvl: newKnowledgeLvl };
+      await db.phrases.update(phrase.id, newPhrase);
+      const newPhrases = phrases.map((item) => (item.id === phrase.id ? newPhrase : item));
+      setPhrases(newPhrases);
+    } catch (error) {
+      console.error(error);
+    }
+    showNextPhrase();
+  };
+
+  const getShufflePhrases = (list: Phrase[]) => {
+    const result = [];
+    const phraseGroups: PhraseGroupsType = {};
+    list?.forEach((phrase: Phrase) => {
+      if (!phraseGroups[phrase.myKnowledgeLvl]) phraseGroups[phrase.myKnowledgeLvl] = [];
+      phraseGroups[phrase.myKnowledgeLvl].push({ ...phrase });
+    });
+    for (let i = 1; i < 10; i += 1) {
+      if (phraseGroups[i]) {
+        result.push(shuffleArray(phraseGroups[i]));
+      }
+    }
+    return result.flat() as Phrase[];
+  };
+
+  const shufflePhrases = async () => {
+    const newPhrases = getShufflePhrases(phrases);
+    setPhrases(newPhrases);
+  };
+
+  useEffect(() => {
+    const getPhrases = async () => {
+      try {
+        const data = await db.table(STORAGE_TABLE_NAME).toArray();
+        setPhrases(getShufflePhrases(data.reverse()));
+        setIsLoading(false);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getPhrases();
+  }, []);
 
   // Навесить слушатели событий
   useEffect(() => {
@@ -138,6 +167,36 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
               }}
               icon={<ArrowLeftOutlined />}
               onClick={showPrewPhrase}
+            />
+
+            <FloatButton
+              shape="circle"
+              style={{
+                right: 152,
+                bottom: 92,
+              }}
+              icon={<CloseOutlined />}
+              onClick={() => changeMyKnownLevel(phrases[shownPhraseIndex], false)}
+            />
+            <FloatButton
+              shape="circle"
+              style={{
+                right: 32,
+                bottom: 92,
+              }}
+              icon={<CheckOutlined />}
+              onClick={() => changeMyKnownLevel(phrases[shownPhraseIndex], true)}
+            />
+
+            <FloatButton
+              shape="circle"
+              style={{
+                right: 212,
+                bottom: 32,
+              }}
+              tooltip="Перемешать фразы и расставить по изученности"
+              icon={<ReloadOutlined />}
+              onClick={shufflePhrases}
             />
           </>
         ) : (
