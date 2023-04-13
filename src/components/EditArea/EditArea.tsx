@@ -128,51 +128,22 @@ const EditArea = () => {
     const search = value?.search?.toLowerCase();
 
     if (!search || (search && search?.length < 3)) {
-      openNotification(showNotification, 'info', 'Enter 3+ characters.');
+      openNotification(showNotification, 'warning', 'Enter 3+ characters.');
       setFilter(DEFAULT_FILTER_FUNC_OBJ);
       return;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    setFilter({ func: (phrase: Phrase) => true }); // NOTE[@nicothin]: todo
+    setPaginationPage(1);
 
-    // try {
-    //   const data = await db.table(STORAGE_TABLE_NAME).toArray();
-    //   setPhrases(getShufflePhrases(data.reverse()));
-    //   setIsLoading(false);
-    // } catch (error) {
-    //   console.error(error);
-    // }
-
-    //   const search = value?.target?.value;
-    //   setFilterValue(search);
-    //   const str = search.trim().toLowerCase();
-    //   if (search.length > 2) {
-    //     setIsPhrasesFiltered(true);
-    //     try {
-    //       // const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
-    //       // const filteredPhrases = storagePhrases.filter(
-    //       //   (phrase) =>
-    //       //     phrase?.languages?.first?.content?.toLowerCase().includes(str) ||
-    //       //     phrase?.languages?.second?.content?.toLowerCase().includes(str) ||
-    //       //     phrase?.languages?.first?.descr?.toLowerCase().includes(str) ||
-    //       //     phrase?.languages?.second?.descr?.toLowerCase().includes(str),
-    //       // );
-    //       // setPhrases(filteredPhrases);
-    //     } catch (error) {
-    //       console.error(error);
-    //       openNotification(showNotification, 'error', 'Phrase not filtered');
-    //     }
-    //   } else if (isPhrasesFiltered) {
-    //     setIsPhrasesFiltered(false);
-    //     try {
-    //       // const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
-    //       // setPhrases(storagePhrases);
-    //     } catch (error) {
-    //       console.error(error);
-    //       openNotification(showNotification, 'error', 'Phrase not filtered');
-    //     }
-    //   }
+    setFilter({
+      func: (phrase: Phrase) =>
+        String(phrase.id).includes(search) ||
+        phrase.first.includes(search) ||
+        phrase?.firstD?.includes(search) ||
+        phrase.second.includes(search) ||
+        phrase?.secondD?.includes(search) ||
+        false,
+    });
   };
 
   const showImportConfirm = (file: File) => {
@@ -234,13 +205,13 @@ const EditArea = () => {
       setIsLoading(false);
 
       const checkCounter = async () => {
-        const counter = await db[STORAGE_TABLE_NAME].count();
+        const counter = await db[STORAGE_TABLE_NAME].filter(filter.func).count();
         setPhrasesCounter(counter);
       };
 
       checkCounter();
     }
-  }, [phrases]);
+  }, [filter, phrases]);
 
   return (
     <div className="edit-area">
