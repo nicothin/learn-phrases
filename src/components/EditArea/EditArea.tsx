@@ -30,7 +30,13 @@ import { formatDate } from '../../utils/formateDate';
 import { openNotification } from '../../utils/openNotification';
 import Loader from '../Loader/Loader';
 
+type FilterFunction = {
+  func: (phrase: Phrase) => boolean;
+};
+
 const { TextArea } = Input;
+
+const DEFAULT_FILTER_FUNC_OBJ = { func: () => true };
 
 const EditArea = () => {
   const PHRASES_ON_PAGE_COUNT = 9;
@@ -47,14 +53,17 @@ const EditArea = () => {
   const [showNotification, contextNotificationHolder] = notification.useNotification();
   const [modal, contextModalHolder] = Modal.useModal();
 
+  const [filter, setFilter] = useState<FilterFunction>(DEFAULT_FILTER_FUNC_OBJ);
+
   const phrases = useLiveQuery(
     () =>
       db[STORAGE_TABLE_NAME].orderBy('id')
         .reverse()
+        .filter(filter.func)
         .offset(phrasesCounterStart)
         .limit(PHRASES_ON_PAGE_COUNT)
         .toArray(),
-    [phrasesCounterStart],
+    [phrasesCounterStart, filter],
   );
 
   const onPaginationChange: PaginationProps['onChange'] = (page) => {
@@ -115,37 +124,27 @@ const EditArea = () => {
     }
   };
 
-  // const onFilterChange = async (value: ChangeEvent<HTMLInputElement>) => {
-  //   const search = value?.target?.value;
-  //   setFilterValue(search);
-  //   const str = search.trim().toLowerCase();
-  //   if (search.length > 2) {
-  //     setIsPhrasesFiltered(true);
-  //     try {
-  //       // const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
-  //       // const filteredPhrases = storagePhrases.filter(
-  //       //   (phrase) =>
-  //       //     phrase?.languages?.first?.content?.toLowerCase().includes(str) ||
-  //       //     phrase?.languages?.second?.content?.toLowerCase().includes(str) ||
-  //       //     phrase?.languages?.first?.descr?.toLowerCase().includes(str) ||
-  //       //     phrase?.languages?.second?.descr?.toLowerCase().includes(str),
-  //       // );
-  //       // setPhrases(filteredPhrases);
-  //     } catch (error) {
-  //       console.error(error);
-  //       openNotification(showNotification, 'error', 'Phrase not filtered');
-  //     }
-  //   } else if (isPhrasesFiltered) {
-  //     setIsPhrasesFiltered(false);
-  //     try {
-  //       // const storagePhrases: Phrase[] = (await localforage.getItem(STORAGE_PHRASES_NAME)) || [];
-  //       // setPhrases(storagePhrases);
-  //     } catch (error) {
-  //       console.error(error);
-  //       openNotification(showNotification, 'error', 'Phrase not filtered');
-  //     }
-  //   }
-  // };
+  const onFilterSubmit = async (value: any) => {
+    const search = value?.search?.toLowerCase();
+
+    if (!search || (search && search?.length < 3)) {
+      openNotification(showNotification, 'warning', 'Enter 3+ characters.');
+      setFilter(DEFAULT_FILTER_FUNC_OBJ);
+      return;
+    }
+
+    setPaginationPage(1);
+
+    setFilter({
+      func: (phrase: Phrase) =>
+        String(phrase.id).includes(search) ||
+        phrase.first.includes(search) ||
+        phrase?.firstD?.includes(search) ||
+        phrase.second.includes(search) ||
+        phrase?.secondD?.includes(search) ||
+        false,
+    });
+  };
 
   const showImportConfirm = (file: File) => {
     modal.confirm({
@@ -206,13 +205,13 @@ const EditArea = () => {
       setIsLoading(false);
 
       const checkCounter = async () => {
-        const counter = await db[STORAGE_TABLE_NAME].count();
+        const counter = await db[STORAGE_TABLE_NAME].filter(filter.func).count();
         setPhrasesCounter(counter);
       };
 
       checkCounter();
     }
-  }, [phrases]);
+  }, [filter, phrases]);
 
   return (
     <div className="edit-area">
@@ -221,13 +220,11 @@ const EditArea = () => {
       <Layout className="edit-area__wrap">
         <Row gutter={[16, 0]}>
           <Col flex="1 0 auto" style={{ maxWidth: '240px', marginBottom: '16px' }}>
-            {/* <Input
-              style={{ width: '100%' }}
-              placeholder="Search (3+ characters)"
-              value={filterValue}
-              onChange={onFilterChange}
-              className={isPhrasesFiltered ? '' : 'edit-area__inactive-filter'}
-            /> */}
+            <Form onFinish={onFilterSubmit} autoComplete="on">
+              <Form.Item name="search">
+                <Input style={{ width: '100%' }} placeholder="Search (3+ characters)" />
+              </Form.Item>
+            </Form>
           </Col>
 
           <Col style={{ marginLeft: 'auto', marginBottom: '16px' }}>

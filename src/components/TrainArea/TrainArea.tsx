@@ -88,6 +88,8 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
     const result = [];
     const phraseGroups: PhraseGroupsType = {};
     list?.forEach((phrase: Phrase) => {
+      // NOTE[@nicothin]: исключаем выученные
+      if (phrase.myKnowledgeLvl > 8) return;
       if (!phraseGroups[phrase.myKnowledgeLvl]) phraseGroups[phrase.myKnowledgeLvl] = [];
       phraseGroups[phrase.myKnowledgeLvl].push({ ...phrase });
     });
