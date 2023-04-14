@@ -127,7 +127,12 @@ const EditArea = () => {
   const onFilterSubmit = async (value: any) => {
     const search = value?.search?.toLowerCase();
 
-    if (!search || (search && search?.length < 3)) {
+    if (search && search === '') {
+      setFilter(DEFAULT_FILTER_FUNC_OBJ);
+      return;
+    }
+
+    if (search && search !== '' && search?.length < 3) {
       openNotification(showNotification, 'warning', 'Enter 3+ characters.');
       setFilter(DEFAULT_FILTER_FUNC_OBJ);
       return;
