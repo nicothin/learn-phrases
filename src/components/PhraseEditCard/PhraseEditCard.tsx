@@ -85,13 +85,13 @@ const PhraseEditCard = ({ phrase }: PhraseEditCardProps) => {
         autoComplete="off"
       >
         <Form.Item name="first" rules={[{ required: true, message: 'Please input phrase.' }]}>
-          <Input placeholder="First language" />
+          <TextArea rows={1} placeholder="First language" autoSize />
         </Form.Item>
         <Form.Item name="firstD">
           <TextArea placeholder="Description" autoSize />
         </Form.Item>
         <Form.Item name="second" rules={[{ required: true, message: 'Please input phrase.' }]}>
-          <Input placeholder="Second language" />
+          <TextArea rows={1} placeholder="Second language" autoSize />
         </Form.Item>
         <Form.Item name="secondD">
           <TextArea placeholder="Description" autoSize />

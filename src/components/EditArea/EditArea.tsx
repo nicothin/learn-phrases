@@ -176,7 +176,7 @@ const EditArea = () => {
 
   const onAddPhrase = async (data: Phrase) => {
     try {
-      const lastItem = await db.table(STORAGE_TABLE_NAME).orderBy('id').last();
+      const lastItem = (await db.table(STORAGE_TABLE_NAME).orderBy('id').last()) || { id: 0 };
       const newPhrase: Phrase = { ...data, myKnowledgeLvl: 1, id: lastItem.id + 1 };
       await db[STORAGE_TABLE_NAME].add(newPhrase);
       openNotification(
@@ -301,14 +301,14 @@ const EditArea = () => {
       >
         <Form ref={formRef} onFinish={onAddPhrase}>
           <Form.Item name="first" rules={[{ required: true, message: 'Please input phrase.' }]}>
-            <Input placeholder="First language" ref={firstInputRef} />
+            <TextArea rows={1} placeholder="First language" ref={firstInputRef} autoSize />
           </Form.Item>
           <Form.Item name="firstD">
             <TextArea rows={2} placeholder="Description" />
           </Form.Item>
 
           <Form.Item name="second" rules={[{ required: true, message: 'Please input phrase.' }]}>
-            <Input placeholder="Second language" />
+            <TextArea rows={1} placeholder="Second language" autoSize />
           </Form.Item>
           <Form.Item name="secondD">
             <TextArea rows={2} placeholder="Description" />
