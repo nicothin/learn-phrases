@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Layout, FloatButton, Button } from 'antd';
+import { Layout, FloatButton, Button, Progress } from 'antd';
+import { gray } from '@ant-design/colors';
 import {
   ArrowRightOutlined,
   ArrowUpOutlined,
@@ -137,8 +138,6 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
               cardData={phrases[shownPhraseIndex]}
               openedCardId={openCardId}
               setOpenCardId={setOpenCardId}
-              thisNumber={shownPhraseIndex + 1}
-              counter={phrases?.length}
             />
             <FloatButton
               shape="circle"
@@ -216,6 +215,14 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
           </p>
         )}
       </Layout>
+
+      <Progress
+        className="train-area__progress"
+        percent={(shownPhraseIndex * 100) / phrases.length}
+        strokeLinecap="butt"
+        strokeColor={gray[0]}
+        showInfo={false}
+      />
     </div>
   );
 };
