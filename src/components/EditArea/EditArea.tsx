@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, BaseSyntheticEvent } from 'react';
 import {
   Layout,
   Button,
@@ -124,7 +124,7 @@ const EditArea = () => {
     }
   };
 
-  const onFilterSubmit = async (value: any) => {
+  const onFilterSubmit = (value: any) => {
     const search = value?.search?.toLowerCase();
 
     if (search && search === '') {
@@ -149,6 +149,10 @@ const EditArea = () => {
         phrase?.secondD?.includes(search) ||
         false,
     });
+  };
+
+  const filterInputChange = async (event: BaseSyntheticEvent) => {
+    if (!event.target.value) setFilter(DEFAULT_FILTER_FUNC_OBJ);
   };
 
   const showImportConfirm = (file: File) => {
@@ -227,7 +231,11 @@ const EditArea = () => {
           <Col flex="1 0 auto" style={{ maxWidth: '240px', marginBottom: '16px' }}>
             <Form onFinish={onFilterSubmit} autoComplete="on">
               <Form.Item name="search">
-                <Input style={{ width: '100%' }} placeholder="Search (3+ characters)" />
+                <Input
+                  style={{ width: '100%' }}
+                  placeholder="Search (3+ characters)"
+                  onChange={filterInputChange}
+                />
               </Form.Item>
             </Form>
           </Col>
