@@ -138,6 +138,8 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
               cardData={phrases[shownPhraseIndex]}
               openedCardId={openCardId}
               setOpenCardId={setOpenCardId}
+              thisNumber={shownPhraseIndex + 1}
+              counter={phrases?.length}
             />
             <FloatButton
               shape="circle"

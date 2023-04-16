@@ -13,9 +13,17 @@ type PhraseCardProps = {
   cardData: Phrase;
   openedCardId: number | undefined;
   setOpenCardId: (id: number) => void;
+  thisNumber: number;
+  counter: number;
 };
 
-const PhraseCard = ({ cardData, openedCardId, setOpenCardId }: PhraseCardProps) => {
+const PhraseCard = ({
+  cardData,
+  openedCardId,
+  setOpenCardId,
+  thisNumber,
+  counter,
+}: PhraseCardProps) => {
   return (
     <>
       <Card className="phrase-card" bordered={false} bodyStyle={{ padding: 0 }}>
@@ -65,7 +73,9 @@ const PhraseCard = ({ cardData, openedCardId, setOpenCardId }: PhraseCardProps) 
       </Card>
 
       <div className="phrase-card__counter">
-        <Text type="secondary">ID: {cardData.id}.</Text>
+        <Text type="secondary">
+          ID: {cardData.id}. &nbsp; {thisNumber}/{counter}{' '}
+        </Text>
       </div>
     </>
   );
