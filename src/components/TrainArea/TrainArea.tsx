@@ -182,6 +182,7 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
                 right: 152,
                 bottom: 92,
               }}
+              tooltip="Until I learned"
               icon={<CloseOutlined />}
               onClick={() => changeMyKnownLevel(phrases[shownPhraseIndex], false)}
             />
@@ -191,6 +192,7 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
                 right: 32,
                 bottom: 92,
               }}
+              tooltip="Already learned"
               icon={<CheckOutlined />}
               onClick={() => changeMyKnownLevel(phrases[shownPhraseIndex], true)}
             />
@@ -201,7 +203,7 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
                 right: 212,
                 bottom: 32,
               }}
-              tooltip="Перемешать фразы и расставить по изученности"
+              tooltip="Shuffle phrases, sort by level of learning"
               icon={<ReloadOutlined />}
               onClick={shufflePhrases}
             />

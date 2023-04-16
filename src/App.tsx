@@ -38,7 +38,7 @@ export const App = () => {
         <FloatButton
           icon={<InfoOutlined />}
           onClick={() => setIsModalAboutOpen(true)}
-          tooltip="О проекте"
+          tooltip="About"
         />
         {mode !== 'edit' && (
           <FloatButton
@@ -46,7 +46,7 @@ export const App = () => {
             onClick={() => {
               setMode('edit');
             }}
-            tooltip="Редактировать фразы"
+            tooltip="Edit phrases"
           />
         )}
         {mode !== 'learn' && (
@@ -55,7 +55,7 @@ export const App = () => {
             onClick={() => {
               setMode('learn');
             }}
-            tooltip="Учить фразы"
+            tooltip="Learn phrases"
           />
         )}
       </FloatButton.Group>
@@ -75,6 +75,30 @@ export const App = () => {
         <p>
           Caution: the data is stored in the browser, there is no data exchange with the server.
         </p>
+        <p>Useful resources:</p>
+        <ul>
+          <li>
+            <Link
+              href="https://context.reverso.net/%D0%BF%D0%B5%D1%80%D0%B5%D0%B2%D0%BE%D0%B4/%D0%B0%D0%BD%D0%B3%D0%BB%D0%B8%D0%B9%D1%81%D0%BA%D0%B8%D0%B9-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9/"
+              target="_blank"
+            >
+              context.reverso.net
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="https://www.babla.ru/%D0%B0%D0%BD%D0%B3%D0%BB%D0%B8%D0%B9%D1%81%D0%BA%D0%B8%D0%B9-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9/"
+              target="_blank"
+            >
+              babla.ru
+            </Link>
+          </li>
+          <li>
+            <Link href="https://myefe.ru/anglijskaya-transkriptsiya.html" target="_blank">
+              myefe.ru
+            </Link>
+          </li>
+        </ul>
         <p>
           Author:{' '}
           <Link href="https://nicothin.pro/" target="_blank">
