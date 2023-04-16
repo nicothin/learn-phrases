@@ -125,7 +125,7 @@ const EditArea = () => {
   };
 
   const onFilterSubmit = (value: any) => {
-    const search = value?.search?.toLowerCase();
+    const search = value?.search?.toLowerCase().trim();
 
     if (search && search === '') {
       setFilter(DEFAULT_FILTER_FUNC_OBJ);
@@ -143,10 +143,10 @@ const EditArea = () => {
     setFilter({
       func: (phrase: Phrase) =>
         String(phrase.id).includes(search) ||
-        phrase.first.includes(search) ||
-        phrase?.firstD?.includes(search) ||
-        phrase.second.includes(search) ||
-        phrase?.secondD?.includes(search) ||
+        phrase.first.toLowerCase().includes(search) ||
+        phrase?.firstD?.toLowerCase().includes(search) ||
+        phrase.second.toLowerCase().includes(search) ||
+        phrase?.secondD?.toLowerCase().includes(search) ||
         false,
     });
   };
