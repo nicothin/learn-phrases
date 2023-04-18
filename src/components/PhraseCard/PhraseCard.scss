@@ -40,4 +40,16 @@
   &__rate {
     margin-top: 1em;
   }
+
+  &__done-icon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 32px;
+    opacity: 0.5;
+  }
+
+  &--is-known {
+    // opacity: 0.5;
+  }
 }

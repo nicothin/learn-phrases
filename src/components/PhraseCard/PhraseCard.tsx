@@ -26,7 +26,12 @@ const PhraseCard = ({
 }: PhraseCardProps) => {
   return (
     <>
-      <Card className="phrase-card" bordered={false} bodyStyle={{ padding: 0 }}>
+      <Card
+        className={`phrase-card ${cardData.myKnowledgeLvl > 8 ? 'phrase-card--is-known' : ''}`}
+        bordered={false}
+        bodyStyle={{ padding: 0 }}
+      >
+        {cardData.myKnowledgeLvl > 8 && <CheckCircleOutlined className="phrase-card__done-icon" />}
         <Collapse
           expandIconPosition="end"
           activeKey={openedCardId}

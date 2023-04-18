@@ -30,6 +30,7 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [shownPhraseIndex, setShownPhraseIndex] = useState<number>(0);
   const [phrases, setPhrases] = useState<Phrase[]>([]);
+  const [progressPercent, setProgressPercent] = useState<number>(0);
   const [openCardId, setOpenCardId] = useState<number | undefined>();
 
   const showNextPhrase = useCallback(() => {
@@ -90,7 +91,7 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
     const phraseGroups: PhraseGroupsType = {};
     list?.forEach((phrase: Phrase) => {
       // NOTE[@nicothin]: исключаем выученные
-      if (phrase.myKnowledgeLvl > 8) return;
+      // if (phrase.myKnowledgeLvl > 8) return;
       if (!phraseGroups[phrase.myKnowledgeLvl]) phraseGroups[phrase.myKnowledgeLvl] = [];
       phraseGroups[phrase.myKnowledgeLvl].push({ ...phrase });
     });
@@ -107,6 +108,7 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
     setPhrases(newPhrases);
   };
 
+  // Первоначально получить список фраз
   useEffect(() => {
     const getPhrases = async () => {
       try {
@@ -126,6 +128,12 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
 
     return () => window.removeEventListener('keydown', keyUpHandler);
   }, [keyUpHandler]);
+
+  useEffect(() => {
+    const unknownPhrasesCounter = phrases?.filter((item) => item.myKnowledgeLvl < 9)?.length || 0;
+    const percent = (shownPhraseIndex * 100) / unknownPhrasesCounter;
+    setProgressPercent(percent <= 100 ? percent : 100);
+  }, [phrases, shownPhraseIndex]);
 
   return (
     <div className="train-area">
@@ -222,7 +230,8 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
 
       <Progress
         className="train-area__progress"
-        percent={(shownPhraseIndex * 100) / phrases.length}
+        percent={progressPercent}
+        // percent={(shownPhraseIndex * 100) / phrases.length}
         strokeLinecap="butt"
         strokeColor={gray[0]}
         showInfo={false}
