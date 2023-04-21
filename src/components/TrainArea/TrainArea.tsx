@@ -32,6 +32,7 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
   const [phrases, setPhrases] = useState<Phrase[]>([]);
   const [progressPercent, setProgressPercent] = useState<number>(0);
   const [openCardId, setOpenCardId] = useState<number | undefined>();
+  const [unknownPhrasesCounter, setUnknownPhrasesCounter] = useState<number>(0);
 
   const showNextPhrase = useCallback(() => {
     setShownPhraseIndex((prevShownPhraseIndex: number): number =>
@@ -130,8 +131,9 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
   }, [keyUpHandler]);
 
   useEffect(() => {
-    const unknownPhrasesCounter = phrases?.filter((item) => item.myKnowledgeLvl < 9)?.length || 0;
-    const percent = (shownPhraseIndex * 100) / unknownPhrasesCounter;
+    const counterUnknown = phrases?.filter((item) => item.myKnowledgeLvl < 9)?.length || 0;
+    setUnknownPhrasesCounter(counterUnknown);
+    const percent = (shownPhraseIndex * 100) / counterUnknown;
     setProgressPercent(percent <= 100 ? percent : 100);
   }, [phrases, shownPhraseIndex]);
 
@@ -147,7 +149,8 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
               openedCardId={openCardId}
               setOpenCardId={setOpenCardId}
               thisNumber={shownPhraseIndex + 1}
-              counter={phrases?.length}
+              counter={unknownPhrasesCounter}
+              counterTotal={phrases?.length}
             />
             <FloatButton
               shape="circle"
