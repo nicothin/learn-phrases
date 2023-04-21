@@ -85,7 +85,7 @@ const EditArea = () => {
           throw new Error('Checking the imported file did not reveal phrases in it.');
         }
 
-        await db[STORAGE_TABLE_NAME].bulkAdd(result);
+        await db[STORAGE_TABLE_NAME].bulkPut(result);
 
         openNotification(
           showNotification,
@@ -143,10 +143,10 @@ const EditArea = () => {
     setFilter({
       func: (phrase: Phrase) =>
         String(phrase.id).includes(search) ||
-        phrase.first.toLowerCase().includes(search) ||
-        phrase?.firstD?.toLowerCase().includes(search) ||
-        phrase.second.toLowerCase().includes(search) ||
-        phrase?.secondD?.toLowerCase().includes(search) ||
+        phrase.first.toLowerCase().replace(/\*\*/gim, '').includes(search) ||
+        phrase?.firstD?.toLowerCase().replace(/\*\*/gim, '').includes(search) ||
+        phrase.second.toLowerCase().replace(/\*\*/gim, '').includes(search) ||
+        phrase?.secondD?.toLowerCase().replace(/\*\*/gim, '').includes(search) ||
         false,
     });
   };
