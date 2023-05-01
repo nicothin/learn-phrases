@@ -31,6 +31,7 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
   const [shownPhraseIndex, setShownPhraseIndex] = useState<number>(0);
   const [phrases, setPhrases] = useState<Phrase[]>([]);
   const [progressPercent, setProgressPercent] = useState<number>(0);
+  const [commonProgress, setCommonProgress] = useState<number>(0);
   const [openCardId, setOpenCardId] = useState<number | undefined>();
   const [unknownPhrasesCounter, setUnknownPhrasesCounter] = useState<number>(0);
 
@@ -130,11 +131,19 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
     return () => window.removeEventListener('keydown', keyUpHandler);
   }, [keyUpHandler]);
 
+  // Прогресс для невыученных фраз
   useEffect(() => {
     const counterUnknown = phrases?.filter((item) => item.myKnowledgeLvl < 9)?.length || 0;
     setUnknownPhrasesCounter(counterUnknown);
     const percent = (shownPhraseIndex * 100) / counterUnknown;
     setProgressPercent(percent <= 100 ? percent : 100);
+  }, [phrases, shownPhraseIndex]);
+
+  // Прогресс для всех фраз
+  useEffect(() => {
+    const counterUnknown = phrases?.length || 0;
+    const percent = (shownPhraseIndex * 100) / counterUnknown;
+    setCommonProgress(percent <= 100 ? percent : 100);
   }, [phrases, shownPhraseIndex]);
 
   return (
@@ -238,6 +247,16 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
         strokeLinecap="butt"
         strokeColor={gray[0]}
         showInfo={false}
+        size="small"
+      />
+      <Progress
+        className="train-area__common-progress"
+        percent={commonProgress}
+        // percent={(shownPhraseIndex * 100) / phrases.length}
+        strokeLinecap="butt"
+        strokeColor={gray[0]}
+        showInfo={false}
+        size="small"
       />
     </div>
   );
