@@ -8,7 +8,6 @@ import {
   ArrowLeftOutlined,
   CloseOutlined,
   CheckOutlined,
-  ReloadOutlined,
 } from '@ant-design/icons';
 
 import './TrainArea.scss';
@@ -23,8 +22,6 @@ import { shuffleArray } from '../../utils/shuffleArray';
 type TrainAreaProps = {
   changeMode: (newMode: Mode) => void;
 };
-
-type PhraseGroupsType = Record<number, Phrase[]>;
 
 const TrainArea = ({ changeMode }: TrainAreaProps) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -88,26 +85,20 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
     [changeMyKnownLevel, openPhrase, phrases, showNextPhrase, showPrewPhrase, shownPhraseIndex],
   );
 
-  const getShufflePhrases = (list: Phrase[]) => {
-    const result = [];
-    const phraseGroups: PhraseGroupsType = {};
+  const getShufflePhrases = (list: Phrase[]): Phrase[] => {
+    const learnedList: Phrase[] = [];
+    const unlearnedList: Phrase[] = [];
     list?.forEach((phrase: Phrase) => {
-      // NOTE[@nicothin]: исключаем выученные
-      // if (phrase.myKnowledgeLvl > 8) return;
-      if (!phraseGroups[phrase.myKnowledgeLvl]) phraseGroups[phrase.myKnowledgeLvl] = [];
-      phraseGroups[phrase.myKnowledgeLvl].push({ ...phrase });
-    });
-    for (let i = 1; i < 10; i += 1) {
-      if (phraseGroups[i]) {
-        result.push(shuffleArray(phraseGroups[i]));
+      if (phrase.myKnowledgeLvl === 9) {
+        learnedList.push(phrase);
+        return;
       }
-    }
-    return result.flat() as Phrase[];
-  };
-
-  const shufflePhrases = async () => {
-    const newPhrases = getShufflePhrases(phrases);
-    setPhrases(newPhrases);
+      unlearnedList.push(phrase);
+    });
+    return [
+      ...(shuffleArray(unlearnedList) as Phrase[]),
+      ...(shuffleArray(learnedList) as Phrase[]),
+    ];
   };
 
   // Первоначально получить список фраз
@@ -217,17 +208,6 @@ const TrainArea = ({ changeMode }: TrainAreaProps) => {
               tooltip="Already learned"
               icon={<CheckOutlined />}
               onClick={() => changeMyKnownLevel(phrases[shownPhraseIndex], true)}
-            />
-
-            <FloatButton
-              shape="circle"
-              style={{
-                right: 212,
-                bottom: 32,
-              }}
-              tooltip="Shuffle phrases, sort by level of learning"
-              icon={<ReloadOutlined />}
-              onClick={shufflePhrases}
             />
           </>
         ) : (
