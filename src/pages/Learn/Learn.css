@@ -20,3 +20,16 @@
   height: 100%;
   outline: none;
 }
+
+.lp-learn-page__progress {
+  position: fixed;
+  right: 0;
+  top: 0;
+  left: 0;
+}
+.lp-learn-page__progress .ant-progress-inner {
+  display: block;
+}
+.lp-learn-page__progress .ant-progress-outer {
+  display: block;
+}

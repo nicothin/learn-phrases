@@ -1,5 +1,6 @@
 export * from './savePhraseLocally';
 export * from './deletePhraseLocally';
+export * from './deleteAllPhrasesLocally';
 export * from './getPhrasesDTOFromLocal';
 
 export * from './getPhrasesDTOGromGist';

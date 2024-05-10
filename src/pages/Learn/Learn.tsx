@@ -1,5 +1,5 @@
 import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
-import { Carousel, FloatButton, message, Modal, notification } from 'antd';
+import { Carousel, FloatButton, message, Modal, notification, Progress } from 'antd';
 import { CarouselRef } from 'antd/es/carousel';
 import {
   ArrowDownOutlined,
@@ -22,7 +22,6 @@ import {
   convertToKnowledgeLvl,
   getFloatButtonPositionStyle,
   onSliderBeforeChange,
-  shuffleArray,
 } from '../../utils';
 import useArrayNavigator from '../../hooks/useArrayNavigator';
 import PhraseCard from '../../components/PhraseCard/PhraseCard';
@@ -35,6 +34,10 @@ export default function Learn() {
   const [notificationApi, contextNotification] = notification.useNotification();
 
   const [phrases, setPhrases] = useState<Phrases>([]);
+  const [shuffledPhraseIDs, setShuffledPhraseIDs] = useState<Set<number>>(new Set());
+  const [phrasesMapFromDexie, setPhrasesMapFromDexie] = useState<Map<number, Phrase>>(new Map());
+  const [unlearnedPhrasesCounter, setUnlearnedPhrasesCounter] = useState(0);
+  const [progressPercent, setProgressPercent] = useState(0);
 
   const { token, gistId } = useSettingsContext();
 
@@ -45,12 +48,17 @@ export default function Learn() {
   const [openedCardId, setOpenedCardId] = useState<number | undefined>(undefined);
   const [canSynchronized, setCanSynchronized] = useState(false);
 
-  const phrasesFromDexie = useLiveQuery(
-    () => DexieIndexedDB[DEXIE_TABLE_NAME].orderBy('id').toArray(),
-    [],
-  );
+  useLiveQuery(() => {
+    DexieIndexedDB[DEXIE_TABLE_NAME].orderBy('id')
+      .toArray()
+      .then((array) => {
+        const tupleArray: [number, Phrase][] = array.map((phrase) => [phrase.id, phrase]);
+        setPhrasesMapFromDexie(new Map(tupleArray));
+      });
+  }, []);
 
   const {
+    nowIndex: nowPrasesIndex,
     next: goToNextPhrase,
     prev: goToPrevPhrase,
     getNow: getNowPhrase,
@@ -128,22 +136,88 @@ export default function Learn() {
     );
   };
 
-  // Make phrases list with shuffle
+  // Get shuffled IDs & Make phrases list with shuffle
   useEffect(() => {
-    const learnedList: Phrases = [];
-    const unlearnedList: Phrases = [];
-    phrasesFromDexie?.forEach((phrase) => {
-      if (phrase.knowledgeLvl === 9) {
-        learnedList.push(phrase);
-        return;
+    if (!phrasesMapFromDexie.size) {
+      setShuffledPhraseIDs(new Set());
+      return;
+    }
+
+    const newShuffledPhraseIDs: Set<number> = new Set();
+
+    // shuffledPhraseIDs has been calculated before
+    if (shuffledPhraseIDs.size) {
+      if (shuffledPhraseIDs.size > phrasesMapFromDexie.size) {
+        shuffledPhraseIDs.forEach((item) => {
+          if (phrasesMapFromDexie.get(item)) newShuffledPhraseIDs.add(item);
+        });
+        setShuffledPhraseIDs(newShuffledPhraseIDs);
+      } else if (shuffledPhraseIDs.size < phrasesMapFromDexie.size) {
+        shuffledPhraseIDs.forEach((item) => {
+          newShuffledPhraseIDs.add(item);
+        });
+        phrasesMapFromDexie.forEach((item) => item.id);
+        setShuffledPhraseIDs(newShuffledPhraseIDs);
+      } else {
+        shuffledPhraseIDs.forEach((item) => {
+          newShuffledPhraseIDs.add(item);
+        });
       }
-      unlearnedList.push(phrase);
+    }
+
+    // shuffledPhraseIDs has NOT been calculated before
+    else {
+      const learnedList: number[] = [];
+      const unlearnedList: number[] = [];
+      phrasesMapFromDexie?.forEach((phrase) => {
+        if (phrase.knowledgeLvl >= 9) {
+          learnedList.push(phrase.id);
+          return;
+        }
+        unlearnedList.push(phrase.id);
+      });
+
+      // TODO add shuffle! shuffleArray()
+
+      unlearnedList.forEach((item) => {
+        newShuffledPhraseIDs.add(item);
+      });
+      learnedList.forEach((item) => {
+        newShuffledPhraseIDs.add(item);
+      });
+
+      setShuffledPhraseIDs(newShuffledPhraseIDs);
+    }
+
+    const newPhrases: Phrases = [];
+    newShuffledPhraseIDs.forEach((id) => {
+      const phrase = phrasesMapFromDexie?.get(id);
+      if (phrase) {
+        newPhrases.push(phrase);
+      }
     });
-    setPhrases([
-      ...(shuffleArray(unlearnedList) as Phrases),
-      ...(shuffleArray(learnedList) as Phrases),
-    ]);
-  }, [phrasesFromDexie]);
+
+    setPhrases(newPhrases);
+  }, [phrasesMapFromDexie, shuffledPhraseIDs]);
+
+  // Set UnlearnedPhrasesCounter
+  useEffect(() => {
+    const unlearnedList: number[] = [];
+    phrasesMapFromDexie?.forEach((phrase) => {
+      if (phrase.knowledgeLvl < 9) {
+        unlearnedList.push(phrase.id);
+      }
+    });
+    setUnlearnedPhrasesCounter(unlearnedList.length);
+  }, [phrasesMapFromDexie]);
+
+  // Calculate progress
+  useEffect(() => {
+    const nowUnlearnPrasesIndex =
+      nowPrasesIndex >= unlearnedPhrasesCounter ? unlearnedPhrasesCounter : nowPrasesIndex;
+    const percent = (nowUnlearnPrasesIndex * 100) / unlearnedPhrasesCounter;
+    setProgressPercent(percent);
+  }, [nowPrasesIndex, unlearnedPhrasesCounter]);
 
   // Event listeners
   useEffect(() => {
@@ -235,6 +309,14 @@ export default function Learn() {
           />
         </>
       )}
+
+      <Progress
+        className="lp-learn-page__progress"
+        percent={progressPercent}
+        strokeLinecap="butt"
+        showInfo={false}
+        size="small"
+      />
 
       {contextMessage}
       {contextNotification}

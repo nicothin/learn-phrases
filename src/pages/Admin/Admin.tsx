@@ -10,9 +10,16 @@ import {
   Form,
   Input,
   Modal,
+  Popconfirm,
 } from 'antd';
 import type { PaginationProps } from 'antd';
-import { DownloadOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
+import {
+  DeleteOutlined,
+  DownloadOutlined,
+  PlusOutlined,
+  QuestionCircleOutlined,
+  SaveOutlined,
+} from '@ant-design/icons';
 import { useLiveQuery } from 'dexie-react-hooks';
 
 import './Admin.css';
@@ -23,7 +30,11 @@ import { useSettingsContext } from '../../hooks';
 import { getDate, getFloatButtonPositionStyle } from '../../utils';
 import { DexieIndexedDB } from '../../services/DexieIndexedDB';
 import { Gist } from '../../services/Gist';
-import { getPhrasesDTOFromLocal, startDownloadFile } from '../../services/actions';
+import {
+  deleteAllPhrasesLocally,
+  getPhrasesDTOFromLocal,
+  startDownloadFile,
+} from '../../services/actions';
 import { importPhrases } from '../../services/actions/importPhrases';
 import PhrasesTable from '../../components/PhrasesTable/PhrasesTable';
 import EditPhraseModal from '../../components/EditPhraseModal/EditPhraseModal';
@@ -144,7 +155,7 @@ export default function Admin() {
         const newPhrasesDTO = JSON.parse(content as string);
 
         if (!newPhrasesDTO.length) {
-          const errorText = 'The imported file does not contain phrases.';
+          const errorText = 'The imported file is not a valid JSON.';
           console.error(errorText);
           notificationApi.error({
             message: 'Import failed',
@@ -163,6 +174,23 @@ export default function Admin() {
         });
       }
     };
+  };
+
+  const onDeleteAllLocalPhrases = () => {
+    deleteAllPhrasesLocally()
+      .then(() => {
+        notificationApi.success({
+          message: 'Cleared',
+          description: 'The local storage has been cleared. I hope you have a backup.',
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+        notificationApi.error({
+          message: 'Clear failed',
+          description: String(error),
+        });
+      });
   };
 
   // Set PhrasesCounter
@@ -248,7 +276,7 @@ export default function Admin() {
             modalApi={modalApi}
           />
           <ExportToGistFloatButton
-            buttonPosition={getFloatButtonPositionStyle([1, 0], { isTop: true })}
+            buttonPosition={getFloatButtonPositionStyle([0, 4])}
             gist={gist}
             notificationApi={notificationApi}
           />
@@ -271,6 +299,23 @@ export default function Admin() {
         onClick={onClickExportFileBtn}
         tooltip="Export phrases to file"
       />
+
+      <Popconfirm
+        placement="left"
+        title="Do you really want to delete all local phrases?"
+        onConfirm={onDeleteAllLocalPhrases}
+        okText="Yes"
+        okButtonProps={{ size: 'middle', danger: true }}
+        cancelButtonProps={{ size: 'middle' }}
+        cancelText="No"
+        icon={<QuestionCircleOutlined />}
+      >
+        <FloatButton
+          shape="circle"
+          style={getFloatButtonPositionStyle([0, 5])}
+          icon={<DeleteOutlined />}
+        />
+      </Popconfirm>
 
       {contextModal}
       {contextNotification}

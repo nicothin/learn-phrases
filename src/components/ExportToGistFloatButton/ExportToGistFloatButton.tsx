@@ -26,9 +26,16 @@ export default function ExportToGistFloatButton({
     getPhrasesDTOFromLocal()
       .then((phrasesDTO: PhrasesDTO) => {
         savePhrasesDTOToGist({ gist, phrasesDTO })
-          .then(() => {
+          .then((res) => {
+            console.log('res', res);
             notificationApi.success({
-              message: 'Export completed',
+              message: 'Export to gist completed',
+              description: (
+                <div>
+                  The export to <a href={res.data.html_url}>this gist</a> has been successfully
+                  completed.
+                </div>
+              ),
             });
           })
           .catch((error: Error) => {
