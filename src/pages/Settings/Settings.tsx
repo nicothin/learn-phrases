@@ -69,7 +69,7 @@ export default function Settings() {
           <Text type="secondary">
             Gist is a service from <a href="https://github.com/">github</a> for storing small sets of files with a history of changes. It's free.
             <br />
-            You can read about tokens <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens">here</a>. This project stores your token ONLY in your browser. The token is used only for gistrequests. You can check it out in <a href="https://github.com/nicothin/learnphrases2">this project's repository</a>.
+            You can read about tokens <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens">here</a>. This project stores your token ONLY in your browser. The token is used only for gistrequests.
             <br />
             You can create your own token <a href="https://github.com/settings/tokens">here</a> (the token must allow to work with gists).
           </Text>

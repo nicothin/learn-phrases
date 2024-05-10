@@ -22,6 +22,7 @@ import {
   convertToKnowledgeLvl,
   getFloatButtonPositionStyle,
   onSliderBeforeChange,
+  shuffleSet,
 } from '../../utils';
 import useArrayNavigator from '../../hooks/useArrayNavigator';
 import PhraseCard from '../../components/PhraseCard/PhraseCard';
@@ -34,7 +35,9 @@ export default function Learn() {
   const [notificationApi, contextNotification] = notification.useNotification();
 
   const [phrases, setPhrases] = useState<Phrases>([]);
-  const [shuffledPhraseIDs, setShuffledPhraseIDs] = useState<Set<number>>(new Set());
+  const [learnedIDs, setLearnedIDs] = useState<Set<number>>(new Set());
+  const [unlearnedIDs, setUnlearnedIDs] = useState<Set<number>>(new Set());
+  const [isNeedToShuffle, setIsNeedToShuffle] = useState(true);
   const [phrasesMapFromDexie, setPhrasesMapFromDexie] = useState<Map<number, Phrase>>(new Map());
   const [unlearnedPhrasesCounter, setUnlearnedPhrasesCounter] = useState(0);
   const [progressPercent, setProgressPercent] = useState(0);
@@ -76,14 +79,16 @@ export default function Learn() {
     (phrase?: Phrase, isPlus?: boolean) => {
       if (!phrase) return;
 
+      const newKnoledgeLvl = convertToKnowledgeLvl(phrase.knowledgeLvl + (isPlus ? 1 : -1));
+
       const newPhrase = {
         ...phrase,
-        knowledgeLvl: convertToKnowledgeLvl(phrase.knowledgeLvl + (isPlus ? 1 : -1)),
+        knowledgeLvl: newKnoledgeLvl,
       };
 
       savePhraseLocally(newPhrase)
         .then(() => {
-          carouselRef.current?.next();
+          if (newKnoledgeLvl !== 9) carouselRef.current?.next();
         })
         .catch((error) => {
           console.log(error);
@@ -97,7 +102,7 @@ export default function Learn() {
     [messageApi],
   );
 
-  const onPhrasesCarouselKeyDown = useCallback(
+  const onKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === 'ArrowDown') setOpenedCardId(getNowPhrase()?.id);
       if (event.key === 'ArrowUp' || event.key === 'ArrowRight' || event.key === 'ArrowLeft')
@@ -136,69 +141,64 @@ export default function Learn() {
     );
   };
 
-  // Get shuffled IDs & Make phrases list with shuffle
+  // setLearnedIDs & setUnlearnedIDs
   useEffect(() => {
     if (!phrasesMapFromDexie.size) {
-      setShuffledPhraseIDs(new Set());
+      setLearnedIDs(new Set());
+      setUnlearnedIDs(new Set());
       return;
     }
 
-    const newShuffledPhraseIDs: Set<number> = new Set();
-
-    // shuffledPhraseIDs has been calculated before
-    if (shuffledPhraseIDs.size) {
-      if (shuffledPhraseIDs.size > phrasesMapFromDexie.size) {
-        shuffledPhraseIDs.forEach((item) => {
-          if (phrasesMapFromDexie.get(item)) newShuffledPhraseIDs.add(item);
-        });
-        setShuffledPhraseIDs(newShuffledPhraseIDs);
-      } else if (shuffledPhraseIDs.size < phrasesMapFromDexie.size) {
-        shuffledPhraseIDs.forEach((item) => {
-          newShuffledPhraseIDs.add(item);
-        });
-        phrasesMapFromDexie.forEach((item) => item.id);
-        setShuffledPhraseIDs(newShuffledPhraseIDs);
-      } else {
-        shuffledPhraseIDs.forEach((item) => {
-          newShuffledPhraseIDs.add(item);
-        });
+    const calculatedLearnedIDs: Set<number> = new Set();
+    const calculatedUnlearnedIDs: Set<number> = new Set();
+    phrasesMapFromDexie?.forEach((phrase) => {
+      if (phrase.knowledgeLvl >= 9) {
+        calculatedLearnedIDs.add(phrase.id);
+        return;
       }
-    }
+      calculatedUnlearnedIDs.add(phrase.id);
+    });
 
-    // shuffledPhraseIDs has NOT been calculated before
-    else {
-      const learnedList: number[] = [];
-      const unlearnedList: number[] = [];
-      phrasesMapFromDexie?.forEach((phrase) => {
-        if (phrase.knowledgeLvl >= 9) {
-          learnedList.push(phrase.id);
-          return;
-        }
-        unlearnedList.push(phrase.id);
+    setLearnedIDs((prev) => {
+      const newIDs: Set<number> = new Set();
+      prev.forEach((id) => {
+        if (calculatedLearnedIDs.has(id)) newIDs.add(id);
       });
+      calculatedLearnedIDs.forEach((id) => newIDs.add(id));
+      return isNeedToShuffle ? shuffleSet(newIDs) : newIDs;
+    });
 
-      // TODO add shuffle! shuffleArray()
-
-      unlearnedList.forEach((item) => {
-        newShuffledPhraseIDs.add(item);
+    setUnlearnedIDs((prev) => {
+      const newIDs: Set<number> = new Set();
+      prev.forEach((id) => {
+        if (calculatedUnlearnedIDs.has(id)) newIDs.add(id);
       });
-      learnedList.forEach((item) => {
-        newShuffledPhraseIDs.add(item);
-      });
+      calculatedUnlearnedIDs.forEach((id) => newIDs.add(id));
+      return isNeedToShuffle ? shuffleSet(newIDs) : newIDs;
+    });
 
-      setShuffledPhraseIDs(newShuffledPhraseIDs);
-    }
+    setIsNeedToShuffle(false);
+  }, [isNeedToShuffle, phrasesMapFromDexie]);
 
+  // setPhrases
+  useEffect(() => {
     const newPhrases: Phrases = [];
-    newShuffledPhraseIDs.forEach((id) => {
-      const phrase = phrasesMapFromDexie?.get(id);
-      if (phrase) {
-        newPhrases.push(phrase);
+
+    unlearnedIDs.forEach((id) => {
+      const thisPhrase = phrasesMapFromDexie.get(id);
+      if (thisPhrase) {
+        newPhrases.push(thisPhrase);
+      }
+    });
+    learnedIDs.forEach((id) => {
+      const thisPhrase = phrasesMapFromDexie.get(id);
+      if (thisPhrase) {
+        newPhrases.push(thisPhrase);
       }
     });
 
     setPhrases(newPhrases);
-  }, [phrasesMapFromDexie, shuffledPhraseIDs]);
+  }, [learnedIDs, phrasesMapFromDexie, unlearnedIDs]);
 
   // Set UnlearnedPhrasesCounter
   useEffect(() => {
@@ -221,12 +221,12 @@ export default function Learn() {
 
   // Event listeners
   useEffect(() => {
-    window.addEventListener('keydown', onPhrasesCarouselKeyDown);
+    window.addEventListener('keydown', onKeyDown);
 
     return () => {
-      window.removeEventListener('keydown', onPhrasesCarouselKeyDown);
+      window.removeEventListener('keydown', onKeyDown);
     };
-  }, [onPhrasesCarouselKeyDown]);
+  }, [onKeyDown]);
 
   // Show or hide SYNC button
   useEffect(() => {
@@ -282,14 +282,12 @@ export default function Learn() {
       <FloatButton
         shape="circle"
         style={getFloatButtonPositionStyle([0, 1])}
-        // tooltip="I don't now it"
         icon={<CloseOutlined />}
         onClick={() => changeMyKnownLevel(getNowPhrase(), false)}
       />
       <FloatButton
         shape="circle"
         style={getFloatButtonPositionStyle([1, 1])}
-        // tooltip="I now it"
         icon={<CheckOutlined />}
         onClick={() => changeMyKnownLevel(getNowPhrase(), true)}
       />
