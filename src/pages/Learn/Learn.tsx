@@ -91,7 +91,7 @@ export default function Learn() {
           if (newKnoledgeLvl !== 9) carouselRef.current?.next();
         })
         .catch((error) => {
-          console.log(error);
+          console.error(error);
           messageApi.open({
             type: 'error',
             content: 'Phrase update error!',
