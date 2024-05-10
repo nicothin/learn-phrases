@@ -1,0 +1,15 @@
+.lp-admin-page {
+  height: calc(100vh - 2em);
+}
+
+.lp-admin-page .ant-table:not(.ant-table-empty) td {
+  cursor: pointer;
+}
+
+.lp-admin-page .ant-table:not(.ant-table-empty) td p {
+  margin: 0;
+}
+
+.lp-admin-page .ant-upload-list {
+  display: none !important;
+}

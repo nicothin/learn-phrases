@@ -1,0 +1,59 @@
+.lp-phrase-card {
+  --padding-h: 28px;
+
+  position: relative;
+  width: clamp(360px, 70vw, 860px);
+}
+.lp-phrase-card .ant-collapse-header,
+.lp-phrase-card .ant-collapse-content-box,
+.lp-phrase-card.ant-card .ant-card-body {
+  padding: 0 !important;
+}
+
+.lp-phrase-card__shown {
+  outline: none;
+}
+
+.lp-phrase-card__title p,
+.lp-phrase-card__description p {
+  margin: 0;
+}
+
+.lp-phrase-card__title {
+  margin: 20px var(--padding-h);
+  font-size: clamp(24px, 4vw, 38px);
+  line-height: 1.2;
+}
+
+.lp-phrase-card__description {
+  display: block;
+  margin: 16px var(--padding-h);
+}
+
+.lp-phrase-card__rate {
+  margin: 16px var(--padding-h) 24px var(--padding-h) !important;
+}
+
+.lp-phrase-card__rate.ant-rate .ant-rate-star {
+  margin: 0 0.5em 0 0 !important;
+  padding: 0 !important;
+}
+
+.lp-phrase-card__tags {
+  margin: 0 var(--padding-h) 24px var(--padding-h) !important;
+}
+
+.lp-phrase-card__done-icon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 32px;
+  opacity: 0.2;
+}
+
+.lp-phrase-card__bottom-info {
+  position: absolute;
+  bottom: -26px;
+  right: 8px;
+  margin: 0 !important;
+}
