@@ -16,7 +16,7 @@ import { DEXIE_TABLE_NAME } from '../../constants';
 import { DexieIndexedDB } from '../../services/DexieIndexedDB';
 import { Gist } from '../../services/Gist';
 import { savePhraseLocally } from '../../services/actions';
-import { useSettingsContext } from '../../hooks';
+import { useSettingsContext, useStateContext } from '../../hooks';
 import { Phrase, Phrases } from '../../types';
 import {
   convertToKnowledgeLvl,
@@ -45,6 +45,7 @@ export default function Learn() {
   const [editedPhraseData, setEditedPhraseData] = useState<Partial<Phrase> | null>(null);
 
   const { token, gistId } = useSettingsContext();
+  const { isPhraseEditModalOpen } = useStateContext();
 
   const gist = Gist.getInstance({ token, gistId });
 
@@ -232,12 +233,14 @@ export default function Learn() {
 
   // Event listeners
   useEffect(() => {
+    if (isPhraseEditModalOpen) return;
+
     window.addEventListener('keydown', onKeyDown);
 
     return () => {
       window.removeEventListener('keydown', onKeyDown);
     };
-  }, [onKeyDown]);
+  }, [isPhraseEditModalOpen, onKeyDown]);
 
   // Show or hide SYNC button
   useEffect(() => {

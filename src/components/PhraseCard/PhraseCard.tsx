@@ -25,8 +25,7 @@ export default function PhraseCard({
 }: PhraseCardProps) {
   if (!cardData) return null;
 
-  const onCardHeaderClick = () =>
-    setOpenedCardId((prev) => (prev === undefined ? cardData.id : undefined));
+  const onCardHeaderClick = () => setOpenedCardId(cardData.id);
 
   const item: CollapseProps['items'] = [
     {
