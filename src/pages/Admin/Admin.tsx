@@ -120,6 +120,13 @@ export default function Admin() {
   const onClickExportFileBtn = async () => {
     getPhrasesDTOFromLocal()
       .then((data: PhrasesDTO) => {
+        if (!data.length) {
+          notificationApi.success({
+            message: 'The list of phrases is empty',
+            description: 'There is nothing to export.',
+          });
+          return;
+        }
         const text = JSON.stringify(data);
         const timeStamp = getDate(null, { divider: '-', timeDivider: '_', addTime: true });
 
@@ -302,7 +309,7 @@ export default function Admin() {
 
       <Popconfirm
         placement="left"
-        title="Do you really want to delete all local phrases?"
+        title="Delete all local phrases?"
         onConfirm={onDeleteAllLocalPhrases}
         okText="Yes"
         okButtonProps={{ size: 'middle', danger: true }}
@@ -314,6 +321,7 @@ export default function Admin() {
           shape="circle"
           style={getFloatButtonPositionStyle([0, 5])}
           icon={<DeleteOutlined />}
+          tooltip="Delete all local phrases"
         />
       </Popconfirm>
 
