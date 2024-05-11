@@ -1,19 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { ConfigProvider, theme } from 'antd';
+import { HashRouter as BrowserRouter } from 'react-router-dom';
 
-import './index.css';
+import './main.css';
 
+import { SettingsContextProvider } from './contexts/SettingsContext';
+import { StateContextProvider } from './contexts/StateContext';
 import App from './App';
-
-const { defaultAlgorithm, darkAlgorithm } = theme;
-const mediaQueryObj = window.matchMedia('(prefers-color-scheme: dark)');
-const algorithm = mediaQueryObj.matches ? darkAlgorithm : defaultAlgorithm;
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <ConfigProvider theme={{ algorithm }}>
-      <App />
-    </ConfigProvider>
+    <StateContextProvider>
+      <SettingsContextProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </SettingsContextProvider>
+    </StateContextProvider>
   </React.StrictMode>,
 );

@@ -20,11 +20,10 @@
     "sourceType": "module"
   },
   "rules": {
+    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_ignore" }],
     "no-console": [
       "error",
-      {
-        "allow": ["error"]
-      }
+      { "allow": ["error"] }
     ],
     "no-debugger": "error",
     "import/prefer-default-export": "off",

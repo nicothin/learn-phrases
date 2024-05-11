@@ -1,0 +1,35 @@
+.lp-learn-page__carousel {
+  position: fixed !important; /* hello from Made-in-China-Carousel! */
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.lp-learn-page__carousel .slick-list,
+.lp-learn-page__carousel .slick-track,
+.lp-learn-page__carousel .slick-slide,
+.lp-learn-page__carousel .slick-slide > div {
+  height: 100%;
+}
+
+.lp-learn-page__slide {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  outline: none;
+}
+
+.lp-learn-page__progress {
+  position: fixed;
+  right: 0;
+  top: 0;
+  left: 0;
+}
+.lp-learn-page__progress .ant-progress-inner {
+  display: block;
+}
+.lp-learn-page__progress .ant-progress-outer {
+  display: block;
+}

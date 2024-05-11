@@ -1,91 +1,84 @@
-import { Card, Collapse, Typography, Rate } from 'antd';
+import { Dispatch, SetStateAction } from 'react';
+import { Card, Collapse, Typography, Rate, CollapseProps } from 'antd';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import ReactMarkdown from 'react-markdown';
 
-import './PhraseCard.scss';
+import './PhraseCard.css';
 
 import { Phrase } from '../../types';
+import { renderTags } from '../../utils';
 
-const { Panel } = Collapse;
 const { Text } = Typography;
 
 type PhraseCardProps = {
-  cardData: Phrase;
-  openedCardId: number | undefined;
-  setOpenCardId: (id: number) => void;
-  thisNumber: number;
-  counter: number;
-  counterTotal: number;
+  readonly cardData?: Phrase;
+  readonly activeKey?: number;
+  readonly setOpenedCardId: Dispatch<SetStateAction<number | undefined>>;
 };
 
-const PhraseCard = ({
-  cardData,
-  openedCardId,
-  setOpenCardId,
-  thisNumber,
-  counter,
-  counterTotal,
-}: PhraseCardProps) => {
-  return (
-    <>
-      <Card
-        className={`phrase-card ${cardData.myKnowledgeLvl > 8 ? 'phrase-card--is-known' : ''}`}
-        bordered={false}
-        bodyStyle={{ padding: 0 }}
-      >
-        {cardData.myKnowledgeLvl > 8 && <CheckCircleOutlined className="phrase-card__done-icon" />}
-        <Collapse
-          expandIconPosition="end"
-          activeKey={openedCardId}
-          onChange={() => setOpenCardId(cardData.id)}
-          size="large"
-          ghost
+export default function PhraseCard({ cardData, activeKey, setOpenedCardId }: PhraseCardProps) {
+  if (!cardData) return null;
+
+  const onCardHeaderClick = () =>
+    setOpenedCardId((prev) => (prev === undefined ? cardData.id : undefined));
+
+  const item: CollapseProps['items'] = [
+    {
+      key: cardData.id,
+      label: (
+        <div
+          className="lp-phrase-card__shown"
+          onClick={onCardHeaderClick}
+          role="button"
+          tabIndex={0}
         >
-          <Panel
-            showArrow={false}
-            header={
-              <div className="phrase-card__shown-phrase-wrap">
-                <ReactMarkdown className="phrase-card__shown-phrase">
-                  {cardData.first}
-                </ReactMarkdown>
-                {cardData?.firstD && (
-                  <Text className="phrase-card__shown-phrase-description" type="secondary">
-                    <ReactMarkdown>{cardData?.firstD}</ReactMarkdown>
-                  </Text>
-                )}
-              </div>
-            }
-            key={cardData.id}
-          >
-            <div className="phrase-card__hidden-phrase-wrap">
-              <ReactMarkdown className="phrase-card__hidden-phrase">
-                {cardData.second}
-              </ReactMarkdown>
-              {cardData.secondD && (
-                <Text className="phrase-card__hidden-phrase-description" type="secondary">
-                  <ReactMarkdown>{cardData.secondD}</ReactMarkdown>
-                </Text>
-              )}
+          <ReactMarkdown className="lp-phrase-card__title">{cardData.first}</ReactMarkdown>
 
-              <Rate
-                className="phrase-card__rate"
-                character={<CheckCircleOutlined />}
-                count={9}
-                value={cardData.myKnowledgeLvl}
-                disabled
-              />
-            </div>
-          </Panel>
-        </Collapse>
-      </Card>
+          {cardData?.firstD && (
+            <Text className="lp-phrase-card__description" type="secondary">
+              <ReactMarkdown>{cardData?.firstD}</ReactMarkdown>
+            </Text>
+          )}
 
-      <div className="phrase-card__counter">
-        <Text type="secondary">
-          ID: {cardData.id}. &nbsp; {thisNumber}/{counter} ({counterTotal})
-        </Text>
-      </div>
-    </>
+          {cardData.knowledgeLvl > 8 && (
+            <CheckCircleOutlined className="lp-phrase-card__done-icon" />
+          )}
+        </div>
+      ),
+      children: (
+        <div className="lp-phrase-card__hidden">
+          <ReactMarkdown className="lp-phrase-card__title">{cardData.second}</ReactMarkdown>
+
+          {cardData.secondD && (
+            <Text className="lp-phrase-card__description" type="secondary">
+              <ReactMarkdown>{cardData.secondD}</ReactMarkdown>
+            </Text>
+          )}
+
+          <Rate
+            className="lp-phrase-card__rate"
+            character={<CheckCircleOutlined />}
+            count={9}
+            value={cardData.knowledgeLvl}
+            disabled
+          />
+
+          {cardData?.tags?.length ? (
+            <p className="lp-phrase-card__tags">{renderTags(cardData)}</p>
+          ) : null}
+        </div>
+      ),
+      showArrow: false,
+    },
+  ];
+
+  return (
+    <Card className="lp-phrase-card" bordered={false}>
+      <Collapse items={item} collapsible="header" activeKey={[activeKey ?? 'UNKNOWN']} ghost />
+
+      <p className="lp-phrase-card__bottom-info">
+        <Text type="secondary">ID: {cardData.id}.</Text>
+      </p>
+    </Card>
   );
-};
-
-export default PhraseCard;
+}

@@ -1,3 +1,7 @@
-# Учить фразы
+# Learn phrases 2
 
-Вводим изучаемую фразу, вводим перевод. Набираем несколько фраз и выучиваем их методом интервального повторения.
+todo:
+
+- add service worker to netless learning
+- move taglist to settings
+- save shuffle ti LS

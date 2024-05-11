@@ -1,15 +1,25 @@
-export type Mode = 'edit' | 'learn';
+export type KnowledgeLvl = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 
-export type NotificationType = 'success' | 'info' | 'warning' | 'error';
+export type PhraseDTO = [number, string, string, string, string, KnowledgeLvl, string, string];
+export type PhrasesDTO = PhraseDTO[];
 
 export type Phrase = {
   id: number;
-
   first: string;
-  firstD?: string;
-
+  firstD: string;
   second: string;
-  secondD?: string;
+  secondD: string;
+  knowledgeLvl: KnowledgeLvl;
+  createDate: string;
+  tags: string;
+};
+export type Phrases = Phrase[];
 
-  myKnowledgeLvl: number;
+export type PhrasesFilterFunction = { func: (phrase: Phrase) => boolean };
+
+export type ButtonPositionType = {
+  left?: number;
+  right?: number;
+  top?: number;
+  bottom?: number;
 };
