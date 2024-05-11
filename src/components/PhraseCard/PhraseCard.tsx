@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from 'react';
-import { Card, Collapse, Typography, Rate, CollapseProps } from 'antd';
+import { Card, Collapse, Typography, Rate, CollapseProps, Button } from 'antd';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import ReactMarkdown from 'react-markdown';
 
@@ -14,13 +14,18 @@ type PhraseCardProps = {
   readonly cardData?: Phrase;
   readonly activeKey?: number;
   readonly setOpenedCardId: Dispatch<SetStateAction<number | undefined>>;
+  readonly onEditPhrase: (data: Phrase) => void;
 };
 
-export default function PhraseCard({ cardData, activeKey, setOpenedCardId }: PhraseCardProps) {
+export default function PhraseCard({
+  cardData,
+  activeKey,
+  setOpenedCardId,
+  onEditPhrase,
+}: PhraseCardProps) {
   if (!cardData) return null;
 
-  const onCardHeaderClick = () =>
-    setOpenedCardId((prev) => (prev === undefined ? cardData.id : undefined));
+  const onCardHeaderClick = () => setOpenedCardId(cardData.id);
 
   const item: CollapseProps['items'] = [
     {
@@ -77,7 +82,12 @@ export default function PhraseCard({ cardData, activeKey, setOpenedCardId }: Phr
       <Collapse items={item} collapsible="header" activeKey={[activeKey ?? 'UNKNOWN']} ghost />
 
       <p className="lp-phrase-card__bottom-info">
-        <Text type="secondary">ID: {cardData.id}.</Text>
+        <Text type="secondary">
+          ID: {cardData.id}.
+          <Button type="text" size="small" onClick={() => onEditPhrase(cardData)}>
+            Edit
+          </Button>
+        </Text>
       </p>
     </Card>
   );

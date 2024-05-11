@@ -1,13 +1,25 @@
-import React, { createContext, useState, useMemo, useEffect } from 'react';
+import {
+  createContext,
+  useState,
+  useMemo,
+  useEffect,
+  Dispatch,
+  SetStateAction,
+  ReactNode,
+  FC,
+} from 'react';
 
 type StateContextType = {
   isTabActive: boolean;
+  isPhraseEditModalOpen: boolean;
+  setIsPhraseEditModalOpen: Dispatch<SetStateAction<boolean>>;
 };
 
 const StateContext = createContext<StateContextType | null>(null);
 
-export const StateContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const StateContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [isTabActive, setIsTabActive] = useState(true);
+  const [isPhraseEditModalOpen, setIsPhraseEditModalOpen] = useState(false);
 
   useEffect(() => {
     const onFocus = () => {
@@ -29,8 +41,10 @@ export const StateContextProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const contextValue = useMemo(
     () => ({
       isTabActive,
+      isPhraseEditModalOpen,
+      setIsPhraseEditModalOpen,
     }),
-    [isTabActive],
+    [isTabActive, isPhraseEditModalOpen],
   );
 
   return <StateContext.Provider value={contextValue}>{children}</StateContext.Provider>;

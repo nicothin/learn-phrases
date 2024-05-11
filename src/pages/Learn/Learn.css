@@ -32,4 +32,12 @@
 }
 .lp-learn-page__progress .ant-progress-outer {
   display: block;
+  padding: 0 !important;
+}
+.lp-learn-page__progress .ant-progress-text {
+  display: block;
+  width: auto !important;
+  margin: 0 !important;
+  padding: 8px !important;
+  opacity: 0.6;
 }

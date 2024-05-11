@@ -10,6 +10,7 @@ import { Phrase } from '../../types';
 import { DATE_FORMAT, TAGS } from '../../constants';
 import { savePhraseLocally, deletePhraseLocally } from '../../services/actions';
 import { convertToKnowledgeLvl } from '../../utils';
+import { useStateContext } from '../../hooks';
 
 const { TextArea } = Input;
 const { Text } = Typography;
@@ -29,8 +30,12 @@ export default function EditPhraseModal({
   notificationApi,
 }: PhraseModalProps) {
   const [form] = Form.useForm();
+
+  const { setIsPhraseEditModalOpen } = useStateContext();
+
   const firstInputRef = useRef<InputRef>(null);
 
+  const [isOpen, setIsOpen] = useState(false);
   const [knowledgeLvl, setKnowledgeLvl] = useState(0);
   const [isFormValid, setIsFormValid] = useState(false);
 
@@ -128,10 +133,20 @@ export default function EditPhraseModal({
     </Flex>
   );
 
-  // Fill knowledgeLvl data
+  // Set isOpen & Fill knowledgeLvl data
   useEffect(() => {
+    setIsOpen(!!editedPhraseData);
     setKnowledgeLvl(convertToKnowledgeLvl(editedPhraseData?.knowledgeLvl));
   }, [editedPhraseData]);
+
+  // setIsPhraseEditModalOpen
+  useEffect(() => {
+    if (setIsPhraseEditModalOpen) setIsPhraseEditModalOpen(!!editedPhraseData);
+
+    return () => {
+      if (setIsPhraseEditModalOpen) setIsPhraseEditModalOpen(false);
+    };
+  }, [editedPhraseData, setIsPhraseEditModalOpen]);
 
   // First once validate form
   useEffect(() => {
@@ -148,7 +163,7 @@ export default function EditPhraseModal({
 
   return (
     <Modal
-      open={!!editedPhraseData}
+      open={isOpen}
       title={title}
       cancelText="Cancel"
       onCancel={onThisModalCancel}

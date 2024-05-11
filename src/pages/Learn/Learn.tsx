@@ -16,7 +16,7 @@ import { DEXIE_TABLE_NAME } from '../../constants';
 import { DexieIndexedDB } from '../../services/DexieIndexedDB';
 import { Gist } from '../../services/Gist';
 import { savePhraseLocally } from '../../services/actions';
-import { useSettingsContext } from '../../hooks';
+import { useSettingsContext, useStateContext } from '../../hooks';
 import { Phrase, Phrases } from '../../types';
 import {
   convertToKnowledgeLvl,
@@ -28,6 +28,7 @@ import useArrayNavigator from '../../hooks/useArrayNavigator';
 import PhraseCard from '../../components/PhraseCard/PhraseCard';
 import ImportFromGistFloatButton from '../../components/ImportFromGistFloatButton/ImportFromGistFloatButton';
 import ExportToGistFloatButton from '../../components/ExportToGistFloatButton/ExportToGistFloatButton';
+import EditPhraseModal from '../../components/EditPhraseModal/EditPhraseModal';
 
 export default function Learn() {
   const [modalApi, contextModal] = Modal.useModal();
@@ -41,8 +42,10 @@ export default function Learn() {
   const [phrasesMapFromDexie, setPhrasesMapFromDexie] = useState<Map<number, Phrase>>(new Map());
   const [unlearnedPhrasesCounter, setUnlearnedPhrasesCounter] = useState(0);
   const [progressPercent, setProgressPercent] = useState(0);
+  const [editedPhraseData, setEditedPhraseData] = useState<Partial<Phrase> | null>(null);
 
   const { token, gistId } = useSettingsContext();
+  const { isPhraseEditModalOpen } = useStateContext();
 
   const gist = Gist.getInstance({ token, gistId });
 
@@ -115,6 +118,10 @@ export default function Learn() {
     [changeMyKnownLevel, getNowPhrase],
   );
 
+  const onEditPhrase = (phrase: Phrase) => {
+    setEditedPhraseData(phrase);
+  };
+
   const getSlideContent = (slideNumber: number) => {
     const cardData: Record<number, Record<number, Phrase | undefined>> = {
       0: {
@@ -137,7 +144,12 @@ export default function Learn() {
     const phrase = cardData[slideNumber][sliderNowIndex];
 
     return (
-      <PhraseCard cardData={phrase} activeKey={openedCardId} setOpenedCardId={setOpenedCardId} />
+      <PhraseCard
+        cardData={phrase}
+        activeKey={openedCardId}
+        setOpenedCardId={setOpenedCardId}
+        onEditPhrase={onEditPhrase}
+      />
     );
   };
 
@@ -221,12 +233,14 @@ export default function Learn() {
 
   // Event listeners
   useEffect(() => {
+    if (isPhraseEditModalOpen) return;
+
     window.addEventListener('keydown', onKeyDown);
 
     return () => {
       window.removeEventListener('keydown', onKeyDown);
     };
-  }, [onKeyDown]);
+  }, [isPhraseEditModalOpen, onKeyDown]);
 
   // Show or hide SYNC button
   useEffect(() => {
@@ -312,9 +326,17 @@ export default function Learn() {
         className="lp-learn-page__progress"
         percent={progressPercent}
         strokeLinecap="butt"
-        showInfo={false}
+        format={(percent) => `${percent?.toFixed(1)}%`}
         size="small"
       />
+
+      {editedPhraseData && (
+        <EditPhraseModal
+          editedPhraseData={editedPhraseData}
+          setEditedPhraseData={setEditedPhraseData}
+          notificationApi={notificationApi}
+        />
+      )}
 
       {contextMessage}
       {contextNotification}

@@ -28,7 +28,11 @@ export class Gist {
   }
 
   public static getInstance(config: GistConfig): Gist {
-    if (!Gist.instance) {
+    if (
+      !Gist.instance ||
+      config.token !== Gist.instance.token ||
+      config.gistId !== Gist.instance.gistId
+    ) {
       Gist.instance = new Gist(config);
     }
     return Gist.instance;
