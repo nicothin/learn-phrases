@@ -54,8 +54,6 @@ export default function Admin() {
 
   const gist = Gist.getInstance({ token, gistId });
 
-  // const [gist, setGist] = useState<Gist>(Gist.getInstance({ token, gistId }));
-
   const [filter, setFilter] = useState<PhrasesFilterFunction>(DEXIE_DEFAULT_FILTER_FUNC_OBJ);
   const [paginationPage, setPaginationPage] = useState(1);
   const [phrasesCounterStart, setPhrasesCounterStart] = useState(0);
@@ -201,11 +199,6 @@ export default function Admin() {
         });
       });
   };
-
-  // // Set actual gistData
-  // useEffect(() => {
-  //   setGist(Gist.getInstance({ token, gistId }));
-  // }, [token, gistId]);
 
   // Set PhrasesCounter
   useEffect(() => {
