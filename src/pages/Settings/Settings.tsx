@@ -1,5 +1,14 @@
 import { useState } from 'react';
-import { Button, Form, Input, Radio, RadioChangeEvent, Space, Typography } from 'antd';
+import {
+  Button,
+  Form,
+  Input,
+  notification,
+  Radio,
+  RadioChangeEvent,
+  Space,
+  Typography,
+} from 'antd';
 import { useForm } from 'antd/es/form/Form';
 
 import { SETTING_KEYS, THEME } from '../../enums';
@@ -15,6 +24,7 @@ interface FieldData {
 
 export default function Settings() {
   const [form] = useForm();
+  const [notificationApi, contextNotification] = notification.useNotification();
 
   const { token, setToken, gistId, setGistId, preferredTheme, setPreferredTheme } =
     useSettingsContext();
@@ -30,8 +40,14 @@ export default function Settings() {
   };
 
   const onSettingsSave = (values: Record<string, string>) => {
-    setToken(values[SETTING_KEYS.TOKEN]);
-    setGistId(values[SETTING_KEYS.GIST_ID]);
+    Promise.all([
+      setToken(values[SETTING_KEYS.TOKEN]),
+      setGistId(values[SETTING_KEYS.GIST_ID]),
+    ]).then(() => {
+      notificationApi.success({
+        message: 'Gist settings saved',
+      });
+    });
   };
 
   const onPreferredThemeChange = (e: RadioChangeEvent) => {
@@ -45,7 +61,7 @@ export default function Settings() {
     <>
       <h1>Settings</h1>
 
-      <h2>Synchronization with gist</h2>
+      <h2>Synchronization</h2>
 
       <p>
         This is a serverless project. By default, all added words/phrases are saved in the browser storage. But you can specify data for accessing <a href="https://gist.github.com/" rel="noreferrer">gist</a> and then the data will be periodically saved to it.
@@ -106,6 +122,8 @@ export default function Settings() {
           </Radio.Group>
         </Form.Item>
       </Form>
+
+      {contextNotification}
     </>
   );
 }

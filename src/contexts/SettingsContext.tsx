@@ -4,9 +4,9 @@ import { SETTING_KEYS, THEME } from '../enums';
 
 type SettingsContextType = {
   token: string;
-  setToken: (text: string) => void;
+  setToken: (text: string) => Promise<void>;
   gistId: string;
-  setGistId: (text: string) => void;
+  setGistId: (text: string) => Promise<void>;
   preferredTheme: THEME | undefined;
   setPreferredTheme: (theme: THEME | undefined) => void;
 };
@@ -21,17 +21,31 @@ export const SettingsContextProvider: React.FC<{ children: React.ReactNode }> = 
   );
 
   const onSetToken = useCallback(
-    (newValue: string) => {
-      localStorage.setItem(SETTING_KEYS.TOKEN, newValue);
-      setToken(newValue);
+    (newValue: string): Promise<void> => {
+      return new Promise((resolve, reject) => {
+        try {
+          localStorage.setItem(SETTING_KEYS.TOKEN, newValue);
+          setToken(newValue);
+          resolve();
+        } catch (error) {
+          reject(error instanceof Error ? error : new Error('Unknown error'));
+        }
+      });
     },
     [setToken],
   );
 
   const onSetGistId = useCallback(
-    (newValue: string) => {
-      localStorage.setItem(SETTING_KEYS.GIST_ID, newValue);
-      setGistId(newValue);
+    (newValue: string): Promise<void> => {
+      return new Promise((resolve, reject) => {
+        try {
+          localStorage.setItem(SETTING_KEYS.GIST_ID, newValue);
+          setGistId(newValue);
+          resolve();
+        } catch (error) {
+          reject(error instanceof Error ? error : new Error('Unknown error'));
+        }
+      });
     },
     [setGistId],
   );

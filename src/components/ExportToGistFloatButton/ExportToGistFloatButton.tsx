@@ -30,10 +30,13 @@ export default function ExportToGistFloatButton({
             notificationApi.success({
               message: 'Export to gist completed',
               description: (
-                <div>
-                  The export to <a href={res.data.html_url}>this gist</a> has been successfully
-                  completed.
-                </div>
+                <>
+                  The export to{' '}
+                  <a href={res.data.html_url} target="_blank">
+                    this gist
+                  </a>{' '}
+                  has been successfully completed.
+                </>
               ),
             });
           })
