@@ -16,7 +16,12 @@ import { DEXIE_TABLE_NAME } from '../../constants';
 import { DexieIndexedDB } from '../../services/DexieIndexedDB';
 import { Gist } from '../../services/Gist';
 import { savePhraseLocally } from '../../services/actions';
-import { useSettingsContext, useStateContext } from '../../hooks';
+import {
+  useSettingsContext,
+  useStateContext,
+  useExportToGistWhen100Percent,
+  useArrayNavigator,
+} from '../../hooks';
 import { Phrase, Phrases } from '../../types';
 import {
   convertToKnowledgeLvl,
@@ -24,7 +29,6 @@ import {
   onSliderBeforeChange,
   shuffleSet,
 } from '../../utils';
-import useArrayNavigator from '../../hooks/useArrayNavigator';
 import PhraseCard from '../../components/PhraseCard/PhraseCard';
 import ImportFromGistFloatButton from '../../components/ImportFromGistFloatButton/ImportFromGistFloatButton';
 import ExportToGistFloatButton from '../../components/ExportToGistFloatButton/ExportToGistFloatButton';
@@ -42,7 +46,9 @@ export default function Learn() {
   const [phrasesMapFromDexie, setPhrasesMapFromDexie] = useState<Map<number, Phrase>>(new Map());
   const [unlearnedPhrasesCounter, setUnlearnedPhrasesCounter] = useState(0);
   const [progressPercent, setProgressPercent] = useState(0);
+  const [commonProgressPercent, setCommonProgressPercent] = useState(0);
   const [editedPhraseData, setEditedPhraseData] = useState<Partial<Phrase> | null>(null);
+  const [isGoToNext, setIsGoToNext] = useState(false);
 
   const { token, gistId } = useSettingsContext();
   const { isPhraseEditModalOpen } = useStateContext();
@@ -64,18 +70,17 @@ export default function Learn() {
   }, []);
 
   const {
+    prevIndex: prevPhraseIndex,
     nowIndex: nowPrasesIndex,
-    next: goToNextPhrase,
-    prev: goToPrevPhrase,
-    getNow: getNowPhrase,
-    getNext: getNextPhrase,
-    getPrev: getPrevPhrase,
+    nextIndex: nextPhraseIndex,
+    goToNext: goToNextPhrase,
+    goToPrev: goToPrevPhrase,
   } = useArrayNavigator(phrases);
 
   const {
     nowIndex: sliderNowIndex,
-    next: goToNextSlide,
-    prev: goToPrevSlide,
+    goToNext: goToNextSlide,
+    goToPrev: goToPrevSlide,
   } = useArrayNavigator([0, 1, 2]);
 
   const changeMyKnownLevel = useCallback(
@@ -91,7 +96,7 @@ export default function Learn() {
 
       savePhraseLocally(newPhrase)
         .then(() => {
-          if (newKnoledgeLvl !== 9) carouselRef.current?.next();
+          carouselRef.current?.next();
         })
         .catch((error) => {
           console.error(error);
@@ -107,15 +112,15 @@ export default function Learn() {
 
   const onKeyDown = useCallback(
     (event: KeyboardEvent) => {
-      if (event.key === 'ArrowDown') setOpenedCardId(getNowPhrase()?.id);
+      if (event.key === 'ArrowDown') setOpenedCardId(phrases[nowPrasesIndex]?.id);
       if (event.key === 'ArrowUp' || event.key === 'ArrowRight' || event.key === 'ArrowLeft')
         setOpenedCardId(undefined);
       if (event.key === 'ArrowRight') carouselRef.current?.next();
       if (event.key === 'ArrowLeft') carouselRef.current?.prev();
-      if (event.key === 'Enter') changeMyKnownLevel(getNowPhrase(), true);
-      if (event.key === 'Escape') changeMyKnownLevel(getNowPhrase(), false);
+      if (event.key === 'Enter') changeMyKnownLevel(phrases[nowPrasesIndex], true);
+      if (event.key === 'Escape') changeMyKnownLevel(phrases[nowPrasesIndex], false);
     },
-    [changeMyKnownLevel, getNowPhrase],
+    [changeMyKnownLevel, nowPrasesIndex, phrases],
   );
 
   const onEditPhrase = (phrase: Phrase) => {
@@ -125,19 +130,19 @@ export default function Learn() {
   const getSlideContent = (slideNumber: number) => {
     const cardData: Record<number, Record<number, Phrase | undefined>> = {
       0: {
-        0: getNowPhrase(),
-        1: getPrevPhrase(),
-        2: getNextPhrase(),
+        0: phrases[nowPrasesIndex],
+        1: phrases[prevPhraseIndex],
+        2: phrases[nextPhraseIndex],
       },
       1: {
-        0: getNextPhrase(),
-        1: getNowPhrase(),
-        2: getPrevPhrase(),
+        0: phrases[nextPhraseIndex],
+        1: phrases[nowPrasesIndex],
+        2: phrases[prevPhraseIndex],
       },
       2: {
-        0: getPrevPhrase(),
-        1: getNextPhrase(),
-        2: getNowPhrase(),
+        0: phrases[prevPhraseIndex],
+        1: phrases[nextPhraseIndex],
+        2: phrases[nowPrasesIndex],
       },
     };
 
@@ -229,7 +234,8 @@ export default function Learn() {
       nowPrasesIndex >= unlearnedPhrasesCounter ? unlearnedPhrasesCounter : nowPrasesIndex;
     const percent = (nowUnlearnPrasesIndex * 100) / unlearnedPhrasesCounter;
     setProgressPercent(percent);
-  }, [nowPrasesIndex, unlearnedPhrasesCounter]);
+    setCommonProgressPercent((nowPrasesIndex * 100) / phrases.length);
+  }, [nowPrasesIndex, phrases.length, unlearnedPhrasesCounter]);
 
   // Event listeners
   useEffect(() => {
@@ -247,6 +253,18 @@ export default function Learn() {
     setCanSynchronized(!!token?.trim() && !!gistId?.trim());
   }, [gistId, token]);
 
+  // To SYNC or not to SYNC now?
+  useExportToGistWhen100Percent({
+    isGoToNext,
+    unlearnedIDs,
+    learnedIDs,
+    phrases,
+    prevPhraseIndex,
+    nowPrasesIndex,
+    nextPhraseIndex,
+    notificationApi,
+  });
+
   return (
     <div className="lp-learn-page">
       <Carousel
@@ -259,10 +277,12 @@ export default function Learn() {
             onToNext: () => {
               goToNextPhrase();
               goToNextSlide();
+              setIsGoToNext(true);
             },
             onToPrev: () => {
               goToPrevPhrase();
               goToPrevSlide();
+              setIsGoToNext(false);
             },
           })
         }
@@ -285,7 +305,7 @@ export default function Learn() {
         shape="circle"
         style={getFloatButtonPositionStyle([1, 0])}
         icon={<ArrowDownOutlined />}
-        onClick={() => setOpenedCardId(getNowPhrase()?.id)}
+        onClick={() => setOpenedCardId(phrases[nowPrasesIndex]?.id)}
       />
       <FloatButton
         shape="circle"
@@ -297,13 +317,13 @@ export default function Learn() {
         shape="circle"
         style={getFloatButtonPositionStyle([0, 1])}
         icon={<CloseOutlined />}
-        onClick={() => changeMyKnownLevel(getNowPhrase(), false)}
+        onClick={() => changeMyKnownLevel(phrases[nowPrasesIndex], false)}
       />
       <FloatButton
         shape="circle"
         style={getFloatButtonPositionStyle([1, 1])}
         icon={<CheckOutlined />}
-        onClick={() => changeMyKnownLevel(getNowPhrase(), true)}
+        onClick={() => changeMyKnownLevel(phrases[nowPrasesIndex], true)}
       />
 
       {canSynchronized && (
@@ -322,6 +342,13 @@ export default function Learn() {
         </>
       )}
 
+      <Progress
+        className="lp-learn-page__common-progress"
+        percent={commonProgressPercent}
+        showInfo={false}
+        strokeLinecap="butt"
+        size="small"
+      />
       <Progress
         className="lp-learn-page__progress"
         percent={progressPercent}

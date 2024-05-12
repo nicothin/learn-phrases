@@ -8,7 +8,7 @@ type GistConfig = {
   gistId?: string;
 };
 
-type OctokitResponse = {
+export type OctokitResponse = {
   data: {
     html_url?: string;
   };
@@ -16,18 +16,24 @@ type OctokitResponse = {
 };
 
 export class Gist {
-  private static instance: Gist;
+  private static instance: Gist | null = null;
   private token: string;
   private octokit: Octokit;
   private gistId: string;
 
   private constructor(config: GistConfig) {
-    this.token = config.token ?? '';
-    this.gistId = config.gistId ?? '';
+    if (!config.token || !config.gistId) {
+      throw new Error('Token and gistId are required');
+    }
+    this.token = config.token;
+    this.gistId = config.gistId;
     this.octokit = new Octokit({ auth: this.token });
   }
 
-  public static getInstance(config: GistConfig): Gist {
+  public static getInstance(config: GistConfig): Gist | null {
+    if (!config.token || !config.gistId) {
+      return null;
+    }
     if (
       !Gist.instance ||
       config.token !== Gist.instance.token ||
@@ -39,10 +45,6 @@ export class Gist {
   }
 
   public async getAllPhrases(): Promise<PhrasesDTO> {
-    if (!this.token || !this.gistId) {
-      throw new Error('Token or gistID not specified');
-    }
-
     const response = await this.octokit.request('GET /gists/{gist_id}', { gist_id: this.gistId });
 
     if (!response?.data?.files?.[FILE_NAMES.PHRASES]) {
@@ -60,10 +62,6 @@ export class Gist {
   }
 
   public async setAllPhrases(phrasesDTO: PhrasesDTO): Promise<OctokitResponse> {
-    if (!this.token || !this.gistId) {
-      throw new Error('Token or gistID not specified');
-    }
-
     if (!Array.isArray(phrasesDTO) || !phrasesDTO?.length) {
       throw new Error('Saved phrases is not array or is empty');
     }

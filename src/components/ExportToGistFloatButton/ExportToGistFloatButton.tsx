@@ -9,7 +9,7 @@ import { getPhrasesDTOFromLocal, savePhrasesDTOToGist } from '../../services/act
 
 type ExportToGistFloatButtonProps = {
   readonly buttonPosition: ButtonPositionType;
-  readonly gist: Gist;
+  readonly gist: Gist | null;
   readonly notificationApi: NotificationInstance;
 };
 
