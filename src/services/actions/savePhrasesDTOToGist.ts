@@ -1,10 +1,16 @@
 import { PhrasesDTO } from '../../types';
-import { Gist } from '../Gist';
+import { Gist, OctokitResponse } from '../Gist';
 
 export const savePhrasesDTOToGist = ({
   gist,
   phrasesDTO,
 }: {
-  gist: Gist;
+  gist: Gist | null;
   phrasesDTO: PhrasesDTO;
-}) => gist.setAllPhrases(phrasesDTO);
+}): Promise<OctokitResponse> => {
+  if (!gist) {
+    return Promise.reject(new Error('Gist instance is null'));
+  }
+
+  return gist.setAllPhrases(phrasesDTO);
+};

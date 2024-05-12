@@ -24,17 +24,13 @@ import { useLiveQuery } from 'dexie-react-hooks';
 
 import './Admin.css';
 
-import { Phrase, PhrasesDTO, PhrasesFilterFunction } from '../../types';
+import { Phrase, PhrasesFilterFunction } from '../../types';
 import { DEXIE_DEFAULT_FILTER_FUNC_OBJ, DEXIE_TABLE_NAME } from '../../constants';
 import { useSettingsContext } from '../../hooks';
-import { getDate, getFloatButtonPositionStyle } from '../../utils';
+import { getFloatButtonPositionStyle } from '../../utils';
 import { DexieIndexedDB } from '../../services/DexieIndexedDB';
 import { Gist } from '../../services/Gist';
-import {
-  deleteAllPhrasesLocally,
-  getPhrasesDTOFromLocal,
-  startDownloadFile,
-} from '../../services/actions';
+import { deleteAllPhrasesLocally, exportAndDownloadPhrases } from '../../services/actions';
 import { importPhrases } from '../../services/actions/importPhrases';
 import PhrasesTable from '../../components/PhrasesTable/PhrasesTable';
 import EditPhraseModal from '../../components/EditPhraseModal/EditPhraseModal';
@@ -115,35 +111,6 @@ export default function Admin() {
 
   const onRowClick = (thisPhrase: Phrase) => {
     setEditedPhraseData(thisPhrase);
-  };
-
-  const onClickExportFileBtn = async () => {
-    getPhrasesDTOFromLocal()
-      .then((data: PhrasesDTO) => {
-        if (!data.length) {
-          notificationApi.success({
-            message: 'The list of phrases is empty',
-            description: 'There is nothing to export.',
-          });
-          return;
-        }
-        const text = JSON.stringify(data);
-        const timeStamp = getDate(null, { divider: '-', timeDivider: '_', addTime: true });
-
-        startDownloadFile(`phrases_${timeStamp}.json`, text);
-
-        notificationApi.success({
-          message: 'Export completed',
-          description: 'Look in the Downloads folder.',
-        });
-      })
-      .catch((error) => {
-        console.error(error);
-        notificationApi.error({
-          message: 'Export failed',
-          description: String(error),
-        });
-      });
   };
 
   const onClickAddPhraseBtn = () => {
@@ -303,7 +270,7 @@ export default function Admin() {
         shape="circle"
         style={getFloatButtonPositionStyle([0, 2])}
         icon={<SaveOutlined />}
-        onClick={onClickExportFileBtn}
+        onClick={() => exportAndDownloadPhrases({ notificationApi })}
         tooltip="Export phrases to file"
       />
 

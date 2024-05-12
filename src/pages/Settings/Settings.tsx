@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import {
   Button,
+  Checkbox,
   Form,
   Input,
   notification,
@@ -26,8 +27,16 @@ export default function Settings() {
   const [form] = useForm();
   const [notificationApi, contextNotification] = notification.useNotification();
 
-  const { token, setToken, gistId, setGistId, preferredTheme, setPreferredTheme } =
-    useSettingsContext();
+  const {
+    token,
+    setToken,
+    gistId,
+    setGistId,
+    isSyncWhen100percent,
+    setIsSyncWhen100percent,
+    preferredTheme,
+    setPreferredTheme,
+  } = useSettingsContext();
 
   const [disabledSaveSyncSettings, setDisabledSaveSyncSettings] = useState(true);
   const [preferredThemeRadioValue, setPreferredThemeRadioValue] = useState(preferredTheme);
@@ -40,9 +49,11 @@ export default function Settings() {
   };
 
   const onSettingsSave = (values: Record<string, string>) => {
+    console.log('values', values);
     Promise.all([
       setToken(values[SETTING_KEYS.TOKEN]),
       setGistId(values[SETTING_KEYS.GIST_ID]),
+      setIsSyncWhen100percent(!!values[SETTING_KEYS.SYNC_WHEN_100_PERCENT]),
     ]).then(() => {
       notificationApi.success({
         message: 'Gist settings saved',
@@ -73,6 +84,7 @@ export default function Settings() {
         initialValues={{
           [SETTING_KEYS.TOKEN]: token,
           [SETTING_KEYS.GIST_ID]: gistId,
+          [SETTING_KEYS.SYNC_WHEN_100_PERCENT]: isSyncWhen100percent,
         }}
         onFinish={onSettingsSave}
         onFieldsChange={onFieldsChange}
@@ -85,13 +97,14 @@ export default function Settings() {
           <Text type="secondary">
             Gist is a service from <a href="https://github.com/">github</a> for storing small sets of files with a history of changes. It's free.
             <br />
-            You can read about tokens <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens">here</a>. This project stores your token ONLY in your browser. The token is used only for gistrequests.
+            You can read about tokens <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens">here</a>. This project stores your token ONLY in your browser. The token is used only for requests to gist.github.com.
             <br />
             You can create your own token <a href="https://github.com/settings/tokens">here</a> (the token must allow to work with gists).
           </Text>
         </Form.Item>
 
         <Form.Item label="Gist ID">
+          <p style={{ marginTop: 0 }}><a href="https://gist.github.com/" target="_blank">Create a new gist</a> wiht file <code>phrases.json</code> and use it to synchronization.</p>
           <Form.Item name={SETTING_KEYS.GIST_ID} rules={[{ validator: validateNoWhitespaceField }]} noStyle>
             <Input />
           </Form.Item>
@@ -100,6 +113,10 @@ export default function Settings() {
             <br />
             For example, if the URL is <code>https://gist.github.com/nicothin/ad14d17a04eec0d1217309e54f7c312e</code>, then the ID is <code>ad14d17a04eec0d1217309e54f7c312e</code>
           </Text>
+        </Form.Item>
+
+        <Form.Item name={SETTING_KEYS.SYNC_WHEN_100_PERCENT} valuePropName="checked">
+          <Checkbox>Synchronization with gist when 100% viewing of unlearned phrases is reached (backup to file first).</Checkbox>
         </Form.Item>
 
         <Form.Item>

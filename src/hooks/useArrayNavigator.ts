@@ -1,25 +1,22 @@
 import { useState } from 'react';
 
-type ArrayNavigatorResult<T> = {
+type ArrayNavigatorResult = {
   nowIndex: number;
   nextIndex: number;
   prevIndex: number;
-  next: () => void;
-  prev: () => void;
-  getNow: () => T | undefined;
-  getNext: () => T | undefined;
-  getPrev: () => T | undefined;
+  goToNext: () => void;
+  goToPrev: () => void;
 };
 
-const useArrayNavigator = <T>(array: T[]): ArrayNavigatorResult<T> => {
+export const useArrayNavigator = <T>(array: T[]): ArrayNavigatorResult => {
   const [nowIndex, setNowIndex] = useState<number>(0);
 
-  const next = () => {
+  const goToNext = () => {
     const nextIndex = nowIndex === array.length - 1 ? 0 : nowIndex + 1;
     setNowIndex(nextIndex);
   };
 
-  const prev = () => {
+  const goToPrev = () => {
     const prevIndex = nowIndex === 0 ? array.length - 1 : nowIndex - 1;
     setNowIndex(prevIndex);
   };
@@ -27,28 +24,11 @@ const useArrayNavigator = <T>(array: T[]): ArrayNavigatorResult<T> => {
   const nextIndex = nowIndex === array.length - 1 ? 0 : nowIndex + 1;
   const prevIndex = nowIndex === 0 ? array.length - 1 : nowIndex - 1;
 
-  const getNow = () => {
-    return array[nowIndex];
-  };
-
-  const getNext = () => {
-    return array[nextIndex];
-  };
-
-  const getPrev = () => {
-    return array[prevIndex];
-  };
-
   return {
     nowIndex,
     nextIndex,
     prevIndex,
-    next,
-    prev,
-    getNow,
-    getNext,
-    getPrev,
+    goToNext,
+    goToPrev,
   };
 };
-
-export default useArrayNavigator;
