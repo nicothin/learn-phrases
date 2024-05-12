@@ -353,7 +353,7 @@ export default function Learn() {
         className="lp-learn-page__progress"
         percent={progressPercent}
         strokeLinecap="butt"
-        showInfo={false}
+        format={(percent) => `${percent?.toFixed(1)}%`}
         size="small"
       />
 
