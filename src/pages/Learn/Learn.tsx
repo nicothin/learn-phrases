@@ -46,6 +46,7 @@ export default function Learn() {
   const [phrasesMapFromDexie, setPhrasesMapFromDexie] = useState<Map<number, Phrase>>(new Map());
   const [unlearnedPhrasesCounter, setUnlearnedPhrasesCounter] = useState(0);
   const [progressPercent, setProgressPercent] = useState(0);
+  const [commonProgressPercent, setCommonProgressPercent] = useState(0);
   const [editedPhraseData, setEditedPhraseData] = useState<Partial<Phrase> | null>(null);
   const [isGoToNext, setIsGoToNext] = useState(false);
 
@@ -95,7 +96,7 @@ export default function Learn() {
 
       savePhraseLocally(newPhrase)
         .then(() => {
-          if (newKnoledgeLvl !== 9) carouselRef.current?.next();
+          carouselRef.current?.next();
         })
         .catch((error) => {
           console.error(error);
@@ -233,7 +234,8 @@ export default function Learn() {
       nowPrasesIndex >= unlearnedPhrasesCounter ? unlearnedPhrasesCounter : nowPrasesIndex;
     const percent = (nowUnlearnPrasesIndex * 100) / unlearnedPhrasesCounter;
     setProgressPercent(percent);
-  }, [nowPrasesIndex, unlearnedPhrasesCounter]);
+    setCommonProgressPercent((nowPrasesIndex * 100) / phrases.length);
+  }, [nowPrasesIndex, phrases.length, unlearnedPhrasesCounter]);
 
   // Event listeners
   useEffect(() => {
@@ -341,10 +343,17 @@ export default function Learn() {
       )}
 
       <Progress
+        className="lp-learn-page__common-progress"
+        percent={commonProgressPercent}
+        showInfo={false}
+        strokeLinecap="butt"
+        size="small"
+      />
+      <Progress
         className="lp-learn-page__progress"
         percent={progressPercent}
         strokeLinecap="butt"
-        format={(percent) => `${percent?.toFixed(1)}%`}
+        showInfo={false}
         size="small"
       />
 

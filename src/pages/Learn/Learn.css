@@ -21,23 +21,23 @@
   outline: none;
 }
 
-.lp-learn-page__progress {
+.lp-learn-page__common-progress {
   position: fixed;
   right: 0;
   top: 0;
   left: 0;
 }
-.lp-learn-page__progress .ant-progress-inner {
+
+.lp-learn-page__progress {
+  position: fixed;
+  right: 0;
+  top: 6px;
+  left: 0;
+}
+.lp-learn-page .ant-progress-inner {
   display: block;
 }
-.lp-learn-page__progress .ant-progress-outer {
+.lp-learn-page .ant-progress-outer {
   display: block;
   padding: 0 !important;
-}
-.lp-learn-page__progress .ant-progress-text {
-  display: block;
-  width: auto !important;
-  margin: 0 !important;
-  padding: 8px !important;
-  opacity: 0.6;
 }
