@@ -138,7 +138,7 @@ export default function Admin() {
           throw Error(errorText);
         }
 
-        importPhrases({ newPhrasesDTO, notificationApi, modalApi });
+        importPhrases({ newPhrasesDTO, notificationApi });
       } catch (error) {
         const errorText = 'The imported file does not contain phrases.';
         console.error(errorText, error);

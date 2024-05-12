@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { NotificationInstance } from 'antd/es/notification/interface';
 
-import { Phrases } from '../types';
+import { Phrases, PhrasesDTO } from '../types';
 import { Gist } from '../services/Gist';
 import { useSettingsContext } from './useSettingsContext';
 import { getPhrasesDTOFromLocal, savePhrasesDTOToGist } from '../services/actions';
