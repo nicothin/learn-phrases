@@ -22,7 +22,7 @@ export default function About() {
 
       <ul>
         <li>Author: <a href="https://nicothin.pro/">Nikolay Gromov</a>.</li>
-        <li>Github repository for this project: <a href="https://github.com/nicothin/learnphrases2">github.com/nicothin/learnphrases2</a></li>
+        <li>Github repository for this project: <a href="https://github.com/nicothin/learn-phrases">github.com/nicothin/learn-phrases</a></li>
       </ul>
 
       <h2>Thanx</h2>
