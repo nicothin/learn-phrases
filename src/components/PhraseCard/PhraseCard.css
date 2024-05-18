@@ -30,8 +30,8 @@
   margin: 16px var(--padding-h);
 }
 
-.lp-phrase-card__rate {
-  margin: 16px var(--padding-h) 24px var(--padding-h) !important;
+.ant-typography ul.lp-phrase-card__rate {
+  margin: 16px var(--padding-h) 24px var(--padding-h);
 }
 
 .lp-phrase-card__rate.ant-rate .ant-rate-star {
@@ -39,15 +39,15 @@
   padding: 0 !important;
 }
 
-.lp-phrase-card__tags {
-  margin: 0 var(--padding-h) 24px var(--padding-h) !important;
+.ant-typography p.lp-phrase-card__tags {
+  margin: 0 var(--padding-h) 24px var(--padding-h);
 }
 
 .lp-phrase-card__done-icon {
   position: absolute;
   top: 8px;
   right: 8px;
-  font-size: 32px;
+  font-size: 20px;
   opacity: 0.2;
 }
 
@@ -56,4 +56,19 @@
   bottom: -26px;
   right: 8px;
   margin: 0 !important;
+}
+
+@media (max-width: 575px) {
+  .lp-phrase-card__title,
+  .lp-phrase-card__description {
+    margin: 16px;
+  }
+
+  .ant-typography ul.lp-phrase-card__rate {
+    margin: 8px 16px 16px;
+  }
+
+  .ant-typography p.lp-phrase-card__tags {
+    margin: 0 16px 16px;
+  }
 }
