@@ -345,7 +345,6 @@ export default function Learn() {
       <Progress
         className="lp-learn-page__common-progress"
         percent={commonProgressPercent}
-        // showInfo={false}
         format={(percent) => `${percent?.toFixed(1)}%`}
         strokeLinecap="butt"
         size="small"
