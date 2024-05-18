@@ -315,13 +315,13 @@ export default function Learn() {
       />
       <FloatButton
         shape="circle"
-        style={getFloatButtonPositionStyle([0, 1])}
+        style={getFloatButtonPositionStyle([1, 1])}
         icon={<CloseOutlined />}
         onClick={() => changeMyKnownLevel(phrases[nowPrasesIndex], false)}
       />
       <FloatButton
         shape="circle"
-        style={getFloatButtonPositionStyle([1, 1])}
+        style={getFloatButtonPositionStyle([0, 1])}
         icon={<CheckOutlined />}
         onClick={() => changeMyKnownLevel(phrases[nowPrasesIndex], true)}
       />
@@ -345,7 +345,8 @@ export default function Learn() {
       <Progress
         className="lp-learn-page__common-progress"
         percent={commonProgressPercent}
-        showInfo={false}
+        // showInfo={false}
+        format={(percent) => `${percent?.toFixed(1)}%`}
         strokeLinecap="butt"
         size="small"
       />
@@ -355,6 +356,7 @@ export default function Learn() {
         strokeLinecap="butt"
         format={(percent) => `${percent?.toFixed(1)}%`}
         size="small"
+        title="111"
       />
 
       {editedPhraseData && (

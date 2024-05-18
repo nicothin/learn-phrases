@@ -18,6 +18,7 @@
   align-items: center;
   justify-content: center;
   height: 100%;
+  padding: 0.5em;
   outline: none;
 }
 
@@ -40,4 +41,12 @@
 .lp-learn-page .ant-progress-outer {
   display: block;
   padding: 0 !important;
+}
+
+.lp-learn-page__common-progress .ant-progress-text {
+  position: absolute;
+  top: 17px;
+  right: 8px;
+  width: auto;
+  opacity: 0.5;
 }

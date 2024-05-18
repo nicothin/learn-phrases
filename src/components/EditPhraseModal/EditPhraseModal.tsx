@@ -6,6 +6,8 @@ import { ModalFooterRender } from 'antd/es/modal/interface';
 import type { InputRef } from 'antd';
 import dayjs from 'dayjs';
 
+import './EditPhraseModal.css';
+
 import { Phrase } from '../../types';
 import { DATE_FORMAT, TAGS } from '../../constants';
 import { savePhraseLocally, deletePhraseLocally } from '../../services/actions';
@@ -19,9 +21,6 @@ interface PhraseModalProps {
   readonly editedPhraseData: Partial<Phrase> | null;
   readonly setEditedPhraseData: Dispatch<SetStateAction<Partial<Phrase> | null>>;
   readonly notificationApi?: NotificationInstance;
-  // readonly onSave?: (values: Phrase) => Promise<void>;
-  // readonly onCancel?: () => void;
-  // readonly onDelete?: (id: number) => Promise<void>;
 }
 
 export default function EditPhraseModal({
@@ -163,6 +162,7 @@ export default function EditPhraseModal({
 
   return (
     <Modal
+      className="lp-edit-phrase-modal"
       open={isOpen}
       title={title}
       cancelText="Cancel"
@@ -222,7 +222,7 @@ export default function EditPhraseModal({
         </Form.Item>
 
         {isEdit && (
-          <Form.Item>
+          <Form.Item className="lp-edit-phrase-modal__memoization-level">
             <Flex gap="middle">
               <span>Memorization level:</span>
               <Rate
