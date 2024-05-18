@@ -355,7 +355,6 @@ export default function Learn() {
         strokeLinecap="butt"
         format={(percent) => `${percent?.toFixed(1)}%`}
         size="small"
-        title="111"
       />
 
       {editedPhraseData && (
