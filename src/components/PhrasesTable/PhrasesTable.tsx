@@ -2,6 +2,8 @@ import { Table } from 'antd';
 import type { TableColumnsType as TableColumns } from 'antd';
 import Markdown from 'react-markdown';
 
+import './PhrasesTable.css';
+
 import { Phrase, Phrases } from '../../types';
 import { renderTags } from '../../utils';
 import { useEffect, useMemo, useState } from 'react';
@@ -48,6 +50,7 @@ const COLUMNS: TableColumns<Phrase> = [
   {
     title: 'Tags',
     dataIndex: 'tags',
+    className: 'lp-phrases-table__tags-wrapper',
     key: 'tags',
     width: 300,
     render: (_, record: Record<string, unknown>) => renderTags(record),
@@ -92,6 +95,7 @@ export default function PhrasesTable({
 
   return (
     <Table
+      className="lp-phrases-table"
       ref={tableRef}
       columns={COLUMNS}
       dataSource={data}

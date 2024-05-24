@@ -195,10 +195,10 @@ export default function EditPhraseModal({
             { required: true, message: 'Please enter a phrase' },
             { pattern: /\S+/g, message: 'Phrase cannot contain only whitespace or newlines' },
           ]}
-          style={{ marginBottom: '12px' }}
+          style={{ marginBottom: '8px' }}
           validateFirst
         >
-          <TextArea rows={1} placeholder="First phrase" ref={firstInputRef} autoSize />
+          <TextArea rows={1} placeholder="First phrase" ref={firstInputRef} size="large" autoSize />
         </Form.Item>
 
         <Form.Item name="firstD">
@@ -211,10 +211,10 @@ export default function EditPhraseModal({
             { required: true, message: 'Please enter a phrase' },
             { pattern: /\S+/g, message: 'Phrase cannot contain only whitespace or newlines' },
           ]}
-          style={{ marginBottom: '12px' }}
+          style={{ marginBottom: '8px' }}
           validateFirst
         >
-          <TextArea rows={1} placeholder="Second phrase" autoSize />
+          <TextArea rows={1} placeholder="Second phrase" size="large" autoSize />
         </Form.Item>
 
         <Form.Item name="secondD">

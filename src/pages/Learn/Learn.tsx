@@ -96,7 +96,9 @@ export default function Learn() {
 
       savePhraseLocally(newPhrase)
         .then(() => {
-          carouselRef.current?.next();
+          if (newKnoledgeLvl < 9) {
+            carouselRef.current?.next();
+          }
         })
         .catch((error) => {
           console.error(error);
@@ -168,6 +170,7 @@ export default function Learn() {
 
     const calculatedLearnedIDs: Set<number> = new Set();
     const calculatedUnlearnedIDs: Set<number> = new Set();
+
     phrasesMapFromDexie?.forEach((phrase) => {
       if (phrase.knowledgeLvl >= 9) {
         calculatedLearnedIDs.add(phrase.id);
