@@ -70,11 +70,7 @@ export default function FormTags({ notificationApi }: FormTagsProps) {
         For example:
       </p>
       <pre>
-          {`[
-  { "value": "Positive", "color": "green" },
-  { "value": "Вопрос", "color": "orange" },
-  { "value": "否定", "color": "red" },
-]`}
+          {`[\n  { "value": "Positive", "color": "green" },\n  { "value": "Вопрос", "color": "orange" },\n  { "value": "否定", "color": "red" },\n]`}
       </pre>
 
       <p>
