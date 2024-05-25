@@ -2,10 +2,10 @@ import React, { createContext, useState, useMemo, useCallback, useEffect } from 
 import { useLiveQuery } from 'dexie-react-hooks';
 
 import { SETTING_KEYS, THEME } from '../enums';
-import { Phrase, Tag, Tags } from '../types';
+import { Phrase, Tags } from '../types';
 import { DexieIndexedDB } from '../services/DexieIndexedDB';
 import { DEXIE_TABLE_NAME } from '../constants';
-import { arrayToString } from '../utils';
+import { arrayToString, getMatchedTags } from '../utils';
 
 type SettingsContextType = {
   token: string;
@@ -100,22 +100,20 @@ export const SettingsContextProvider: React.FC<{ children: React.ReactNode }> = 
     [setIsSyncWhen100percent],
   );
 
-  // TODO[@nicothin]: написать функцию getVerifiedTags, которая будет получать фразы их БД и массив тегов и возвращать гарантировано коректный массив тегов.
-  // использовать ее при задавании тегов в onSetTags и в useEffect() получения тегов
-
   const onSetTags = useCallback(
-    (newValue: Tags): Promise<void> => {
+    (tagsMapFromSettings: Tags): Promise<void> => {
       return new Promise((resolve, reject) => {
         try {
-          localStorage.setItem(SETTING_KEYS.TAGS, arrayToString(newValue));
-          setTags(newValue);
+          const newTags = getMatchedTags(phrasesMapFromDexie, tagsMapFromSettings);
+          setTags(newTags);
+          localStorage.setItem(SETTING_KEYS.TAGS, arrayToString(newTags));
           resolve();
         } catch (error) {
           reject(error instanceof Error ? error : new Error('Unknown error'));
         }
       });
     },
-    [setTags],
+    [setTags, phrasesMapFromDexie],
   );
 
   // Get tags list: phrasesMapFromDexie + localStorage.getItem(SETTING_KEYS.TAGS)
@@ -130,22 +128,7 @@ export const SettingsContextProvider: React.FC<{ children: React.ReactNode }> = 
       console.error('LocalStorage tags reading error', error);
     }
 
-    const newTagsMap: Map<string, Tag> = new Map();
-
-    tagsMapFromSettings.forEach((tag) => {
-      newTagsMap.set(tag.value, tag);
-    });
-
-    phrasesMapFromDexie.forEach((phrase) => {
-      if (!phrase.tags) return;
-      const tags = phrase.tags.split(',');
-      tags.forEach((tag: string) => {
-        if (newTagsMap.has(tag)) return;
-        newTagsMap.set(tag, { value: tag });
-      });
-    });
-
-    const newTags: Tags = Array.from(newTagsMap.values());
+    const newTags = getMatchedTags(phrasesMapFromDexie, tagsMapFromSettings);
 
     setTags(newTags);
     localStorage.setItem(SETTING_KEYS.TAGS, arrayToString(newTags));

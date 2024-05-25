@@ -1,4 +1,4 @@
-export const arrayToString = (array: Record<string, unknown>[]): string => {
+export const arrayToString = <T>(array: T[]): string => {
   const result = array
     .map((obj) => {
       let mergedFields = '';
