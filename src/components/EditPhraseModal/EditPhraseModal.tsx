@@ -9,10 +9,10 @@ import dayjs from 'dayjs';
 import './EditPhraseModal.css';
 
 import { Phrase } from '../../types';
-import { DATE_FORMAT, TAGS } from '../../constants';
+import { DATE_FORMAT } from '../../constants';
 import { savePhraseLocally, deletePhraseLocally } from '../../services/actions';
 import { convertToKnowledgeLvl } from '../../utils';
-import { useStateContext } from '../../hooks';
+import { useSettingsContext, useStateContext } from '../../hooks';
 
 const { TextArea } = Input;
 const { Text } = Typography;
@@ -29,6 +29,8 @@ export default function EditPhraseModal({
   notificationApi,
 }: PhraseModalProps) {
   const [form] = Form.useForm();
+
+  const { tags } = useSettingsContext();
 
   const { setIsPhraseEditModalOpen } = useStateContext();
 
@@ -241,7 +243,7 @@ export default function EditPhraseModal({
             allowClear={false}
             style={{ width: '100%' }}
             placeholder="Tags"
-            options={TAGS}
+            options={tags}
           />
         </Form.Item>
       </Form>
