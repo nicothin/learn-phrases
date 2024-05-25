@@ -14,3 +14,6 @@ export * from './validateNoWhitespaceField';
 export * from './onSliderBeforeChange';
 export * from './shuffleArray';
 export * from './shuffleSet';
+export * from './validateJSON';
+export * from './arrayToString';
+export * from './getMatchedTags';

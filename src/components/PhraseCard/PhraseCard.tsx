@@ -7,6 +7,7 @@ import './PhraseCard.css';
 
 import { Phrase } from '../../types';
 import { renderTags } from '../../utils';
+import { useSettingsContext } from '../../hooks';
 
 const { Text } = Typography;
 
@@ -23,6 +24,8 @@ export default function PhraseCard({
   setOpenedCardId,
   onEditPhrase,
 }: PhraseCardProps) {
+  const { tags } = useSettingsContext();
+
   if (!cardData) return null;
 
   const onCardHeaderClick = () => setOpenedCardId(cardData.id);
@@ -69,7 +72,7 @@ export default function PhraseCard({
           />
 
           {cardData?.tags?.length ? (
-            <p className="lp-phrase-card__tags">{renderTags(cardData)}</p>
+            <p className="lp-phrase-card__tags">{renderTags(cardData, tags)}</p>
           ) : null}
         </div>
       ),

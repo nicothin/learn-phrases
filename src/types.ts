@@ -23,3 +23,13 @@ export type ButtonPositionType = {
   top?: number;
   bottom?: number;
 };
+
+export interface FieldData {
+  errors?: string[];
+}
+
+export interface Tag {
+  value: string;
+  color?: string;
+}
+export type Tags = Tag[];
