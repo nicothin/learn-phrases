@@ -10,7 +10,6 @@ export const TAGS_JSON_STRING: string = `[
   { "value": "Negative", "color": "red" },
   { "value": "Present Simple", "color": "blue" },
   { "value": "Present Continuous", "color": "blue" },
-  { "value": "Present Perfect", "color": "blue" },
   { "value": "Past Simple", "color": "cyan" },
   { "value": "Future Simple", "color": "lime" },
   { "value": "Past Continuous", "color": "cyan" },
@@ -20,6 +19,9 @@ export const TAGS_JSON_STRING: string = `[
   { "value": "Future Perfect", "color": "lime" },
   { "value": "Past Perfect Continuous", "color": "cyan" },
   { "value": "Future Perfect Continuous", "color": "lime" },
+  { "value": "Present Perfect", "color": "blue" },
   { "value": "Passive voice", "color": "magenta" },
   { "value": "Irregular verbs", "color": "magenta" }
 ]`;
+
+export const NO_TAGS = 'No tags';

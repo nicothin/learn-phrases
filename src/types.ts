@@ -33,3 +33,8 @@ export interface Tag {
   color?: string;
 }
 export type Tags = Tag[];
+
+export interface TagCheckbox extends Tag {
+  checked: boolean;
+}
+export type TagCheckboxes = Map<TagCheckbox['value'], TagCheckbox>;

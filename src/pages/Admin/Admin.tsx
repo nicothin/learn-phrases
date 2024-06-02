@@ -24,8 +24,8 @@ import { useLiveQuery } from 'dexie-react-hooks';
 
 import './Admin.css';
 
-import { Phrase, PhrasesFilterFunction } from '../../types';
-import { DEXIE_DEFAULT_FILTER_FUNC_OBJ, DEXIE_TABLE_NAME } from '../../constants';
+import { Phrase, PhrasesFilterFunction, TagCheckboxes } from '../../types';
+import { DEXIE_DEFAULT_FILTER_FUNC_OBJ, DEXIE_TABLE_NAME, NO_TAGS } from '../../constants';
 import { useSettingsContext } from '../../hooks';
 import { getFloatButtonPositionStyle } from '../../utils';
 import { DexieIndexedDB } from '../../services/DexieIndexedDB';
@@ -36,6 +36,7 @@ import PhrasesTable from '../../components/PhrasesTable/PhrasesTable';
 import EditPhraseModal from '../../components/EditPhraseModal/EditPhraseModal';
 import ImportFromGistFloatButton from '../../components/ImportFromGistFloatButton/ImportFromGistFloatButton';
 import ExportToGistFloatButton from '../../components/ExportToGistFloatButton/ExportToGistFloatButton';
+import TagFilterFloatButton from '../../components/TagFilterFloatButton/TagFilterFloatButton';
 
 const PHRASES_ON_PAGE_COUNT = 30;
 const REMOVE_MARKDOWN_REGEX = /([*_~]{2})+/gim;
@@ -46,7 +47,7 @@ export default function Admin() {
 
   const tableRef: Parameters<typeof Table>[0]['ref'] = useRef(null);
 
-  const { token, gistId } = useSettingsContext();
+  const { token, gistId, tags } = useSettingsContext();
 
   const gist = Gist.getInstance({ token, gistId });
 
@@ -58,6 +59,8 @@ export default function Admin() {
   const [canSynchronized, setCanSynchronized] = useState(false);
 
   const [editedPhraseData, setEditedPhraseData] = useState<Partial<Phrase> | null>(null);
+
+  const [tagsCheckboxes, setTagsCheckboxes] = useState<TagCheckboxes>(new Map());
 
   const phrasesInTheSelection = useLiveQuery(
     () =>
@@ -184,6 +187,16 @@ export default function Admin() {
     setCanSynchronized(!!token?.trim() && !!gistId?.trim());
   }, [gistId, token]);
 
+  // Tag checkboxes
+  useEffect(() => {
+    const initialTagCheckboxes = new Map();
+    tags.forEach((tag) => {
+      initialTagCheckboxes.set(tag.value, { ...tag, checked: true });
+    });
+    initialTagCheckboxes.set(NO_TAGS, { value: NO_TAGS, checked: true });
+    setTagsCheckboxes(initialTagCheckboxes);
+  }, [tags]);
+
   return (
     <div className="lp-admin-page">
       <Row gutter={[16, 0]} wrap={false} style={{ marginBottom: '1em' }}>
@@ -232,6 +245,28 @@ export default function Admin() {
         />
       )}
 
+      {canSynchronized && (
+        <>
+          <ImportFromGistFloatButton
+            buttonPosition={getFloatButtonPositionStyle([0, 4])}
+            gist={gist}
+            notificationApi={notificationApi}
+            modalApi={modalApi}
+          />
+          <ExportToGistFloatButton
+            buttonPosition={getFloatButtonPositionStyle([1, 4])}
+            gist={gist}
+            notificationApi={notificationApi}
+          />
+        </>
+      )}
+
+      <TagFilterFloatButton
+        floatButtonPosition={[1, 0]}
+        tagsCheckboxes={tagsCheckboxes}
+        setTagsCheckboxes={setTagsCheckboxes}
+      />
+
       <FloatButton
         shape="circle"
         type="primary"
@@ -240,22 +275,6 @@ export default function Admin() {
         tooltip="Add phrase"
         onClick={onClickAddPhraseBtn}
       />
-
-      {canSynchronized && (
-        <>
-          <ImportFromGistFloatButton
-            buttonPosition={getFloatButtonPositionStyle([0, 3])}
-            gist={gist}
-            notificationApi={notificationApi}
-            modalApi={modalApi}
-          />
-          <ExportToGistFloatButton
-            buttonPosition={getFloatButtonPositionStyle([0, 4])}
-            gist={gist}
-            notificationApi={notificationApi}
-          />
-        </>
-      )}
 
       <Upload customRequest={onFileUpload}>
         <FloatButton
@@ -286,7 +305,7 @@ export default function Admin() {
       >
         <FloatButton
           shape="circle"
-          style={getFloatButtonPositionStyle([0, 5])}
+          style={getFloatButtonPositionStyle([0, 3])}
           icon={<DeleteOutlined />}
           tooltip="Delete all local phrases"
         />

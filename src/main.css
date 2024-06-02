@@ -34,3 +34,10 @@ td {
     padding: 16px;
   }
 }
+
+@media (prefers-color-scheme: dark) {
+  .ant-dropdown .ant-dropdown-menu,
+  .ant-dropdown-menu-submenu .ant-dropdown-menu {
+    scrollbar-color: rgba(255, 255, 255, 0.25) rgba(253, 253, 253, 0.12);
+  }
+}
