@@ -51,7 +51,12 @@ export default function Admin() {
 
   const gist = Gist.getInstance({ token, gistId });
 
-  const [filter, setFilter] = useState<PhrasesFilterFunction>(DEXIE_DEFAULT_FILTER_FUNC_OBJ);
+  const [searchFilter, setSearchFilter] = useState<PhrasesFilterFunction>(
+    DEXIE_DEFAULT_FILTER_FUNC_OBJ,
+  );
+  const [tagsFilter, setTagsFilter] = useState<PhrasesFilterFunction>(
+    DEXIE_DEFAULT_FILTER_FUNC_OBJ,
+  );
   const [paginationPage, setPaginationPage] = useState(1);
   const [phrasesCounterStart, setPhrasesCounterStart] = useState(0);
   const [phrasesCounter, setPhrasesCounter] = useState(0);
@@ -61,16 +66,19 @@ export default function Admin() {
   const [editedPhraseData, setEditedPhraseData] = useState<Partial<Phrase> | null>(null);
 
   const [tagsCheckboxes, setTagsCheckboxes] = useState<TagCheckboxes>(new Map());
+  // NOTE[@nicothin]: why is this array reset when saving the phrase?
+  console.log('tagsCheckboxes', tagsCheckboxes);
 
   const phrasesInTheSelection = useLiveQuery(
     () =>
       DexieIndexedDB[DEXIE_TABLE_NAME].orderBy('id')
         .reverse()
-        .filter(filter.func)
+        .filter(searchFilter.func)
+        .filter(tagsFilter.func)
         .offset(phrasesCounterStart)
         .limit(PHRASES_ON_PAGE_COUNT)
         .toArray(),
-    [phrasesCounterStart, filter],
+    [phrasesCounterStart, searchFilter, tagsFilter],
   );
 
   const onPaginationChange: PaginationProps['onChange'] = (page) => {
@@ -83,7 +91,7 @@ export default function Admin() {
     const search = value?.search?.toLowerCase().trim();
 
     if (search === '') {
-      setFilter(DEXIE_DEFAULT_FILTER_FUNC_OBJ);
+      setSearchFilter(DEXIE_DEFAULT_FILTER_FUNC_OBJ);
       return;
     }
 
@@ -91,13 +99,13 @@ export default function Admin() {
       notificationApi.warning({
         message: 'Enter 2+ characters',
       });
-      setFilter(DEXIE_DEFAULT_FILTER_FUNC_OBJ);
+      setSearchFilter(DEXIE_DEFAULT_FILTER_FUNC_OBJ);
       return;
     }
 
     setPaginationPage(1);
 
-    setFilter({
+    setSearchFilter({
       func: (phrase: Phrase) =>
         String(phrase.id).includes(search) ||
         phrase.first.toLowerCase().replace(REMOVE_MARKDOWN_REGEX, '').includes(search) ||
@@ -109,7 +117,7 @@ export default function Admin() {
   };
 
   const filterInputChange = async (event: BaseSyntheticEvent) => {
-    if (!event.target.value) setFilter(DEXIE_DEFAULT_FILTER_FUNC_OBJ);
+    if (!event.target.value) setSearchFilter(DEXIE_DEFAULT_FILTER_FUNC_OBJ);
   };
 
   const onRowClick = (thisPhrase: Phrase) => {
@@ -175,12 +183,14 @@ export default function Admin() {
     if (!phrasesInTheSelection) return;
 
     const checkCounter = async () => {
-      const counter = await DexieIndexedDB[DEXIE_TABLE_NAME].filter(filter.func).count();
+      const counter = await DexieIndexedDB[DEXIE_TABLE_NAME].filter(searchFilter.func)
+        .filter(tagsFilter.func)
+        .count();
       setPhrasesCounter(counter);
     };
 
     checkCounter();
-  }, [filter, phrasesInTheSelection]);
+  }, [searchFilter, tagsFilter, phrasesInTheSelection]);
 
   // Show or hide SYNC button
   useEffect(() => {
@@ -196,6 +206,42 @@ export default function Admin() {
     initialTagCheckboxes.set(NO_TAGS, { value: NO_TAGS, checked: true });
     setTagsCheckboxes(initialTagCheckboxes);
   }, [tags]);
+
+  // Tag filter
+  useEffect(() => {
+    const processingTagCheckboxes = new Map(tagsCheckboxes);
+    processingTagCheckboxes.delete(NO_TAGS);
+
+    const isNeedToShowNoTags = tagsCheckboxes.get(NO_TAGS)?.checked ?? true;
+
+    if (!processingTagCheckboxes.size) {
+      setTagsFilter(DEXIE_DEFAULT_FILTER_FUNC_OBJ);
+      return;
+    }
+
+    setTagsFilter({
+      func: (phrase: Phrase) => {
+        const tags = phrase.tags?.trim() || '';
+
+        if (!tags) {
+          if (isNeedToShowNoTags) return true;
+          else return false;
+        }
+
+        const tagList = tags.split(',').map((tag) => tag.trim());
+        let isShowThisPhrase = true;
+        if (
+          tagList.every(
+            (tag) => tagsCheckboxes.has(tag) && tagsCheckboxes.get(tag)?.checked === false,
+          )
+        ) {
+          isShowThisPhrase = false;
+        }
+
+        return isShowThisPhrase;
+      },
+    });
+  }, [tagsCheckboxes]);
 
   return (
     <div className="lp-admin-page">

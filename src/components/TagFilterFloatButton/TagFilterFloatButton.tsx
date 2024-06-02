@@ -1,11 +1,15 @@
-import { ChangeEvent, ReactNode, useCallback, useMemo, useState } from 'react';
+import { ChangeEvent, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { FilterOutlined } from '@ant-design/icons';
-import { Checkbox, FloatButton, Popover, Tag } from 'antd';
+import { Button, Checkbox, Divider, FloatButton, Popover, Space, Tag } from 'antd';
 
 import './TagFilterFloatButton.css';
 
 import { getFloatButtonPositionStyle } from '../../utils';
 import { TagCheckboxes } from '../../types';
+
+interface BadgeData {
+  count?: ReactNode;
+}
 
 interface TagFilterFloatButtonProps {
   readonly tagsCheckboxes: TagCheckboxes;
@@ -18,7 +22,7 @@ export default function TagFilterFloatButton({
   setTagsCheckboxes,
   floatButtonPosition,
 }: TagFilterFloatButtonProps) {
-  const [badgeCount, setBadgeCount] = useState(0);
+  const [badge, setBadge] = useState<BadgeData | undefined>(undefined);
 
   const checkboxChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>): void => {
@@ -33,16 +37,19 @@ export default function TagFilterFloatButton({
       });
 
       setTagsCheckboxes(newTagsCheckboxes);
+    },
+    [setTagsCheckboxes, tagsCheckboxes],
+  );
 
-      const newCheckboxesCheckedCounter = Array.from(newTagsCheckboxes.values()).filter(
-        (item) => item.checked,
-      ).length;
+  const onChangeAll = useCallback(
+    (checkedValue: boolean) => {
+      const newTagsCheckboxes: TagCheckboxes = new Map();
 
-      setBadgeCount(
-        newCheckboxesCheckedCounter !== tagsCheckboxes.size
-          ? tagsCheckboxes.size - (tagsCheckboxes.size - newCheckboxesCheckedCounter)
-          : 0,
-      );
+      tagsCheckboxes.forEach((tag) => {
+        newTagsCheckboxes.set(tag.value, { ...tag, checked: checkedValue });
+      });
+
+      setTagsCheckboxes(newTagsCheckboxes);
     },
     [setTagsCheckboxes, tagsCheckboxes],
   );
@@ -58,8 +65,38 @@ export default function TagFilterFloatButton({
         </p>,
       );
     });
-    return <div onChange={checkboxChange}>{content}</div>;
-  }, [checkboxChange, tagsCheckboxes]);
+
+    return (
+      <div onChange={checkboxChange}>
+        {content}
+        <Divider />
+        <Space.Compact block>
+          <Button onClick={() => onChangeAll(true)}>Select all</Button>
+          <Button onClick={() => onChangeAll(false)}>Select none</Button>
+        </Space.Compact>
+      </div>
+    );
+  }, [checkboxChange, onChangeAll, tagsCheckboxes]);
+
+  useEffect(() => {
+    const tagsCheckboxesCheckedCounter = Array.from(tagsCheckboxes.values()).filter(
+      (item) => item.checked,
+    ).length;
+
+    if (tagsCheckboxesCheckedCounter === tagsCheckboxes.size) {
+      setBadge(undefined);
+      return;
+    }
+
+    if (tagsCheckboxesCheckedCounter === 0) {
+      setBadge({ count: '!!!' });
+      return;
+    }
+
+    setBadge({
+      count: tagsCheckboxes.size - (tagsCheckboxes.size - tagsCheckboxesCheckedCounter),
+    });
+  }, [tagsCheckboxes]);
 
   return (
     <Popover content={popoverContent} placement="leftBottom" title="Tag filter" trigger="click">
@@ -67,7 +104,7 @@ export default function TagFilterFloatButton({
         shape="circle"
         style={getFloatButtonPositionStyle(floatButtonPosition)}
         icon={<FilterOutlined />}
-        badge={badgeCount ? { count: badgeCount, color: 'red' } : undefined}
+        badge={badge}
       />
     </Popover>
   );

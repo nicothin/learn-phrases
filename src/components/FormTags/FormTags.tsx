@@ -6,7 +6,7 @@ import { NotificationInstance } from 'antd/es/notification/interface';
 import { SETTING_KEYS } from '../../enums';
 import { TAGS_JSON_STRING } from '../../constants';
 import { useSettingsContext } from '../../hooks';
-import { FieldData } from '../../types';
+import { FieldData, Tag, Tags } from '../../types';
 import { arrayToString, validateJSON } from '../../utils';
 
 const { TextArea } = Input;
@@ -35,8 +35,34 @@ export default function FormTags({ notificationApi }: FormTagsProps) {
   };
 
   const onTagsSave = (values: Record<string, string>) => {
-    const newTags = JSON.parse(values[SETTING_KEYS.TAGS]);
-    setTags(newTags)
+    const newTags: Tags = JSON.parse(values[SETTING_KEYS.TAGS]);
+    if (newTags && !Array.isArray(newTags)) {
+      notificationApi.error({
+        message: 'Export failed',
+        description: 'Tags shout be an Array.',
+      });
+      return;
+    }
+
+    const verifirdTags: Tags = [];
+
+    newTags.forEach((tag) => {
+      const tagValue = tag.value?.trim();
+      if (!tagValue) return;
+
+      const tagColor = tag.color?.trim();
+
+      const verifiedTag: Tag = {
+        value: tagValue,
+      };
+      if (tagColor) {
+        verifiedTag.color = tagColor;
+      }
+
+      verifirdTags.push(verifiedTag);
+    });
+
+    setTags(verifirdTags)
       .then(() => {
         notificationApi.success({
           message: 'Tags saved',
