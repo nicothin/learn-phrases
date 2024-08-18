@@ -42,6 +42,8 @@ export default function App() {
     };
   }, [preferredThemeInContext]);
 
+  // prettier-ignore
+
   return (
     <ConfigProvider
       theme={{
@@ -57,30 +59,9 @@ export default function App() {
               {/* prettier-ignore */}
               <Route index element={<Learn />} />
               <Route path="admin" element={<Admin />} />
-              <Route
-                path="about"
-                element={
-                  <TextLayout>
-                    <About />
-                  </TextLayout>
-                }
-              />
-              <Route
-                path="settings"
-                element={
-                  <TextLayout>
-                    <Settings />
-                  </TextLayout>
-                }
-              />
-              <Route
-                path="*"
-                element={
-                  <TextLayout>
-                    <PageNotFound />
-                  </TextLayout>
-                }
-              />
+              <Route path="about" element={<TextLayout><About /></TextLayout>} />
+              <Route path="settings" element={<TextLayout><Settings /></TextLayout>} />
+              <Route path="*" element={<TextLayout><PageNotFound /></TextLayout>} />
             </Routes>
           </Typography>
         </main>
