@@ -1,6 +1,7 @@
 import { Tag } from 'antd';
 import { Tags } from '../types';
 
+// TODO[@nicothin]: move to cpmponents
 export const renderTags = (record: Record<string, unknown>, tagsData?: Tags) => {
   const list = record.tags ? (record.tags as string).split(',') : [];
   const tags: React.ReactNode[] = [];

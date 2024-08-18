@@ -54,6 +54,7 @@ export default function App() {
         <main className="lp-layout__main">
           <Typography>
             <Routes>
+              {/* prettier-ignore */}
               <Route index element={<Learn />} />
               <Route path="admin" element={<Admin />} />
               <Route
