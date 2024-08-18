@@ -29,6 +29,7 @@ export default function App() {
 
     const mediaQuery: MediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
     const onThemeChange = (e: MediaQueryListEvent) => {
+      //1
       setNowPreferredTheme(e.matches ? THEME.DARK : THEME.LIGHT);
     };
 
