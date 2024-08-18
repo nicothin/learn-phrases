@@ -1,9 +1,9 @@
 import { createContext, useState, useMemo, Dispatch, SetStateAction, ReactNode, FC } from 'react';
 
-type StateContextType = {
+interface StateContextType {
   isPhraseEditModalOpen: boolean;
   setIsPhraseEditModalOpen: Dispatch<SetStateAction<boolean>>;
-};
+}
 
 const StateContext = createContext<StateContextType | null>(null);
 

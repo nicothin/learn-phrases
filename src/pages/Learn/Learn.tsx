@@ -1,5 +1,5 @@
 import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
-import { Carousel, FloatButton, message, Modal, notification, Progress } from 'antd';
+import { Carousel, FloatButton, Progress } from 'antd';
 import { CarouselRef } from 'antd/es/carousel';
 import {
   ArrowDownOutlined,
@@ -21,6 +21,7 @@ import {
   useStateContext,
   useExportToGistWhen100Percent,
   useArrayNavigator,
+  useOverlayContext,
 } from '../../hooks';
 import { Phrase, Phrases } from '../../types';
 import {
@@ -35,9 +36,7 @@ import ExportToGistFloatButton from '../../components/ExportToGistFloatButton/Ex
 import EditPhraseModal from '../../components/EditPhraseModal/EditPhraseModal';
 
 export default function Learn() {
-  const [modalApi, contextModal] = Modal.useModal();
-  const [messageApi, contextMessage] = message.useMessage();
-  const [notificationApi, contextNotification] = notification.useNotification();
+  const { notificationApi, modalApi, messageApi } = useOverlayContext();
 
   const [phrases, setPhrases] = useState<Phrases>([]);
   const [learnedIDs, setLearnedIDs] = useState<Set<number>>(new Set());
@@ -379,10 +378,6 @@ export default function Learn() {
           notificationApi={notificationApi}
         />
       )}
-
-      {contextMessage}
-      {contextNotification}
-      {contextModal}
     </div>
   );
 }

@@ -1,11 +1,10 @@
-import { notification } from 'antd';
-
+import { useOverlayContext } from '../../hooks';
 import FormSynchronization from '../../components/FormSynchronization/FormSynchronization';
 import FormPreferredTheme from '../../components/FormPreferredTheme/FormPreferredTheme';
 import FormTags from '../../components/FormTags/FormTags';
 
 export default function Settings() {
-  const [notificationApi, contextNotification] = notification.useNotification();
+  const { notificationApi } = useOverlayContext();
 
   // prettier-ignore
 
@@ -28,8 +27,6 @@ export default function Settings() {
       <h2>Visual</h2>
 
       <FormPreferredTheme />
-
-      {contextNotification}
     </>
   );
 }

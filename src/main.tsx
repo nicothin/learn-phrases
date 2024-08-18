@@ -6,15 +6,18 @@ import './main.css';
 
 import { SettingsContextProvider } from './contexts/SettingsContext';
 import { StateContextProvider } from './contexts/StateContext';
+import { OverlayContextProvider } from './contexts/OverlayContext';
 import App from './App';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <StateContextProvider>
       <SettingsContextProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
+        <OverlayContextProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </OverlayContextProvider>
       </SettingsContextProvider>
     </StateContextProvider>
   </React.StrictMode>,

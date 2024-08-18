@@ -3,8 +3,8 @@ import { Routes, Route } from 'react-router-dom';
 import { ConfigProvider, Layout, theme, Typography } from 'antd';
 
 import { THEME } from './enums';
-import { useSettingsContext } from './hooks';
 
+import { useSettingsContext, useOverlayContext } from './hooks';
 import TextLayout from './layouts/TextLayout';
 import Learn from './pages/Learn/Learn';
 import Admin from './pages/Admin/Admin';
@@ -17,6 +17,7 @@ export default function App() {
   const { defaultAlgorithm, darkAlgorithm } = theme;
 
   const { preferredTheme: preferredThemeInContext } = useSettingsContext();
+  const { contextNotification, contextModal, contextMessage } = useOverlayContext();
 
   const [nowPreferredTheme, setNowPreferredTheme] = useState<THEME>(THEME.LIGHT);
 
@@ -43,8 +44,6 @@ export default function App() {
     };
   }, [preferredThemeInContext]);
 
-  // prettier-ignore
-
   return (
     <ConfigProvider
       theme={{
@@ -57,16 +56,40 @@ export default function App() {
         <main className="lp-layout__main">
           <Typography>
             <Routes>
-              {/* prettier-ignore */}
               <Route index element={<Learn />} />
               <Route path="admin" element={<Admin />} />
-              <Route path="about" element={<TextLayout><About /></TextLayout>} />
-              <Route path="settings" element={<TextLayout><Settings /></TextLayout>} />
-              <Route path="*" element={<TextLayout><PageNotFound /></TextLayout>} />
+              <Route
+                path="about"
+                element={
+                  <TextLayout>
+                    <About />
+                  </TextLayout>
+                }
+              />
+              <Route
+                path="settings"
+                element={
+                  <TextLayout>
+                    <Settings />
+                  </TextLayout>
+                }
+              />
+              <Route
+                path="*"
+                element={
+                  <TextLayout>
+                    <PageNotFound />
+                  </TextLayout>
+                }
+              />
             </Routes>
           </Typography>
         </main>
       </Layout>
+
+      {contextNotification}
+      {contextModal}
+      {contextMessage}
     </ConfigProvider>
   );
 }

@@ -7,7 +7,7 @@ import { DexieIndexedDB } from '../services/DexieIndexedDB';
 import { DEXIE_TABLE_NAME } from '../constants';
 import { arrayToString, getMatchedTags } from '../utils';
 
-type SettingsContextType = {
+interface SettingsContextType {
   token: string;
   setToken: (text: string) => Promise<void>;
   gistId: string;
@@ -18,7 +18,7 @@ type SettingsContextType = {
   setTags: (text: Tags) => Promise<void>;
   preferredTheme: THEME | undefined;
   setPreferredTheme: (theme: THEME | undefined) => void;
-};
+}
 
 const SettingsContext = createContext<SettingsContextType | null>(null);
 

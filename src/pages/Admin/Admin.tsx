@@ -1,17 +1,5 @@
 import { BaseSyntheticEvent, useEffect, useRef, useState } from 'react';
-import {
-  notification,
-  Upload,
-  Table,
-  FloatButton,
-  Pagination,
-  Row,
-  Col,
-  Form,
-  Input,
-  Modal,
-  Popconfirm,
-} from 'antd';
+import { Upload, Table, FloatButton, Pagination, Row, Col, Form, Input, Popconfirm } from 'antd';
 import type { PaginationProps } from 'antd';
 import {
   DeleteOutlined,
@@ -36,13 +24,13 @@ import PhrasesTable from '../../components/PhrasesTable/PhrasesTable';
 import EditPhraseModal from '../../components/EditPhraseModal/EditPhraseModal';
 import ImportFromGistFloatButton from '../../components/ImportFromGistFloatButton/ImportFromGistFloatButton';
 import ExportToGistFloatButton from '../../components/ExportToGistFloatButton/ExportToGistFloatButton';
+import { useOverlayContext } from '../../hooks/useOverlayContext';
 
 const PHRASES_ON_PAGE_COUNT = 30;
 const REMOVE_MARKDOWN_REGEX = /([*_~]{2})+/gim;
 
 export default function Admin() {
-  const [modalApi, contextModal] = Modal.useModal();
-  const [notificationApi, contextNotification] = notification.useNotification();
+  const { notificationApi, modalApi } = useOverlayContext();
 
   const tableRef: Parameters<typeof Table>[0]['ref'] = useRef(null);
 
@@ -291,9 +279,6 @@ export default function Admin() {
           tooltip="Delete all local phrases"
         />
       </Popconfirm>
-
-      {contextModal}
-      {contextNotification}
     </div>
   );
 }
