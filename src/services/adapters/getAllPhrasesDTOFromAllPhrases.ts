@@ -1,4 +1,4 @@
-import { PhrasesDTO, Phrases } from '../types';
+import { PhrasesDTO, Phrases } from '../../types';
 import { getPhraseDTOFromPhrase } from './getPhraseDTOFromPhrase';
 
 export const getAllPhrasesDTOFromAllPhrases = (data: Phrases): PhrasesDTO => {

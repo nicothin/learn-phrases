@@ -1,8 +1,8 @@
 import { NotificationInstance } from 'antd/es/notification/interface';
 import { PhrasesDTO } from '../../types';
-import { getAllPhrasesFromAllPhrasesDTO } from '../../utils';
 import { DexieIndexedDB } from '../DexieIndexedDB';
 import { DEXIE_TABLE_NAME } from '../../constants';
+import { getAllPhrasesFromAllPhrasesDTO } from '../adapters';
 
 export const importPhrases = ({
   newPhrasesDTO,

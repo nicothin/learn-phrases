@@ -1,8 +1,3 @@
-export * from './getPhraseFromPhraseDTO';
-export * from './getPhraseDTOFromPhrase';
-export * from './getAllPhrasesFromAllPhrasesDTO';
-export * from './getAllPhrasesDTOFromAllPhrases';
-
 export * from './getFloatButtonPositionStyle';
 export * from './renderTags';
 export * from './hasNotEmptyStringProperty';

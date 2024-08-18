@@ -1,5 +1,5 @@
-import { Phrase, PhraseDTO } from '../types';
-import { getDate } from './getDate';
+import { Phrase, PhraseDTO } from '../../types';
+import { getDate } from '../../utils';
 
 export const getPhraseDTOFromPhrase = (data: Phrase): PhraseDTO | null => {
   if (

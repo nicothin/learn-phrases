@@ -1,6 +1,5 @@
-import { Phrase } from '../types';
-import { getDate } from './getDate';
-import { convertToKnowledgeLvl } from './convertToKnowledgeLvl';
+import { Phrase } from '../../types';
+import { convertToKnowledgeLvl, getDate } from '../../utils';
 
 export const getPhraseFromPhraseDTO = (data: unknown): Phrase | null => {
   if (

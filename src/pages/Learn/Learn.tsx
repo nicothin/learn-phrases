@@ -348,7 +348,12 @@ export default function Learn() {
       <Progress
         className="lp-learn-page__common-progress"
         percent={commonProgressPercent}
-        format={(percent) => `${percent?.toFixed(1)}%`}
+        format={(percent) => (
+          <>
+            {percent?.toFixed(1)}%<br />
+            {nowPrasesIndex}/{phrases.length}
+          </>
+        )}
         strokeLinecap="butt"
         size="small"
       />
@@ -356,7 +361,14 @@ export default function Learn() {
         className="lp-learn-page__progress"
         percent={progressPercent}
         strokeLinecap="butt"
-        format={(percent) => `${percent?.toFixed(1)}%`}
+        format={(percent) => (
+          <>
+            {percent?.toFixed(1)}%
+            <br />
+            {nowPrasesIndex >= unlearnedPhrasesCounter ? unlearnedPhrasesCounter : nowPrasesIndex}/
+            {unlearnedPhrasesCounter}
+          </>
+        )}
         size="small"
       />
 

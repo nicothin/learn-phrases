@@ -1,6 +1,6 @@
 import { DEXIE_TABLE_NAME } from '../../constants';
 import { PhrasesDTO } from '../../types';
-import { getAllPhrasesDTOFromAllPhrases } from '../../utils';
+import { getAllPhrasesDTOFromAllPhrases } from '../adapters';
 import { DexieIndexedDB } from '../DexieIndexedDB';
 
 export const getPhrasesDTOFromLocal = async (): Promise<PhrasesDTO> =>
