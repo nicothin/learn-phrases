@@ -1,7 +1,0 @@
-mocks
-node_modules
-dist
-public
-**/*.json
-**/*.stories.tsx$
-**/*vite.config.ts

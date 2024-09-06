@@ -1,0 +1,92 @@
+:root {
+  font-family: var(--font-family-sans-serif, sans-serif);
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 400;
+
+  color: var(--text-color);
+  background-color: var(--body-bg-color);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+*:focus-visible {
+  outline: 2px var(--black);
+}
+
+body {
+  margin: 0;
+}
+
+h1 {
+  margin-bottom: 0.5em;
+  color: inherit;
+  font-weight: 600;
+  font-size: 2.714rem;
+  line-height: 1.21;
+}
+
+h2 {
+  margin: 1.2em 0 0.5em;
+  color: inherit;
+  font-weight: 600;
+  font-size: 2.142rem;
+  line-height: 1.26;
+}
+
+.modal-title {
+  font-size: var(--text-size-lg);
+  font-weight: 600;
+}
+
+a,
+.link {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-family: inherit;
+  font-weight: inherit;
+  font-size: inherit;
+  color: var(--link-color);
+  text-decoration: underline;
+  background: none;
+  cursor: pointer;
+}
+a:hover,
+.link:hover {
+  text-decoration: none;
+}
+
+svg {
+  fill: currentColor;
+}
+
+.text-secondary {
+  color: var(--text-color-secondary);
+}
+
+.layout-text {
+  max-width: 650px;
+  margin: auto;
+  padding: 1em;
+  overflow: hidden;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+}
+.app__header {
+  flex-shrink: 0;
+}
+.app__content {
+  flex-grow: 1;
+}

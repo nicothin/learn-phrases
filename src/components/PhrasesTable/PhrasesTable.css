@@ -1,3 +1,58 @@
-.lp-phrases-table__tags-wrapper {
-  padding-bottom: 2px !important;
+.phrases-table {
+  height: 100%;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background-color: var(--bg-color);
+}
+
+.phrases-table__inner {
+  height: 100%;
+  scrollbar-color: var(--gray-light) transparent;
+  scrollbar-width: auto;
+  overflow: auto scroll;
+}
+
+.phrases-table__table {
+  table-layout: fixed;
+  border-collapse: collapse;
+
+  tr:first-child th:first-child {
+    border-top-left-radius: var(--border-radius);
+  }
+  tr:first-child th:last-child {
+    border-top-right-radius: var(--border-radius);
+  }
+  tr:last-child td:first-child {
+    border-bottom-left-radius: var(--border-radius);
+  }
+  tr:last-child td:last-child {
+    border-bottom-right-radius: var(--border-radius);
+  }
+}
+
+.phrases-table__cell {
+  height: 100%;
+  padding: 0.5em 0.8em;
+  vertical-align: top;
+  border-right: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  text-align-last: left;
+
+  p {
+    margin: 0;
+  }
+}
+
+td.phrases-table__cell {
+  cursor: pointer;
+}
+
+tr:focus-visible .phrases-table__cell--first {
+  box-shadow: inset 0 0 0 2px var(--black);
+}
+
+.phrases-table__no-phrases {
+  padding: 2em;
+  font-size: 1.6em;
+  text-align: center;
 }

@@ -1,16 +1,4 @@
-export enum FILE_NAMES {
-  PHRASES = 'phrases.json',
-}
-
-export enum THEME {
-  LIGHT = 'LIGHT',
-  DARK = 'DARK',
-}
-
-export enum SETTING_KEYS {
-  TOKEN = 'LP2_TOKEN',
-  GIST_ID = 'LP2_GIST_ID',
-  SYNC_WHEN_100_PERCENT = 'LP2_SYNC_WHEN_100_PERCENT',
-  PREFERRED_THEME = 'LP2_PREFERRED_THEME',
-  TAGS = 'LP2_TAGS',
+export enum STATUS {
+  SUCCESS = 'SUCCESS',
+  ERROR = 'ERROR',
 }

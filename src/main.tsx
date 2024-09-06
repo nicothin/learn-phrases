@@ -1,21 +1,23 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
 import { HashRouter as BrowserRouter } from 'react-router-dom';
 
-import './main.css';
+import './assets/custom-properties.css';
+import './assets/main.css';
 
-import { SettingsContextProvider } from './contexts/SettingsContext';
-import { StateContextProvider } from './contexts/StateContext';
+import { ActionsContextProvider } from './contexts/ActionsContext';
+import { NotificationContextProvider } from './contexts/NotificationContext/NotificationsContext';
+
 import App from './App';
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
-    <StateContextProvider>
-      <SettingsContextProvider>
-        <BrowserRouter>
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <NotificationContextProvider>
+      <ActionsContextProvider>
+        <BrowserRouter future={{ v7_startTransition: true }}>
           <App />
         </BrowserRouter>
-      </SettingsContextProvider>
-    </StateContextProvider>
-  </React.StrictMode>,
+      </ActionsContextProvider>
+    </NotificationContextProvider>
+  </StrictMode>
 );

@@ -1,9 +1,24 @@
+import { ReactNode } from 'react';
+
+import { STATUS } from './enums';
+
+export interface IDBObjectFieldsParameters {
+  type?: string;
+  multiEntry?: boolean;
+  unique?: boolean;
+  autoIncrement?: boolean;
+}
+export interface IDBObjectFields {
+  [key: string]: IDBObjectFieldsParameters;
+}
+export interface IDBTable {
+  name: string;
+  keyPath: string;
+}
+
 export type KnowledgeLvl = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
-
 export type PhraseDTO = [number, string, string, string, string, KnowledgeLvl, string, string];
-export type PhrasesDTO = PhraseDTO[];
-
-export type Phrase = {
+export interface Phrase {
   id: number;
   first: string;
   firstD: string;
@@ -11,25 +26,33 @@ export type Phrase = {
   secondD: string;
   knowledgeLvl: KnowledgeLvl;
   createDate: string;
-  tags: string;
-};
-export type Phrases = Phrase[];
-
-export type PhrasesFilterFunction = { func: (phrase: Phrase) => boolean };
-
-export type ButtonPositionType = {
-  left?: number;
-  right?: number;
-  top?: number;
-  bottom?: number;
-};
-
-export interface FieldData {
-  errors?: string[];
+  tags: string[];
+}
+export interface Replacement {
+  search: RegExp;
+  replace: string;
 }
 
-export interface Tag {
-  value: string;
-  color?: string;
+export interface Notification {
+  text: string;
+  id?: number;
+  description?: string | ReactNode;
+  consoleDescription?: unknown;
+  type?: STATUS;
+  duration?: number;
+  timeoutId?: NodeJS.Timeout;
 }
-export type Tags = Tag[];
+
+export interface UserSettings {
+  userId: number;
+  token: string;
+  gistId: string;
+  syncOn100percent: boolean;
+}
+
+export interface Conflict {
+  incomingPhrase: Partial<Phrase>;
+  existingPhrase: Phrase | undefined;
+  differentFields: (keyof Phrase)[];
+  isIncomingSelected: boolean;
+}

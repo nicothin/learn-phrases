@@ -1,0 +1,51 @@
+.drop-button {
+  position: relative;
+}
+
+.drop-button--open {
+
+  .drop-button__drop {
+    width: auto;
+    height: auto;
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.drop-button--to-left-top {
+
+  .drop-button__drop {
+    left: auto;
+    right: calc(100% + 1em);
+    transform: translateX(1em);
+  }
+}
+
+.drop-button--to-left-top.drop-button--open {
+
+  .drop-button__drop {
+    width: auto;
+    height: auto;
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.drop-button__button {
+  display: block;
+}
+
+.drop-button__drop {
+  position: absolute;
+  bottom: 0;
+  left: calc(100% + 1em);
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  opacity: 0;
+  border-radius: var(--border-radius);
+  background-color: var(--bg-color);
+  box-shadow: var(--box-shadow);
+  transform: translateX(-1em);
+  transition: all 0.3s;
+}

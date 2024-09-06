@@ -1,111 +1,81 @@
-import { Table } from 'antd';
-import type { TableColumnsType as TableColumns } from 'antd';
-import Markdown from 'react-markdown';
+import { ReactNode } from 'react';
 
 import './PhrasesTable.css';
 
-import { Phrase, Phrases } from '../../types';
-import { renderTags } from '../../utils';
-import { useEffect, useMemo, useState } from 'react';
-import { useSettingsContext } from '../../hooks';
+import { Phrase } from '../../types';
+import { formatDate } from '../../utils';
+import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
 
-interface PhraseTableProps {
-  readonly wrapperSelector: string;
-  readonly phrasesInTheSelection?: Phrases;
-  readonly onRowClick: (record: Phrase) => void;
-  readonly tableRef: Parameters<typeof Table>[0]['ref'];
+interface PhrasesTableProps {
+  phrases: Phrase[];
+  onRowClick: (phraseId: number) => void;
+  noPhrasesMessage?: string | ReactNode;
 }
 
-export default function PhrasesTable({
-  wrapperSelector,
-  phrasesInTheSelection,
-  onRowClick,
-  tableRef,
-}: PhraseTableProps) {
-  const { tags } = useSettingsContext();
+export function PhrasesTable(data: PhrasesTableProps) {
+  const { phrases, onRowClick, noPhrasesMessage = 'There are no phrases here yet.' } = data;
 
-  const [contentAreaSize, setContentAreaSize] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-
-  const COLUMNS: TableColumns<Phrase> = [
-    {
-      title: 'ID',
-      dataIndex: 'id',
-      key: 'id',
-      width: 48,
-      fixed: 'left',
-    },
-    {
-      title: 'First',
-      dataIndex: 'first',
-      key: 'first',
-      render: (_, record) => <Markdown>{record.first}</Markdown>,
-    },
-    {
-      title: 'Second',
-      dataIndex: 'second',
-      key: 'second',
-      render: (_, record) => <Markdown>{record.second}</Markdown>,
-    },
-    {
-      title: 'LVL',
-      dataIndex: 'knowledgeLvl',
-      key: 'knowledgeLvl',
-      width: 40,
-    },
-    {
-      title: 'Created',
-      dataIndex: 'createDate',
-      key: 'createDate',
-      width: 100,
-    },
-    {
-      title: 'Tags',
-      dataIndex: 'tags',
-      className: 'lp-phrases-table__tags-wrapper',
-      key: 'tags',
-      width: 300,
-      render: (_, record: Record<string, unknown>) => renderTags(record, tags),
-    },
-  ];
-
-  const handleRowClick = (record: Phrase) => {
-    onRowClick(record);
-  };
-
-  const data = useMemo(
-    () => phrasesInTheSelection?.map((item) => ({ ...item, key: item.id })) || [],
-    [phrasesInTheSelection],
-  );
-
-  // Resize table when viewport size changes
-  useEffect(() => {
-    const onViewportResize = () => {
-      const div = document.querySelector(wrapperSelector);
-      if (div) {
-        const { width, height } = div.getBoundingClientRect();
-        setContentAreaSize({ x: Math.max(width - 24, 1000), y: height - 94 });
-      }
-    };
-
-    onViewportResize();
-
-    window.addEventListener('resize', onViewportResize);
-
-    return () => {
-      window.removeEventListener('resize', onViewportResize);
-    };
-  }, [wrapperSelector]);
+  // const canAdd = typeof onAddPhrase === 'function';
 
   return (
-    <Table
-      className="lp-phrases-table"
-      ref={tableRef}
-      columns={COLUMNS}
-      dataSource={data}
-      scroll={contentAreaSize}
-      size="small"
-      onRow={(record: Phrase) => ({ onClick: () => handleRowClick(record) })}
-      pagination={false}
-    />
+    <div className="phrases-table">
+      {phrases?.length ? (
+        <div className="phrases-table__inner">
+          <table className="phrases-table__table" style={{ width: '100%', minWidth: '1000px' }}>
+            <colgroup>
+              <col style={{ width: "54px" }} />
+              <col />
+              <col />
+              <col style={{ width: "40px" }} />
+              <col style={{ width: "100px" }} />
+              {/* <col style={{ width: "300px" }} /> */}
+            </colgroup>
+
+            <thead>
+              <tr>
+                <th className="phrases-table__cell" scope="col">ID</th>
+                <th className="phrases-table__cell" scope="col">First</th>
+                <th className="phrases-table__cell" scope="col">Second</th>
+                <th className="phrases-table__cell" scope="col">LVL</th>
+                <th className="phrases-table__cell" scope="col">Created</th>
+                {/* <th className="phrases-table__cell" scope="col">Tags</th> */}
+              </tr>
+            </thead>
+
+            <tbody className="phrases-table__table-body">
+              {phrases.map((phrase) => (
+                <tr
+                  key={phrase.id}
+                  onClick={() => onRowClick(phrase.id)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter') {
+                      event.preventDefault();
+                      onRowClick(phrase.id);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                >
+                  <td className="phrases-table__cell">{phrase.id}</td>
+                  <td className="phrases-table__cell  phrases-table__cell--first">
+                    <MarkdownRenderer>{phrase.first}</MarkdownRenderer>
+                  </td>
+                  <td className="phrases-table__cell">
+                    <MarkdownRenderer>{phrase.second}</MarkdownRenderer>
+                  </td>
+                  <td className="phrases-table__cell">{phrase.knowledgeLvl}</td>
+                  <td className="phrases-table__cell">{formatDate(phrase.createDate)}</td>
+                  {/* <td className="phrases-table__cell">{phrase.tags?.join(', ')}</td> */}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <p className="phrases-table__no-phrases">
+          {noPhrasesMessage}
+        </p>
+      )}
+    </div>
   );
-}
+};

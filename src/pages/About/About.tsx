@@ -1,7 +1,8 @@
+/* eslint-disable max-len */
+
 export default function About() {
-  // prettier-ignore
   return (
-    <>
+    <div className="layout-text">
       <h1>About</h1>
 
       <p>
@@ -15,7 +16,9 @@ export default function About() {
         </li>
       </ol>
       <p>
-        This is a serverless project. By default, all added words/phrases are saved in the browser storage. But in the settings you can specify data for accessing <a href="https://gist.github.com/" rel="noreferrer">gist</a> and then the data will be periodically saved to it.
+        This is a serverless project. By default, all added words/phrases are saved in the browser storage.
+        <br />
+        But in the settings you can specify data for accessing <a href="https://gist.github.com/" rel="noreferrer">gist</a> and then the data will be periodically saved to it.
       </p>
 
       <h2>Links</h2>
@@ -28,6 +31,6 @@ export default function About() {
       <h2>Thanx</h2>
 
       <p>Thanks to <a href="https://www.instagram.com/english_playlists/">Alexander Bebris</a>. This project inspired by the video course <a href="https://www.youtube.com/watch?v=BAahBqreWZw&amp;list=PLD6SPjEPomasNzHuJpcS1Fxa2PYf1Bm-x&amp;index=1">English by playlists</a>.</p>
-    </>
+    </div>
   );
 }

@@ -1,0 +1,52 @@
+.icon-success {
+  display: inline-block;
+  width: 2em;
+  height: 2em;
+  position: relative;
+}
+.icon-success::before {
+  content: '';
+  display: block;
+  width: 1em;
+  height: 0.5em;
+  border-left: 2px solid var(--success-color);
+  border-bottom: 2px solid var(--success-color);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -70%) rotate(-45deg);
+}
+.icon-success--float::before {
+  /* border-left-width: 3px; */
+  /* border-bottom-width: 3px; */
+  border-color: currentColor;
+}
+
+.icon-error {
+  display: inline-block;
+  width: 2em;
+  height: 2em;
+  position: relative;
+}
+.icon-error::before,
+.icon-error::after {
+  content: '';
+  display: block;
+  width: 2px;
+  height: 1.4em;
+  background-color: var(--danger-color);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+.icon-error::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+.icon-error::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+.icon-error--float::before,
+.icon-error--float::after {
+  /* width: 3px; */
+  background-color: currentColor
+}

@@ -1,0 +1,16 @@
+.settings__form-item {
+  display: block;
+  margin-bottom: 1em;
+}
+
+.settings__submit-btn {
+  margin-top: 2em;
+}
+
+.settings__form-item--checkbox {
+  input {
+    display: inline-block;
+    vertical-align: baseline;
+    margin: 0 0.6rem 0;
+  }
+}

@@ -1,0 +1,50 @@
+.main-menu {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  position: fixed;
+  z-index: 9999;
+  bottom: 2em;
+  left: 2em;
+}
+
+.main-menu__button {
+  position: relative;
+}
+
+.main-menu__burger {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  width: 18px;
+  height: 18px;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s;
+}
+
+.main-menu__title {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: 0;
+  width: 18px;
+  height: 18px;
+  overflow: hidden;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 18px;
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s;
+}
+
+.drop-button--open {
+  .main-menu__burger {
+    opacity: 0;
+  }
+  .main-menu__title {
+    opacity: 1;
+    z-index: 1;
+  }
+}

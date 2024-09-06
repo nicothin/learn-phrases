@@ -1,0 +1,32 @@
+.close {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background-color: transparent;
+  border: 0;
+  border-radius: var(--border-radius);
+  font-family: inherit;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--gray);
+  cursor: pointer;
+  overflow: hidden;
+  user-select: none;
+  transition: all 0.3s;
+
+  span {
+    transform: translateY(-0.05em);
+  }
+}
+
+.close:hover {
+  color: var(--gray-dark);
+  background-color: var(--gray-lightest);
+}
+
+.close:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--black);
+}
