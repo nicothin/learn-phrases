@@ -32,8 +32,7 @@ export const ImportButton = (data: ImportButtonProps) => {
           addNotification(conversion.notification);
         }
         setPhrasesToResolveConflicts(conversion.phrases);
-      }
-      catch (error) {
+      } catch (error) {
         console.error(error);
         addNotification({
           text: `Invalid JSON: ${error}`,
@@ -60,7 +59,7 @@ export const ImportButton = (data: ImportButtonProps) => {
       <span className="import-button__text">
         Import phrases from file
         {suffix && ` ${suffix}`}
-        </span>
+      </span>
     </span>
   );
-}
+};

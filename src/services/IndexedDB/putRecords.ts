@@ -43,8 +43,8 @@ export function putRecords(params: PutRecordsParams): Promise<unknown[]> {
 
         putRequest.onerror = (event) => {
           const putRequestEventTarget = event.target as IDBRequest;
-          const error = putRequestEventTarget.error?.message ??
-            `IDB: Error putting object: ${JSON.stringify(value)}`;
+          const error =
+            putRequestEventTarget.error?.message ?? `IDB: Error putting object: ${JSON.stringify(value)}`;
           errors.push(error);
         };
       });

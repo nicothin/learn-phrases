@@ -29,11 +29,9 @@ export function getAllRecords(params: GetAllRecordsParams): Promise<unknown> {
             const valueB = b[sortedBy];
             if (typeof valueA === 'number' && typeof valueB === 'number') {
               return valueB - valueA;
-            }
-            else if (!valueA && !valueB) {
+            } else if (!valueA && !valueB) {
               return 0; // equal
-            }
-            else {
+            } else {
               return valueA.localeCompare(valueB);
             }
           });

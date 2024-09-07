@@ -11,24 +11,24 @@ interface ConfirmProps {
   isOpen: boolean;
 }
 
-export function Confirm (data: ConfirmProps) {
+export function Confirm(data: ConfirmProps) {
   const { title, message, confirmButtonText, onConfirm, onCancel, isOpen } = data;
 
-  return isOpen
-    ? (
-      <div className="confirm">
-        <div className="confirm__content">
-          <h3 className="confirm__title">{title}</h3>
-          {message && <div className="confirm__message">{message}</div>}
-          <div className="confirm__buttons">
-            <button onClick={onCancel} className="btn  btn--secondary">Cancel</button>
-            <button onClick={onConfirm} className="btn  btn--danger">
-              {confirmButtonText ?? 'Confirm'}
-            </button>
-          </div>
+  return isOpen ? (
+    <div className="confirm">
+      <div className="confirm__content">
+        <h3 className="confirm__title">{title}</h3>
+        {message && <div className="confirm__message">{message}</div>}
+        <div className="confirm__buttons">
+          <button onClick={onCancel} className="btn  btn--secondary">
+            Cancel
+          </button>
+          <button onClick={onConfirm} className="btn  btn--danger">
+            {confirmButtonText ?? 'Confirm'}
+          </button>
         </div>
-        <span className="confirm__backdrop"></span>
       </div>
-    )
-    : null;
-};
+      <span className="confirm__backdrop"></span>
+    </div>
+  ) : null;
+}

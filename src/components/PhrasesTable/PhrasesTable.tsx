@@ -23,21 +23,31 @@ export function PhrasesTable(data: PhrasesTableProps) {
         <div className="phrases-table__inner">
           <table className="phrases-table__table" style={{ width: '100%', minWidth: '1000px' }}>
             <colgroup>
-              <col style={{ width: "54px" }} />
+              <col style={{ width: '54px' }} />
               <col />
               <col />
-              <col style={{ width: "40px" }} />
-              <col style={{ width: "100px" }} />
+              <col style={{ width: '40px' }} />
+              <col style={{ width: '100px' }} />
               {/* <col style={{ width: "300px" }} /> */}
             </colgroup>
 
             <thead>
               <tr>
-                <th className="phrases-table__cell" scope="col">ID</th>
-                <th className="phrases-table__cell" scope="col">First</th>
-                <th className="phrases-table__cell" scope="col">Second</th>
-                <th className="phrases-table__cell" scope="col">LVL</th>
-                <th className="phrases-table__cell" scope="col">Created</th>
+                <th className="phrases-table__cell" scope="col">
+                  ID
+                </th>
+                <th className="phrases-table__cell" scope="col">
+                  First
+                </th>
+                <th className="phrases-table__cell" scope="col">
+                  Second
+                </th>
+                <th className="phrases-table__cell" scope="col">
+                  LVL
+                </th>
+                <th className="phrases-table__cell" scope="col">
+                  Created
+                </th>
                 {/* <th className="phrases-table__cell" scope="col">Tags</th> */}
               </tr>
             </thead>
@@ -72,10 +82,8 @@ export function PhrasesTable(data: PhrasesTableProps) {
           </table>
         </div>
       ) : (
-        <p className="phrases-table__no-phrases">
-          {noPhrasesMessage}
-        </p>
+        <p className="phrases-table__no-phrases">{noPhrasesMessage}</p>
       )}
     </div>
   );
-};
+}

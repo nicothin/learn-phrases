@@ -13,4 +13,4 @@ export const arrayOfStringAreEqual = (arr1: string[], arr2: string[]): boolean =
   }
 
   return true;
-}
+};

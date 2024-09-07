@@ -7,9 +7,11 @@ export const getPhraseFromPhraseDTO = (data: unknown): Partial<Phrase> | null =>
     !Array.isArray(data) ||
     data.length < 4 ||
     typeof data[0] !== 'number' ||
-    typeof data[1] !== 'string' || !data[1] ||
+    typeof data[1] !== 'string' ||
+    !data[1] ||
     typeof data[2] !== 'string' ||
-    typeof data[3] !== 'string' || !data[3]
+    typeof data[3] !== 'string' ||
+    !data[3]
   ) {
     console.error('Invalid phrase data:', data);
     return null;
@@ -22,7 +24,7 @@ export const getPhraseFromPhraseDTO = (data: unknown): Partial<Phrase> | null =>
   try {
     createDate = new Date(data[6]).toISOString();
   } catch (error) {
-    console.error(error, data);
+    console.info(error, data);
   }
 
   const newPhrase: Phrase = {

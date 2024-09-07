@@ -35,7 +35,6 @@ export const REPLACEMENTS: Replacement[] = [
   { search: /__(.*?)__/g, replace: '<span style="text-decoration:underline">$1</span>' },
 ];
 
-
 // export const DATE_FORMAT = 'YYYY.MM.DD';
 
 // export const TAGS_JSON_STRING: string = `[

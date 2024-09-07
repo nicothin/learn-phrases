@@ -1,7 +1,7 @@
 .btn {
   display: inline-block;
   min-height: calc(1em + 1.4em + 2px);
-  border: 1px solid var(--main-color);
+  border: 1px solid var(--primary-color);
   border-radius: var(--border-radius);
   padding: 0.5em 1.2em;
   font-family: inherit;
@@ -12,7 +12,7 @@
   user-select: none;
   font-size: 1em;
   line-height: 1.4em;
-  background-color: var(--main-color);
+  background-color: var(--primary-color);
   color: #fff;
   transition: all .2s ease-in-out;
   cursor: pointer;
@@ -55,10 +55,10 @@
   padding: 0.1em 0.5rem;
 }
 
-@supports (color: hsl(from var(--main-color) h s calc(l + 8))) {
+@supports (color: hsl(from var(--primary-color) h s calc(l + 8))) {
   .btn:not(:disabled):hover {
-    border-color: hsl(from var(--main-color) h s calc(l + 8));
-    background-color: hsl(from var(--main-color) h s calc(l + 8));
+    border-color: hsl(from var(--primary-color) h s calc(l + 8));
+    background-color: hsl(from var(--primary-color) h s calc(l + 8));
   }
 
   .btn--secondary:not(:disabled):hover,

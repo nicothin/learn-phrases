@@ -41,10 +41,10 @@
   background-color: var(--primary-color);
 }
 
-@supports (color: hsl(from var(--main-color) h s calc(l + 8))) {
+@supports (color: hsl(from var(--primary-color) h s calc(l + 8))) {
   .btn-circle--accent:hover,
   .btn-circle--accent:focus-visible {
-    background-color: hsl(from var(--main-color) h s calc(l + 8));
+    background-color: hsl(from var(--primary-color) h s calc(l + 8));
   }
 }
 

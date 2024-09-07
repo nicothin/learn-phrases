@@ -1,6 +1,4 @@
-/* eslint-disable max-len */
-
-export function Icons () {
+export function Icons() {
   /*
     <svg width="18" height="18">
       <use xlinkHref="#error" fill="var(--danger-color)" />
@@ -11,11 +9,11 @@ export function Icons () {
     <svg style={{ display: 'none' }}>
       <defs>
         <symbol id="done" viewBox="0 0 18 18">
-          <path d="M9 0a9 9 0 1 0 0 18A9 9 0 0 0 9 0zm4 5 2 2-7 7-5-5 2-2 3 3 5-5z"/>
+          <path d="M9 0a9 9 0 1 0 0 18A9 9 0 0 0 9 0zm4 5 2 2-7 7-5-5 2-2 3 3 5-5z" />
         </symbol>
 
         <symbol id="success" width="18" height="18">
-          <path d="M7 14 1.425 8.447 3 7l4 4 8-8 1.459 1.549S10.333 10.667 7 14z"/>
+          <path d="M7 14 1.425 8.447 3 7l4 4 8-8 1.459 1.549S10.333 10.667 7 14z" />
         </symbol>
 
         <symbol id="error" width="18" height="18">

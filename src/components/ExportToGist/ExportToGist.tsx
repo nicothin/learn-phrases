@@ -40,4 +40,4 @@ export function ExportToGist(data: ExportToGistProps) {
       {children}
     </button>
   );
-};
+}

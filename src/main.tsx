@@ -1,5 +1,5 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
 import { HashRouter as BrowserRouter } from 'react-router-dom';
 
 import './assets/custom-properties.css';
@@ -10,7 +10,7 @@ import { NotificationContextProvider } from './contexts/NotificationContext/Noti
 
 import App from './App';
 
-createRoot(document.getElementById("root")!).render(
+createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <NotificationContextProvider>
       <ActionsContextProvider>
@@ -19,5 +19,5 @@ createRoot(document.getElementById("root")!).render(
         </BrowserRouter>
       </ActionsContextProvider>
     </NotificationContextProvider>
-  </StrictMode>
+  </StrictMode>,
 );

@@ -10,7 +10,7 @@ interface RatingProps {
   isSmall?: boolean;
 }
 
-export function Rating (data: RatingProps) {
+export function Rating(data: RatingProps) {
   const { maxLevel = 10, level = 0, className, onChange, isSmall } = data;
 
   const [selectedLevel, setSelectedLevel] = useState(level);
@@ -30,8 +30,7 @@ export function Rating (data: RatingProps) {
       ${index + 1 <= hoverLevel ? 'rating__item--hover' : ''}
     `;
 
-    return isInteractive
-    ? (
+    return isInteractive ? (
       <button
         key={index + 1}
         onClick={isInteractive ? () => onLevelClick(index + 1) : undefined}
@@ -40,15 +39,15 @@ export function Rating (data: RatingProps) {
         onMouseEnter={isInteractive ? () => setHoverLevel(index + 1) : undefined}
         onMouseLeave={isInteractive ? () => setHoverLevel(0) : undefined}
       >
-        <svg width="18" height="18"><use xlinkHref="#done" /></svg>
+        <svg width="18" height="18">
+          <use xlinkHref="#done" />
+        </svg>
       </button>
-    )
-    : (
-      <span
-        key={index + 1}
-        className={classes}
-      >
-        <svg width="18" height="18"><use xlinkHref="#done" /></svg>
+    ) : (
+      <span key={index + 1} className={classes}>
+        <svg width="18" height="18">
+          <use xlinkHref="#done" />
+        </svg>
       </span>
     );
   });
@@ -58,13 +57,15 @@ export function Rating (data: RatingProps) {
   }, [level]);
 
   return (
-    <div className={`
+    <div
+      className={`
       rating
       ${isInteractive ? 'rating--interactive' : ''}
       ${isSmall ? 'rating--small' : ''}
       ${className ?? ''}
-    `}>
+    `}
+    >
       {icons}
     </div>
   );
-};
+}

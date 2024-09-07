@@ -1,6 +1,6 @@
 .phrase-card {
   position: relative;
-  width: clamp(360px, 70vw, 860px);
+  width: clamp(360px, 83vw, 860px);
   border-radius: var(--border-radius);
   background-color: var(--bg-color);
   box-shadow: var(--box-shadow-sm);
@@ -13,7 +13,7 @@
 }
 
 .phrase-card__main-text-wrap {
-  font-size: clamp(24px, 4vw, 38px);
+  font-size: var(--phrase-main-text-size);
   line-height: 1.2;
 
   p {
@@ -27,6 +27,7 @@
 
 .phrase-card__description-text-wrap {
   padding: 1rem 0 0;
+  font-size: var(--phrase-second-text-size);
 
   p {
     margin: 0;

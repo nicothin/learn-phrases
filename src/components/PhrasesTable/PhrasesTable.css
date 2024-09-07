@@ -53,6 +53,6 @@ tr:focus-visible .phrases-table__cell--first {
 
 .phrases-table__no-phrases {
   padding: 2em;
-  font-size: 1.6em;
+  font-size: var(--text-size-xl);
   text-align: center;
 }

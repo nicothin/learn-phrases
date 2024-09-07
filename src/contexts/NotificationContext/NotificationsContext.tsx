@@ -33,30 +33,33 @@ export const NotificationContextProvider: FC<{ children: ReactNode }> = ({ child
     });
   }, []);
 
-  const addNotification = useCallback((notification: Notification) => {
-    const id = !notification.id ? Date.now() : notification.id;
-    const newNotification = { ...notification, id };
+  const addNotification = useCallback(
+    (notification: Notification) => {
+      const id = !notification.id ? Date.now() : notification.id;
+      const newNotification = { ...notification, id };
 
-    const duration = notification.duration ?? 10000;
+      const duration = notification.duration ?? 10000;
 
-    if (newNotification?.duration !== 0) {
-      const timeoutId = setTimeout(() => {
-        removeNotification(newNotification.id);
-      }, duration);
+      if (newNotification?.duration !== 0) {
+        const timeoutId = setTimeout(() => {
+          removeNotification(newNotification.id);
+        }, duration);
 
-      newNotification.timeoutId = timeoutId;
-    }
-
-    setAllNotifications((prevNotifications) => [...prevNotifications, newNotification]);
-
-    if (notification.consoleDescription) {
-      if (notification.type === STATUS.ERROR) {
-        console.error(notification.consoleDescription);
-      } else {
-        console.log(notification.consoleDescription);
+        newNotification.timeoutId = timeoutId;
       }
-    }
-  }, [removeNotification]);
+
+      setAllNotifications((prevNotifications) => [...prevNotifications, newNotification]);
+
+      if (notification.consoleDescription) {
+        if (notification.type === STATUS.ERROR) {
+          console.error(notification.consoleDescription);
+        } else {
+          console.info(notification.consoleDescription);
+        }
+      }
+    },
+    [removeNotification],
+  );
 
   const value = useMemo(() => {
     return { addNotification, removeNotification };
@@ -101,12 +104,8 @@ export const NotificationContextProvider: FC<{ children: ReactNode }> = ({ child
               </svg>
             )}
 
-            <p className="notification__text">
-              {item.text}
-            </p>
-            {item.description && (
-              <div className="notification__description">{item.description}</div>
-            )}
+            <p className="notification__text">{item.text}</p>
+            {item.description && <div className="notification__description">{item.description}</div>}
 
             <button
               type="button"

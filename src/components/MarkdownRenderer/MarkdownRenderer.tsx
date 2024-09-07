@@ -20,17 +20,11 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({ c
           .filter((part) => !!part)
           .map((part, index) => {
             if (part.startsWith('# '))
-              return (
-                <h2 key={index} dangerouslySetInnerHTML={{ __html: part.replace(/^#\s/, '') }} />
-              );
+              return <h2 key={index} dangerouslySetInnerHTML={{ __html: part.replace(/^#\s/, '') }} />;
             else if (part.startsWith('## '))
-              return (
-                <h2 key={index} dangerouslySetInnerHTML={{ __html: part.replace(/^##\s/, '') }} />
-              );
+              return <h2 key={index} dangerouslySetInnerHTML={{ __html: part.replace(/^##\s/, '') }} />;
             else if (part.startsWith('### '))
-              return (
-                <h2 key={index} dangerouslySetInnerHTML={{ __html: part.replace(/^###\s/, '') }} />
-              );
+              return <h2 key={index} dangerouslySetInnerHTML={{ __html: part.replace(/^###\s/, '') }} />;
 
             return <p key={index} dangerouslySetInnerHTML={{ __html: part }} />;
           })}

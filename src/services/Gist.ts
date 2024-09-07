@@ -38,11 +38,7 @@ export class Gist {
       return null;
     }
 
-    if (
-      !Gist.instance ||
-      config.token !== Gist.instance.token ||
-      config.gistId !== Gist.instance.gistId
-    ) {
+    if (!Gist.instance || config.token !== Gist.instance.token || config.gistId !== Gist.instance.gistId) {
       Gist.instance = new Gist(config);
     }
     return Gist.instance;

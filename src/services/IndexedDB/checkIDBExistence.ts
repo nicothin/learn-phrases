@@ -47,11 +47,15 @@ export function checkIDBExistence(params: CheckIDBExistenceParams): Promise<void
         }
       });
       if (tablesNotFound.length > 0) {
-        reject(new Error(`IDB: The following tables were not found in the database: ${tablesNotFound.join(', ')}`));
+        reject(
+          new Error(`IDB: The following tables were not found in the database: ${tablesNotFound.join(', ')}`),
+        );
       }
 
       if (tablesNotFound.length > 0) {
-        reject(new Error(`IDB: The following tables were not found in the database: ${tablesNotFound.join(', ')}`));
+        reject(
+          new Error(`IDB: The following tables were not found in the database: ${tablesNotFound.join(', ')}`),
+        );
       }
 
       resolve();

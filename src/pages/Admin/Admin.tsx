@@ -4,25 +4,34 @@ import './Admin.css';
 import '../../assets/btn.css';
 
 import { UserSettings } from '../../types';
-import { useActionsContext, useNotificationContext, useEditPhrase } from '../../hooks';
+import {
+  useActionsContext,
+  useNotificationContext,
+  useEditPhrase,
+  usePhraseConflictsResolver,
+  useImportFromJSON,
+} from '../../hooks';
 import { PhrasesTable } from '../../components/PhrasesTable/PhrasesTable';
-import { ImportButton } from '../../components/ImportButton/ImportButton';
+import { ImportFromFileButton } from '../../components/ImportFromFileButton/ImportFromFileButton';
+import { ExportToGistButton } from '../../components/ExportToGistButton/ExportToGistButton';
+import { ImportFromGistButton } from '../../components/ImportFromGistButton/ImportFromGistButton';
 import { Pagination } from '../../components/Pagination/Pagination';
-import { ExportButton } from '../../components/ExportButton/ExportButton';
+import { ExportToFileButton } from '../../components/ExportToFileButton/ExportToFileButton';
 import { Confirm } from '../../components/Confirm/Confirm';
 import { InputText } from '../../components/InputText/InputText';
 import { DropButton } from '../../components/DropButton/DropButton';
-import { ExportToGist } from '../../components/ExportToGist/ExportToGist';
-import { ImportFromGist } from '../../components/ImportFromGist/ImportFromGist';
 
 const PHRASES_PER_PAGE = 50;
 const SEARCH_MIN_LENGTH = 3;
 const MAIN_USER_ID = 1;
 
 export default function Admin() {
-  const { allPhrases, exportPhrasesDTOToFile, deleteAllPhrases, allSettings } = useActionsContext();
+  const { allPhrases, exportPhrasesDTOToFile, deleteAllPhrases, allSettings, setIsImportFromJSONOpen } =
+    useActionsContext();
   const { addNotification } = useNotificationContext();
   const { editPhraseContent, startEditingPhrase } = useEditPhrase();
+  const { phraseConflictsResolverContent } = usePhraseConflictsResolver();
+  const { importFromJSONContent } = useImportFromJSON();
 
   const [isConfirmDeleteAllPhrasesOpen, setIsConfirmDeleteAllPhrasesOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -38,7 +47,7 @@ export default function Admin() {
   };
 
   const onEditPhrase = (phraseId: number) => {
-    const phrase = allPhrases.find(({ id }) => id === phraseId) || {}
+    const phrase = allPhrases.find(({ id }) => id === phraseId) || {};
     startEditingPhrase(phrase);
   };
 
@@ -70,10 +79,11 @@ export default function Admin() {
       return allPhrases.slice((currentPage - 1) * PHRASES_PER_PAGE, currentPage * PHRASES_PER_PAGE);
     }
 
-    const actualPhrases = allPhrases.filter((phrase) =>
-      String(phrase.id) === searchString ||
-      phrase.first.toLowerCase().includes(searchString) ||
-      phrase.second.toLowerCase().includes(searchString)
+    const actualPhrases = allPhrases.filter(
+      (phrase) =>
+        String(phrase.id) === searchString ||
+        phrase.first.toLowerCase().includes(searchString) ||
+        phrase.second.toLowerCase().includes(searchString),
     );
 
     setShownPhrasesCounter(actualPhrases.length);
@@ -83,13 +93,13 @@ export default function Admin() {
 
   // Set shown phrases at the first load
   useEffect(() => {
-    setShownPhrasesCounter(allPhrases.length)
+    setShownPhrasesCounter(allPhrases.length);
   }, [allPhrases.length]);
 
   // Set actual user settings
   useEffect(() => {
     const thisMainUserData: UserSettings | undefined = allSettings?.find(
-      (item) => item.userId === MAIN_USER_ID
+      (item) => item.userId === MAIN_USER_ID,
     );
     setThisUserSettings(thisMainUserData);
   }, [allSettings]);
@@ -120,45 +130,51 @@ export default function Admin() {
           phrases={shownPhrases}
           onRowClick={onEditPhrase}
           noPhrasesMessage={
-            searchString.length
-              ? 'No phrases found'
-              : <>
+            searchString.length ? (
+              'No phrases found'
+            ) : (
+              <>
                 There are no phrases here yet.
                 <br />
-                It's time <button type="button" className="link" onClick={() => startEditingPhrase({})}>
+                It's time{' '}
+                <button type="button" className="link" onClick={() => startEditingPhrase({})}>
                   to add a few
-                </button>.
+                </button>{' '}
+                or <ImportFromFileButton className="link">import from file</ImportFromFileButton> or{' '}
+                <button onClick={() => setIsImportFromJSONOpen(true)} className="link">
+                  import from JSON
+                </button>
+                .
               </>
+            )
           }
         />
       </div>
 
-      <div className="admin__sub-table">
-        Phrases counter: {allPhrases.length}
-      </div>
+      <div className="admin__sub-table">Phrases counter: {allPhrases.length}</div>
 
       {canTrySyncToGist && (
-        <ImportFromGist
+        <ImportFromGistButton
           className="admin__btn  btn-circle"
           classNameLoading="btn-circle--loading"
-          style={{ right: '2em', bottom: '18em' }}
+          style={{ right: '2em', top: '4em' }}
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18">
             <use xlinkHref="#download" />
           </svg>
-        </ImportFromGist>
+        </ImportFromGistButton>
       )}
 
       {canTrySyncToGist && (
-        <ExportToGist
+        <ExportToGistButton
           className="admin__btn  btn-circle"
           classNameLoading="btn-circle--loading"
-          style={{ right: '2em', bottom: '14em' }}
+          style={{ right: '2em', top: '8em' }}
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18">
             <use xlinkHref="#upload" />
           </svg>
-        </ExportToGist>
+        </ExportToGistButton>
       )}
 
       {thereArePhrases && (
@@ -177,19 +193,28 @@ export default function Admin() {
       <div className="admin__btn" style={{ right: '2em', bottom: '6em' }}>
         <DropButton
           className=""
-          buttonContent={(
+          buttonContent={
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18">
-              <path d="m4 10-3 3 3 3h1v-2h12v-2H5v-2zM13 2v2H1v2h12v2h1l3-3-3-3Z"/>
+              <path d="m4 10-3 3 3 3h1v-2h12v-2H5v-2zM13 2v2H1v2h12v2h1l3-3-3-3Z" />
             </svg>
-          )}
+          }
           buttonClassName="btn-circle"
           direction="left-top"
           title="Import / Export phrases"
         >
           <ul className="menu">
-            <li><ImportButton className="btn  btn--secondary  btn--sm" /></li>
+            <li>
+              <button onClick={() => setIsImportFromJSONOpen(true)} className="btn  btn--secondary  btn--sm">
+                Import phrases from JSON
+              </button>
+            </li>
+            <li>
+              <ImportFromFileButton className="btn  btn--secondary  btn--sm" />
+            </li>
             {thereArePhrases && (
-              <li><ExportButton className="btn  btn--secondary  btn--sm" /></li>
+              <li>
+                <ExportToFileButton className="btn  btn--secondary  btn--sm" />
+              </li>
             )}
           </ul>
         </DropButton>
@@ -211,16 +236,19 @@ export default function Admin() {
       <Confirm
         isOpen={isConfirmDeleteAllPhrasesOpen}
         title="Are you sure you want to delete all phrases?"
-        message={(
+        message={
           <>
             <p>This action is irreversible.</p>
             <p>The backup copy will be saved to a file first.</p>
           </>
-        )}
+        }
         confirmButtonText="Yes, delete all local phrases"
         onConfirm={onConfirmDeleteAllPhrases}
         onCancel={onCancelDeleteAllPhrases}
       />
+
+      {phraseConflictsResolverContent}
+      {importFromJSONContent}
     </div>
   );
 }

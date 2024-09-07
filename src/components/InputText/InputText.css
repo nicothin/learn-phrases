@@ -36,6 +36,10 @@
   transition: box-shadow 0.3s;
 }
 
+.input-text__input--standart {
+  overflow: auto;
+}
+
 .input-text__input:focus-visible {
   outline: none;
   border-color: var(--black);

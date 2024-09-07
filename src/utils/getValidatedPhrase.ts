@@ -4,7 +4,7 @@ import { convertToKnowledgeLvl } from './convertToKnowledgeLvl';
 export const getValidatedPhrase = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   phrase: any,
-  idIsRequired: boolean = false
+  idIsRequired: boolean = false,
 ): Partial<Phrase> | null => {
   if (
     typeof phrase !== 'object' ||
@@ -20,6 +20,7 @@ export const getValidatedPhrase = (
   try {
     const date = new Date(phrase.createDate);
     createDate = date.toISOString().slice(0, -1);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (_) {
     // console.log(_, phrase);
   }

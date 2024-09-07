@@ -18,9 +18,7 @@ export function Progress(data: ProgressProps) {
       <div className="progress__line-wrap">
         <div className="progress__line" style={{ width: `${safePercentage}%` }} />
       </div>
-      <div className="progress__text  text-secondary">
-        {children}
-      </div>
+      <div className="progress__text  text-secondary">{children}</div>
     </div>
   );
-};
+}

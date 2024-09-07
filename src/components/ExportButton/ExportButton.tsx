@@ -18,9 +18,7 @@ export const ExportButton = (data: ExportButtonProps) => {
 
   return (
     <button className={`export-button ${className ?? ''}`} onClick={exportToFile}>
-      <span className="export-button__text">
-        {children ?? 'Export phrases to file'}
-      </span>
+      <span className="export-button__text">{children ?? 'Export phrases to file'}</span>
     </button>
   );
-}
+};

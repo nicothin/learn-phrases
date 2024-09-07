@@ -1,12 +1,4 @@
-import {
-  useRef,
-  useState,
-  useImperativeHandle,
-  forwardRef,
-  ReactNode,
-  useCallback,
-  Children,
-} from 'react';
+import { useRef, useState, useImperativeHandle, forwardRef, ReactNode, useCallback, Children } from 'react';
 
 import './Carousel.css';
 
@@ -42,7 +34,7 @@ export const Carousel = forwardRef<CarouselRef, CarouselProps>(
         beforeChange?.(currentIndex, nextIndex);
         setCurrentIndex(nextIndex);
       },
-      [beforeChange, currentIndex, slideCount]
+      [beforeChange, currentIndex, slideCount],
     );
 
     return (
@@ -59,5 +51,5 @@ export const Carousel = forwardRef<CarouselRef, CarouselProps>(
         </div>
       </div>
     );
-  }
+  },
 );

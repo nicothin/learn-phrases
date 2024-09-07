@@ -25,13 +25,11 @@ export const useEditPhrase = (): EditPhraseResult => {
   };
 
   return {
-    editPhraseContent: isEditPhraseModalOpen
-      ? (
-        <Modal isOpen={isEditPhraseModalOpen} onCloseThisModal={stopEditingPhrase}>
-          <EditPhraseForm phrase={editedPhrase} onCancel={stopEditingPhrase} />
-        </Modal>
-      )
-      : null,
+    editPhraseContent: isEditPhraseModalOpen ? (
+      <Modal isOpen={isEditPhraseModalOpen} onCloseThisModal={stopEditingPhrase}>
+        <EditPhraseForm phrase={editedPhrase} onCancel={stopEditingPhrase} />
+      </Modal>
+    ) : null,
     isEditPhraseModalOpen,
     startEditingPhrase,
   };

@@ -4,7 +4,6 @@ import { Routes, Route } from 'react-router-dom';
 import { useActionsContext, useNotificationContext } from './hooks';
 import { Icons } from './components/Icons/Icons';
 import { MainMenu } from './components/MainMenu/MainMenu';
-import { PhraseConflictsResolver } from './components/PhraseConflictsResolver/PhraseConflictsResolver';
 
 import Learn from './pages/Learn/Learn';
 import Admin from './pages/Admin/Admin';
@@ -19,6 +18,7 @@ export default function App() {
   // Check if IDB exists, and if not, create it
   useEffect(() => {
     checkIDBExist().catch((error) => addNotification(error));
+    // NOTE[@nicothin]: This is a conscious decision
   }, []); // [addNotification, checkIDBExist]
 
   return (
@@ -38,8 +38,6 @@ export default function App() {
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </div>
-
-      <PhraseConflictsResolver />
     </div>
   );
 }

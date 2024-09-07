@@ -25,8 +25,8 @@ export function deleteRecords(params: DeleteRecordsProps): Promise<void> {
 
         deleteRequest.onerror = (event) => {
           const deleteRequestEventTarget = event.target as IDBRequest;
-          const error = deleteRequestEventTarget.error?.message ??
-            `IDB: Error deleting object: ${JSON.stringify(key)}`;
+          const error =
+            deleteRequestEventTarget.error?.message ?? `IDB: Error deleting object: ${JSON.stringify(key)}`;
           deleteErrors.push(error);
         };
       });

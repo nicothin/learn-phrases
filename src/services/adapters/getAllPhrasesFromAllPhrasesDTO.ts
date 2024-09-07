@@ -25,15 +25,15 @@ export const getAllPhrasesFromAllPhrasesDTO = (data: PhraseDTO[]): GetAllPhrases
     phrases,
     notification: errors.length
       ? {
-        text: 'Some errors occurred during conversion phrasesDTO to phrases.',
-        description: 'See the console logs for more information.',
-        consoleDescription: errors,
-        type: STATUS.ERROR,
-      }
+          text: 'Some errors occurred during conversion phrasesDTO to phrases.',
+          description: 'See the console logs for more information.',
+          consoleDescription: errors,
+          type: STATUS.ERROR,
+        }
       : {
-        text: 'Completely successful conversion of phrases from DTO',
-        type: STATUS.SUCCESS,
-        duration: 3000,
-      },
+          text: 'Completely successful conversion of phrases from DTO',
+          type: STATUS.SUCCESS,
+          duration: 3000,
+        },
   };
 };

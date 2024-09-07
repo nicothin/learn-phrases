@@ -34,7 +34,6 @@ export function ImportFromGist(data: ImportFromGistProps) {
         setPhrasesToResolveConflicts(conversion.phrases);
       })
       .catch((result) => {
-        console.log('result', result);
         addNotification(result.notification);
       })
       .finally(() => setIsLoading(false));
@@ -52,4 +51,4 @@ export function ImportFromGist(data: ImportFromGistProps) {
       {children}
     </button>
   );
-};
+}

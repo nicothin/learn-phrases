@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import { FormEvent, useEffect, useState } from 'react';
 
 import './Settings.css';
@@ -37,7 +36,9 @@ export default function Settings() {
   };
 
   useEffect(() => {
-    const thisMainUserData: UserSettings | undefined = allSettings.find((item) => item.userId === MAIN_USER_ID);
+    const thisMainUserData: UserSettings | undefined = allSettings.find(
+      (item) => item.userId === MAIN_USER_ID,
+    );
 
     if (!thisMainUserData) return;
 
@@ -47,7 +48,7 @@ export default function Settings() {
       gistId: thisMainUserData.gistId ?? '',
       syncOn100percent: thisMainUserData.syncOn100percent,
     });
-  }, [allSettings])
+  }, [allSettings]);
 
   return (
     <div className="layout-text  settings">
@@ -56,7 +57,11 @@ export default function Settings() {
       <p>
         This is a serverless project. By default, all added words/phrases are saved in the browser storage.
         <br />
-        But you can specify data for accessing <a href="https://gist.github.com/" rel="noreferrer">gist</a> and then the data will be periodically saved to it.
+        But you can specify data for accessing{' '}
+        <a href="https://gist.github.com/" rel="noreferrer">
+          gist
+        </a>{' '}
+        and then the data will be periodically saved to it.
       </p>
 
       <form className="settings__form" onSubmit={onSaveSyncSettings}>
@@ -68,11 +73,17 @@ export default function Settings() {
           onChange={(value) => handleInputChange({ name: 'token', value })}
           description={
             <>
-              Gist is a service from <a href="https://github.com/">github</a> for storing small sets of files with a history of changes. It's free.
+              Gist is a service from <a href="https://github.com/">github</a> for storing small sets of files
+              with a history of changes. It's free.
               <br />
-              You can read about tokens <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens">here</a>. This project stores your token ONLY in your browser.
+              You can read about tokens{' '}
+              <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens">
+                here
+              </a>
+              . This project stores your token ONLY in your browser.
               <br />
-              You can create your own token <a href="https://github.com/settings/tokens">here</a> (the token must allow to work with gists).
+              You can create your own token <a href="https://github.com/settings/tokens">here</a> (the token
+              must allow to work with gists).
             </>
           }
         />
@@ -92,12 +103,17 @@ export default function Settings() {
               name="syncOn100percent"
               type="checkbox"
               checked={syncFormData.syncOn100percent}
-              onChange={(event) => handleInputChange({ name: 'syncOn100percent', value: event.target.checked })}
-            /> Synchronization with gist when 100% viewing of unlearned phrases is reached.
+              onChange={(event) =>
+                handleInputChange({ name: 'syncOn100percent', value: event.target.checked })
+              }
+            />{' '}
+            Synchronization with gist when 100% viewing of unlearned phrases is reached.
           </label>
         </div>
 
-        <button className="btn  settings__submit-btn" type="submit">Save sync settings</button>
+        <button className="btn  settings__submit-btn" type="submit">
+          Save sync settings
+        </button>
       </form>
     </div>
   );

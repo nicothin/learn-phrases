@@ -1,12 +1,4 @@
-import {
-  ChangeEvent,
-  ReactNode,
-  useEffect,
-  useRef,
-  useState,
-  forwardRef,
-  useImperativeHandle,
-} from 'react';
+import { ChangeEvent, ReactNode, useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 
 import './InputText.css';
 
@@ -22,6 +14,7 @@ interface TextFormProps {
   errorMessage?: string | ReactNode;
   required?: boolean;
   checkValidity?: boolean;
+  isStandart?: boolean;
   onChange?: (value: string) => void;
 }
 
@@ -29,84 +22,86 @@ export type InputTextHandle = {
   focus: () => void;
 };
 
-export const InputText = forwardRef<InputTextHandle, TextFormProps>(({
-  name,
-  size,
-  label,
-  description,
-  value,
-  initialValue,
-  placeholder,
-  className,
-  errorMessage,
-  required,
-  checkValidity,
-  onChange,
-}, ref) => {
-  const [textareaValue, setTextareaValue] = useState(value ?? initialValue ?? '');
-  const [isValid, setIsValid] = useState(true);
-
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  useImperativeHandle(ref, () => ({
-    focus: () => {
-      textareaRef.current?.focus();
+export const InputText = forwardRef<InputTextHandle, TextFormProps>(
+  (
+    {
+      name,
+      size,
+      label,
+      description,
+      value,
+      initialValue,
+      placeholder,
+      className,
+      errorMessage,
+      required,
+      checkValidity,
+      isStandart,
+      onChange,
     },
-  }));
+    ref,
+  ) => {
+    const [textareaValue, setTextareaValue] = useState(value ?? initialValue ?? '');
+    const [isValid, setIsValid] = useState(true);
 
-  const onTextareaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    const value = e.target.value;
-    setTextareaValue(value);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    if (typeof onChange === 'function') {
-      onChange(value);
-    }
-  };
+    useImperativeHandle(ref, () => ({
+      focus: () => {
+        textareaRef.current?.focus();
+      },
+    }));
 
-  useEffect(() => {
-    if (!value) {
-      return;
-    }
+    const onTextareaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+      const value = e.target.value;
+      setTextareaValue(value);
 
-    setTextareaValue(value);
-  }, [value]);
+      if (typeof onChange === 'function') {
+        onChange(value);
+      }
+    };
 
-  useEffect(() => {
-    if (!textareaRef.current) return;
+    useEffect(() => {
+      if (!value) {
+        return;
+      }
 
-    textareaRef.current.style.height = 'auto';
-    textareaRef.current.style.height = `${textareaRef.current.scrollHeight + 2}px`;
+      setTextareaValue(value);
+    }, [value]);
 
-    setIsValid(checkValidity ? textareaRef.current.checkValidity() : true);
-  }, [checkValidity, textareaValue]);
+    useEffect(() => {
+      if (!textareaRef.current || isStandart) return;
 
-  return (
-    <div
-      className={`
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight + 2}px`;
+
+      setIsValid(checkValidity ? textareaRef.current.checkValidity() : true);
+    }, [checkValidity, isStandart, textareaValue]);
+
+    return (
+      <div
+        className={`
         input-text
         ${className ?? ''} ${!isValid ? 'input-text--error' : ''}
         ${size ? `input-text--size-${size}` : ''}
       `}
-    >
-      <label className="input-text__label">
-        {label && <span className="input-text__label-text">{label}</span>}
-        <textarea
-          ref={textareaRef}
-          name={name}
-          rows={1}
-          value={textareaValue}
-          onChange={onTextareaChange}
-          required={required}
-          className="input-text__input"
-          placeholder={placeholder}
-        />
-      </label>
-      {description && (
-        <span className="input-text__description text-secondary">{description}</span>
-      )}
-      {(!isValid && errorMessage) && (
-        <span className="input-text__error-message">{errorMessage}</span>
-      )}
-    </div>
-  );
-});
+      >
+        <label className="input-text__label">
+          {label && <span className="input-text__label-text">{label}</span>}
+          <textarea
+            ref={textareaRef}
+            name={name}
+            rows={1}
+            value={textareaValue}
+            onChange={onTextareaChange}
+            required={required}
+            className={`input-text__input ${isStandart ? 'input-text__input--standart' : ''}`}
+            placeholder={placeholder}
+          />
+        </label>
+        {description && <span className="input-text__description text-secondary">{description}</span>}
+        {!isValid && errorMessage && <span className="input-text__error-message">{errorMessage}</span>}
+      </div>
+    );
+  },
+);

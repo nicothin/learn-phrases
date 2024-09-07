@@ -14,7 +14,7 @@ type ModalProps = {
   contentClassName?: string;
 };
 
-export function Modal (data: ModalProps) {
+export function Modal(data: ModalProps) {
   const {
     children,
     onCloseThisModal,
@@ -31,7 +31,10 @@ export function Modal (data: ModalProps) {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         if (!isNonClosable) {
-          onCloseThisModal?.();
+          // NOTE[@nicothin]: because another component reacts to pressing the ESC key
+          setTimeout(() => {
+            onCloseThisModal?.();
+          }, 0);
         }
       }
       if (event.key === 'Tab') {
@@ -48,30 +51,28 @@ export function Modal (data: ModalProps) {
     };
   }, [isNonClosable, isOpen, onCloseThisModal]);
 
-  return isOpen
-    ? (
-      <dialog
-        ref={modalRef}
-        open={isOpen}
-        className={`modal ${isOpen ? 'modal--open' : ''} ${className} ${isHuge ? 'modal--huge' : ''}`}
-      >
-        <span className="modal__backdrop"></span>
+  return isOpen ? (
+    <dialog
+      ref={modalRef}
+      open={isOpen}
+      className={`modal ${isOpen ? 'modal--open' : ''} ${className} ${isHuge ? 'modal--huge' : ''}`}
+    >
+      <span className="modal__backdrop"></span>
 
-        <div className={`modal__content ${contentClassName}`} onClick={(e) => e.stopPropagation()}>
-          {!isNonClosable && (
-            <button
-              className="close  modal__close-btn"
-              onClick={onCloseThisModal}
-              data-dismiss="modal"
-              aria-label="Close"
-            >
-              <span aria-hidden="true">×</span>
-            </button>
-          )}
+      <div className={`modal__content ${contentClassName}`} onClick={(e) => e.stopPropagation()}>
+        {!isNonClosable && (
+          <button
+            className="close  modal__close-btn"
+            onClick={onCloseThisModal}
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">×</span>
+          </button>
+        )}
 
-          {children}
-        </div>
-      </dialog>
-    )
-    : null;
-};
+        {children}
+      </div>
+    </dialog>
+  ) : null;
+}

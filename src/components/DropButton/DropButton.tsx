@@ -13,7 +13,7 @@ interface DropButtonProps {
   children?: ReactNode;
 }
 
-export function DropButton (data: DropButtonProps) {
+export function DropButton(data: DropButtonProps) {
   const {
     buttonContent,
     direction = 'right-top',
@@ -92,4 +92,4 @@ export function DropButton (data: DropButtonProps) {
       )}
     </div>
   );
-};
+}

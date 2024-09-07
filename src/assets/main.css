@@ -15,6 +15,7 @@
 
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 *:focus-visible {
@@ -23,13 +24,14 @@
 
 body {
   margin: 0;
+  font-size: var(--text-size);
 }
 
 h1 {
   margin-bottom: 0.5em;
   color: inherit;
   font-weight: 600;
-  font-size: 2.714rem;
+  font-size: var(--text-size-xxxl);
   line-height: 1.21;
 }
 
@@ -37,13 +39,8 @@ h2 {
   margin: 1.2em 0 0.5em;
   color: inherit;
   font-weight: 600;
-  font-size: 2.142rem;
+  font-size: var(--text-size-xxl);
   line-height: 1.26;
-}
-
-.modal-title {
-  font-size: var(--text-size-lg);
-  font-weight: 600;
 }
 
 a,
@@ -66,6 +63,16 @@ a:hover,
 
 svg {
   fill: currentColor;
+}
+
+pre {
+  white-space: pre-wrap;
+}
+
+pre,
+code {
+  font-size: 1em;
+  font-family: var(--font-family-monospace);
 }
 
 .text-secondary {

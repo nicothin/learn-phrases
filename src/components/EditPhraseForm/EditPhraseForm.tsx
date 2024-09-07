@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
 
 import '../../assets/btn.css';
+import '../../assets/title.css';
 import './EditPhraseForm.css';
 
 import { Phrase } from '../../types';
@@ -83,15 +84,13 @@ export function EditPhraseForm(data: EditPhraseFormProps) {
   return (
     <>
       <form className="edit-phrase-form" onSubmit={onPutPhrase}>
-        <div className="edit-phrase-form__title-wrap">
-          <p className="edit-phrase-form__title  modal-title">
+        <div className="edit-phrase-form__title-wrap  title">
+          <p className="title__text">
             {phrase?.createDate ? 'Edit' : 'Add'} phrase
             {phrase?.createDate ? ` (ID: ${phrase.id})` : ''}
           </p>
           {phrase?.createDate && (
-            <p className="text-secondary  edit-phrase-form__title-date">
-              Added {formatDate(phrase.createDate)}
-            </p>
+            <p className="text-secondary  title__sub-text">Added {formatDate(phrase.createDate)}</p>
           )}
         </div>
 
@@ -160,11 +159,7 @@ export function EditPhraseForm(data: EditPhraseFormProps) {
 
           <div className="edit-phrase-form__footer-main-btns">
             {onCancel && (
-              <button
-                type="button"
-                className="btn  btn--secondary"
-                onClick={onCancel}
-              >
+              <button type="button" className="btn  btn--secondary" onClick={onCancel}>
                 Cancel
               </button>
             )}

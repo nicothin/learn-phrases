@@ -66,10 +66,7 @@ export function PhraseCard(data: PhraseCardProps) {
             </div>
           )}
 
-          <Rating
-            className="phrase-card__memo-rating"
-            level={phrase?.knowledgeLvl}
-          />
+          <Rating className="phrase-card__memo-rating" level={phrase?.knowledgeLvl} />
         </div>
       </div>
 
@@ -81,4 +78,4 @@ export function PhraseCard(data: PhraseCardProps) {
       </p>
     </div>
   );
-};
+}

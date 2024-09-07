@@ -2,7 +2,7 @@ import { RefObject } from 'react';
 
 export const onTabPress = (event: KeyboardEvent, modalRef: RefObject<HTMLElement>) => {
   const focusableElements = modalRef.current?.querySelectorAll<HTMLElement>(
-    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
   );
 
   if (!focusableElements || focusableElements.length === 0) {

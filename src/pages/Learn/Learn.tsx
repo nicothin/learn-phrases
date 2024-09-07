@@ -6,13 +6,19 @@ import '../../assets/btn-circle.css';
 import { Phrase, UserSettings } from '../../types';
 import { convertToKnowledgeLvl, shuffleArray } from '../../utils';
 import { STATUS } from '../../enums';
-import { useActionsContext, useNotificationContext, useArrayNavigator, useEditPhrase } from '../../hooks';
+import {
+  useActionsContext,
+  useNotificationContext,
+  useArrayNavigator,
+  useEditPhrase,
+  usePhraseConflictsResolver,
+} from '../../hooks';
 import { onSliderBeforeChange } from './utils/onSliderBeforeChange';
 import { Carousel, CarouselRef } from '../../components/Carousel/Carousel';
 import { PhraseCard } from '../../components/PhraseCard/PhraseCard';
 import { Progress } from '../../components/Progress/Progress';
-import { ImportFromGist } from '../../components/ImportFromGist/ImportFromGist';
-import { ExportToGist } from '../../components/ExportToGist/ExportToGist';
+import { ImportFromGistButton } from '../../components/ImportFromGistButton/ImportFromGistButton';
+import { ExportToGistButton } from '../../components/ExportToGistButton/ExportToGistButton';
 import { NavLink } from 'react-router-dom';
 
 const MAIN_USER_ID = 1;
@@ -21,6 +27,7 @@ export default function Learn() {
   const { allPhrases, addPhrases, allSettings, savePhrasesDTOToGist } = useActionsContext();
   const { addNotification } = useNotificationContext();
   const { editPhraseContent, isEditPhraseModalOpen, startEditingPhrase } = useEditPhrase();
+  const { phraseConflictsResolverContent, isPhraseConflictsResolverOpen } = usePhraseConflictsResolver();
 
   const carouselRef: MutableRefObject<CarouselRef | null> = useRef(null);
 
@@ -47,23 +54,26 @@ export default function Learn() {
     goToPrev: goToPrevSlide,
   } = useArrayNavigator([0, 1, 2]);
 
-  const sliderData: Record<number, Record<number, Phrase['id']>> = useMemo(() => ({
-    0: {
-      0: phrasesIDs[nowPhraseIndex],
-      1: phrasesIDs[prevPhraseIndex],
-      2: phrasesIDs[nextPhraseIndex],
-    },
-    1: {
-      0: phrasesIDs[nextPhraseIndex],
-      1: phrasesIDs[nowPhraseIndex],
-      2: phrasesIDs[prevPhraseIndex],
-    },
-    2: {
-      0: phrasesIDs[prevPhraseIndex],
-      1: phrasesIDs[nextPhraseIndex],
-      2: phrasesIDs[nowPhraseIndex],
-    },
-  }), [phrasesIDs, prevPhraseIndex, nowPhraseIndex, nextPhraseIndex]);
+  const sliderData: Record<number, Record<number, Phrase['id']>> = useMemo(
+    () => ({
+      0: {
+        0: phrasesIDs[nowPhraseIndex],
+        1: phrasesIDs[prevPhraseIndex],
+        2: phrasesIDs[nextPhraseIndex],
+      },
+      1: {
+        0: phrasesIDs[nextPhraseIndex],
+        1: phrasesIDs[nowPhraseIndex],
+        2: phrasesIDs[prevPhraseIndex],
+      },
+      2: {
+        0: phrasesIDs[prevPhraseIndex],
+        1: phrasesIDs[nextPhraseIndex],
+        2: phrasesIDs[nowPhraseIndex],
+      },
+    }),
+    [phrasesIDs, prevPhraseIndex, nowPhraseIndex, nextPhraseIndex],
+  );
 
   const onEditPhrase = (phraseID: Phrase['id']) => {
     startEditingPhrase(allPhrases.find((phrase) => phrase.id === phraseID) ?? {});
@@ -76,37 +86,33 @@ export default function Learn() {
     if (!phrase) return null;
 
     return (
-      <PhraseCard
-        key={phrase.id}
-        phrase={phrase}
-        openedCardId={openedCardId}
-        onEditPhrase={onEditPhrase}
-      />
+      <PhraseCard key={phrase.id} phrase={phrase} openedCardId={openedCardId} onEditPhrase={onEditPhrase} />
     );
   };
 
-  const changeMyKnownLevel = useCallback((isPlus: boolean) => {
-    const phraseId = sliderData[1][1];
-    const newPhrase = allPhrases.find((phrase) => phrase.id === phraseId);
+  const changeMyKnownLevel = useCallback(
+    (isPlus: boolean) => {
+      const phraseId = sliderData[1][1];
+      const newPhrase = allPhrases.find((phrase) => phrase.id === phraseId);
 
-    if (!newPhrase) {
-      addNotification({
-        text: `Something is wrong`,
-        type: STATUS.ERROR,
-        description: 'When trying to save a new level of learning a phrase, the phrase was not found by ID.',
-      })
-      return;
-    }
+      if (!newPhrase) {
+        addNotification({
+          text: `Something is wrong`,
+          type: STATUS.ERROR,
+          description:
+            'When trying to save a new level of learning a phrase, the phrase was not found by ID.',
+        });
+        return;
+      }
 
-    newPhrase.knowledgeLvl = convertToKnowledgeLvl(newPhrase.knowledgeLvl + (isPlus ? 1 : -1));
+      newPhrase.knowledgeLvl = convertToKnowledgeLvl(newPhrase.knowledgeLvl + (isPlus ? 1 : -1));
 
-    addPhrases([newPhrase])
-      .then(() => {
-        carouselRef.current?.next();
-        setOpenedCardId(undefined);
-      })
-      .catch((result) => addNotification(result));
-
+      addPhrases([newPhrase])
+        .then(() => {
+          carouselRef.current?.next();
+          setOpenedCardId(undefined);
+        })
+        .catch((result) => addNotification(result));
     },
     [addNotification, addPhrases, allPhrases, sliderData],
   );
@@ -114,11 +120,8 @@ export default function Learn() {
   const onKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === 'ArrowDown') setOpenedCardId(phrasesIDs[nowPhraseIndex]);
-      if (
-        event.key === 'ArrowUp' ||
-        event.key === 'ArrowRight' ||
-        event.key === 'ArrowLeft'
-      ) setOpenedCardId(undefined);
+      if (event.key === 'ArrowUp' || event.key === 'ArrowRight' || event.key === 'ArrowLeft')
+        setOpenedCardId(undefined);
       if (event.key === 'ArrowRight') carouselRef.current?.next();
       if (event.key === 'ArrowLeft') carouselRef.current?.prev();
       if (event.key === 'Enter') changeMyKnownLevel(true);
@@ -129,21 +132,53 @@ export default function Learn() {
         const phrase = allPhrases.find((phrase) => phrase.id === phraseId);
         if (!phrase) return;
         startEditingPhrase(phrase);
-      };
+      }
     },
     [allPhrases, changeMyKnownLevel, startEditingPhrase, nowPhraseIndex, phrasesIDs, sliderData],
   );
 
   // Event listeners
   useEffect(() => {
-    if (isEditPhraseModalOpen) return;
+    if (isEditPhraseModalOpen || isPhraseConflictsResolverOpen) return;
+
+    const touchStart = { x: 0, y: 0 };
+
+    const onTouchStart = (event: TouchEvent) => {
+      // event.preventDefault();
+      touchStart.x = event.touches[0].clientX;
+      touchStart.y = event.touches[0].clientY;
+    };
+
+    const onTouchEnd = (event: TouchEvent) => {
+      const touchEnd = { x: event.changedTouches[0].clientX, y: event.changedTouches[0].clientY };
+      const deltaX = touchEnd.x - touchStart.x;
+      const deltaY = touchEnd.y - touchStart.y;
+
+      if (Math.abs(deltaX) > 40 || Math.abs(deltaY) > 40) {
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+          if (deltaX > 0) {
+            carouselRef.current?.prev();
+          } else {
+            carouselRef.current?.next();
+          }
+        } else if (deltaY > 0) {
+          carouselRef.current?.prev();
+        } else {
+          carouselRef.current?.next();
+        }
+      }
+    };
 
     window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('touchstart', onTouchStart);
+    window.addEventListener('touchend', onTouchEnd);
 
     return () => {
       window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchend', onTouchEnd);
     };
-  }, [isEditPhraseModalOpen, onKeyDown]);
+  }, [isEditPhraseModalOpen, isPhraseConflictsResolverOpen, onKeyDown]);
 
   // setLearnedIDs & setUnlearnedIDs
   useEffect(() => {
@@ -197,7 +232,7 @@ export default function Learn() {
   // Set actual user settings
   useEffect(() => {
     const thisMainUserData: UserSettings | undefined = allSettings?.find(
-      (item) => item.userId === MAIN_USER_ID
+      (item) => item.userId === MAIN_USER_ID,
     );
     setThisUserSettings(thisMainUserData);
   }, [allSettings]);
@@ -212,7 +247,7 @@ export default function Learn() {
     ) {
       savePhrasesDTOToGist(MAIN_USER_ID)
         .then((result) => addNotification(result))
-        .catch((result) => addNotification(result))
+        .catch((result) => addNotification(result));
     }
   }, [
     addNotification,
@@ -224,145 +259,143 @@ export default function Learn() {
     unlearnedIDs.length,
   ]);
 
-  return phrasesIDs.length
-    ? (
-      <div className="learn">
-        <Carousel
-          ref={carouselRef}
-          className="learn__carousel"
-          beforeChange={(current, next) =>
-            onSliderBeforeChange({
-              current,
-              next,
-              onToNext: () => {
-                goToNextPhrase();
-                goToNextSlide();
-                setIsGoToNext(true);
-              },
-              onToPrev: () => {
-                goToPrevPhrase();
-                goToPrevSlide();
-                setIsGoToNext(false);
-              },
-            })
-          }
+  return phrasesIDs.length ? (
+    <div className="learn">
+      <Carousel
+        ref={carouselRef}
+        className="learn__carousel"
+        beforeChange={(current, next) =>
+          onSliderBeforeChange({
+            current,
+            next,
+            onToNext: () => {
+              goToNextPhrase();
+              goToNextSlide();
+              setIsGoToNext(true);
+            },
+            onToPrev: () => {
+              goToPrevPhrase();
+              goToPrevSlide();
+              setIsGoToNext(false);
+            },
+          })
+        }
+      >
+        <div className="learn__slide">{getSlideContent(0)}</div>
+        <div className="learn__slide">{getSlideContent(1)}</div>
+        <div className="learn__slide">{getSlideContent(2)}</div>
+      </Carousel>
+
+      <Progress
+        className="learn__common-progress"
+        percentage={(100 / phrasesIDs.length) * Math.min(nowPhraseIndex, phrasesIDs.length) || 0}
+      >
+        <small className="learn__common-progress-info">
+          {Math.round((100 / phrasesIDs.length) * Math.min(nowPhraseIndex, phrasesIDs.length) * 10) / 10}%
+          <br />
+          {Math.min(nowPhraseIndex, phrasesIDs.length)} / {phrasesIDs.length}
+        </small>
+      </Progress>
+
+      {!!unlearnedIDs.length && (
+        <Progress
+          className="learn__unlearned-progress"
+          percentage={(100 / unlearnedIDs.length) * Math.min(nowPhraseIndex, unlearnedIDs.length) || 0}
         >
-          <div className="learn__slide">{getSlideContent(0)}</div>
-          <div className="learn__slide">{getSlideContent(1)}</div>
-          <div className="learn__slide">{getSlideContent(2)}</div>
-        </Carousel>
+          <small className="learn__common-progress-info">
+            {Math.round((100 / unlearnedIDs.length) * Math.min(nowPhraseIndex, unlearnedIDs.length) * 10) /
+              10}
+            %
+            <br />
+            {Math.min(nowPhraseIndex, unlearnedIDs.length)} / {unlearnedIDs.length}
+          </small>
+        </Progress>
+      )}
 
-          <Progress
-            className="learn__common-progress"
-            percentage={(100 / phrasesIDs.length * Math.min(nowPhraseIndex, phrasesIDs.length)) || 0}
-          >
-            <small className="learn__common-progress-info">
-              {Math.round((100 / phrasesIDs.length * Math.min(nowPhraseIndex, phrasesIDs.length)) * 10) / 10}%
-              <br />
-              {Math.min(nowPhraseIndex, phrasesIDs.length)} / {phrasesIDs.length}
-            </small>
-          </Progress>
+      <button
+        className="learn__btn  btn-circle"
+        style={{ right: '6em', bottom: '6em' }}
+        onClick={() => changeMyKnownLevel(true)}
+      >
+        <svg width="18" height="18">
+          <use xlinkHref="#success" />
+        </svg>
+      </button>
 
-        {!!unlearnedIDs.length && (
-          <Progress
-            className="learn__unlearned-progress"
-            percentage={(100 / unlearnedIDs.length * Math.min(nowPhraseIndex, unlearnedIDs.length)) || 0}
-          >
-            <small className="learn__common-progress-info">
-              {Math.round(
-                (100 / unlearnedIDs.length * Math.min(nowPhraseIndex, unlearnedIDs.length)) * 10
-              ) / 10}%
-              <br />
-              {Math.min(nowPhraseIndex, unlearnedIDs.length)} / {unlearnedIDs.length}
-            </small>
-          </Progress>
-        )}
+      <button
+        className="learn__btn  btn-circle"
+        style={{ right: '2em', bottom: '6em' }}
+        onClick={() => changeMyKnownLevel(false)}
+      >
+        <svg width="18" height="18">
+          <use xlinkHref="#error" />
+        </svg>
+      </button>
 
-        <button
+      <button
+        className="learn__btn  btn-circle"
+        style={{ right: '10em', bottom: '2em' }}
+        onClick={() => carouselRef.current?.prev()}
+      >
+        <svg width="18" height="18">
+          <use xlinkHref="#arrow-l" />
+        </svg>
+      </button>
+
+      <button
+        className="learn__btn  btn-circle"
+        style={{ right: '6em', bottom: '2em' }}
+        onClick={() => setOpenedCardId(phrasesIDs[nowPhraseIndex])}
+      >
+        <svg width="18" height="18">
+          <use xlinkHref="#arrow-d" />
+        </svg>
+      </button>
+
+      <button
+        className="learn__btn  btn-circle"
+        style={{ right: '2em', bottom: '2em' }}
+        onClick={() => carouselRef.current?.next()}
+      >
+        <svg width="18" height="18">
+          <use xlinkHref="#arrow-r" />
+        </svg>
+      </button>
+
+      {canTrySyncToGist && (
+        <ImportFromGistButton
           className="learn__btn  btn-circle"
-          style={{ right: '6em', bottom: '6em' }}
-          onClick={() => changeMyKnownLevel(true)}
+          classNameLoading="btn-circle--loading"
+          style={{ right: '2em', top: '4em' }}
         >
-          <svg width="18" height="18">
-            <use xlinkHref="#success" />
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18">
+            <use xlinkHref="#download" />
           </svg>
-        </button>
+        </ImportFromGistButton>
+      )}
 
-        <button
+      {canTrySyncToGist && (
+        <ExportToGistButton
           className="learn__btn  btn-circle"
-          style={{ right: '2em', bottom: '6em' }}
-          onClick={() => changeMyKnownLevel(false)}
+          classNameLoading="btn-circle--loading"
+          style={{ right: '2em', top: '8em' }}
         >
-          <svg width="18" height="18">
-            <use xlinkHref="#error" />
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18">
+            <use xlinkHref="#upload" />
           </svg>
-        </button>
+        </ExportToGistButton>
+      )}
 
-        <button
-          className="learn__btn  btn-circle"
-          style={{ right: '10em', bottom: '2em' }}
-          onClick={() => carouselRef.current?.prev()}
-        >
-          <svg width="18" height="18">
-            <use xlinkHref="#arrow-l" />
-          </svg>
-        </button>
-
-        <button
-          className="learn__btn  btn-circle"
-          style={{ right: '6em', bottom: '2em' }}
-          onClick={() => setOpenedCardId(phrasesIDs[nowPhraseIndex])}
-        >
-          <svg width="18" height="18">
-            <use xlinkHref="#arrow-d" />
-          </svg>
-        </button>
-
-        <button
-          className="learn__btn  btn-circle"
-          style={{ right: '2em', bottom: '2em' }}
-          onClick={() => carouselRef.current?.next()}
-        >
-          <svg width="18" height="18">
-            <use xlinkHref="#arrow-r" />
-          </svg>
-        </button>
-
-        {canTrySyncToGist && (
-          <ImportFromGist
-            className="learn__btn  btn-circle"
-            classNameLoading="btn-circle--loading"
-            style={{ right: '2em', bottom: '18em' }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18">
-              <use xlinkHref="#download" />
-            </svg>
-          </ImportFromGist>
-        )}
-
-        {canTrySyncToGist && (
-          <ExportToGist
-            className="learn__btn  btn-circle"
-            classNameLoading="btn-circle--loading"
-            style={{ right: '2em', bottom: '14em' }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18">
-              <use xlinkHref="#upload" />
-            </svg>
-          </ExportToGist>
-        )}
-
-        {editPhraseContent}
-      </div>
-    )
-    : (
-      <div className="learn">
-        <p className="learn__empty">
-          <span>
-            There are no phrases here yet.
-            Go to <NavLink to="/admin">the admin section</NavLink> and add a few.
-          </span>
-        </p>
-      </div>
-    );
+      {editPhraseContent}
+      {phraseConflictsResolverContent}
+    </div>
+  ) : (
+    <div className="learn">
+      <p className="learn__empty">
+        <span>
+          There are no phrases here yet. Go to <NavLink to="/admin">the admin section</NavLink> and add a few.
+        </span>
+      </p>
+    </div>
+  );
 }

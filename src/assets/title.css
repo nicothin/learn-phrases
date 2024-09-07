@@ -1,0 +1,36 @@
+/*
+<div className="title">
+  <p className="title__text">Title</p>
+  <p className="text-secondary  title__sub-text">Sutitle</p>
+  <div className="title__description-wrapper">
+    <p>12345</p>
+  </div>
+</div>
+*/
+
+.title {
+  display: block;
+  width: 100%;
+}
+
+.title__text {
+  margin: 0;
+  font-size: var(--text-size-lg);
+  font-weight: 600;
+}
+
+.title__sub-text {
+  margin: 0;
+}
+
+.title__description-wrapper {
+  margin-top: 1em;
+
+  p {
+    margin: 0;
+  }
+
+  p:not(:last-child) {
+    margin: 0 0 1em;
+  }
+}
