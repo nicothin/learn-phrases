@@ -39,6 +39,7 @@
   position: relative;
   z-index: 2;
   margin: 0.5rem;
+  border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   padding: 1.5em 2em;
   max-width: 520px;
@@ -66,5 +67,12 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .modal__backdrop {
+    background-color: var(--white);
+    opacity: 0.6;
   }
 }

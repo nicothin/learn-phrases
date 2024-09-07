@@ -66,3 +66,10 @@
     transform: translateY(0);
   }
 }
+
+@media (prefers-color-scheme: dark) {
+  .confirm__backdrop {
+    background-color: var(--white);
+    opacity: 0.6;
+  }
+}

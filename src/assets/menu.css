@@ -37,7 +37,7 @@
   [role="button"].active,
   [role="button"]:hover {
     outline: none;
-    background-color: var(--gray-lightest);
+    background-color: var(--gray-lighter);
   }
 
   a:focus-visible,

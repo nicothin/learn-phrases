@@ -62,6 +62,7 @@ export const usePhraseConflictsResolver = (): PhraseConflictsResolverResult => {
       }
     });
 
+    setPhrasesToResolveConflicts([]);
     setIncomingPhraseWithoutConflicts((prev) => [...prev, ...phrases]);
     setConflicts([]);
   };

@@ -78,3 +78,15 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+@media (prefers-color-scheme: dark) {
+  .btn-circle:not(.btn-circle--accent) {
+    border-color: var(--gray-light);
+    background-color: var(--gray-lighter);
+  }
+
+  .btn-circle:not(.btn-circle--accent):hover {
+    border-color: var(--gray);
+    background-color: var(--gray-light);
+  }
+}
