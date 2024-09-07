@@ -270,8 +270,8 @@ export const ActionsContextProvider: FC<{ children: ReactNode }> = ({ children }
 
     const text = JSON.stringify(exportedPhrases).replace(/],\[/g, '],\n[');
     const now = new Date();
-    const timeStamp = `${window.location.hostname}_phrases_${now.toISOString().slice(0, 10)}_${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }).replace(/:/g, '-')}.json`;
-    startDownloadFile(timeStamp, text);
+    const fileName = `LP_${window.location.hostname.replace('.', '_')}_phrases_${now.toISOString().slice(0, 10)}_${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }).replace(/:/g, '-')}.json`;
+    startDownloadFile(fileName, text);
 
     return Promise.resolve({
       text: `All Phrases were successfully exported to file.`,
