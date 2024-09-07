@@ -1,299 +1,254 @@
-import { BaseSyntheticEvent, useEffect, useRef, useState } from 'react';
-import {
-  notification,
-  Upload,
-  Table,
-  FloatButton,
-  Pagination,
-  Row,
-  Col,
-  Form,
-  Input,
-  Modal,
-  Popconfirm,
-} from 'antd';
-import type { PaginationProps } from 'antd';
-import {
-  DeleteOutlined,
-  DownloadOutlined,
-  PlusOutlined,
-  QuestionCircleOutlined,
-  SaveOutlined,
-} from '@ant-design/icons';
-import { useLiveQuery } from 'dexie-react-hooks';
+import { useEffect, useMemo, useState } from 'react';
 
 import './Admin.css';
+import '../../assets/btn.css';
 
-import { Phrase, PhrasesFilterFunction } from '../../types';
-import { DEXIE_DEFAULT_FILTER_FUNC_OBJ, DEXIE_TABLE_NAME } from '../../constants';
-import { useSettingsContext } from '../../hooks';
-import { getFloatButtonPositionStyle } from '../../utils';
-import { DexieIndexedDB } from '../../services/DexieIndexedDB';
-import { Gist } from '../../services/Gist';
-import { deleteAllPhrasesLocally, exportAndDownloadPhrases } from '../../services/actions';
-import { importPhrases } from '../../services/actions/importPhrases';
-import PhrasesTable from '../../components/PhrasesTable/PhrasesTable';
-import EditPhraseModal from '../../components/EditPhraseModal/EditPhraseModal';
-import ImportFromGistFloatButton from '../../components/ImportFromGistFloatButton/ImportFromGistFloatButton';
-import ExportToGistFloatButton from '../../components/ExportToGistFloatButton/ExportToGistFloatButton';
+import { UserSettings } from '../../types';
+import {
+  useActionsContext,
+  useNotificationContext,
+  useEditPhrase,
+  usePhraseConflictsResolver,
+  useImportFromJSON,
+} from '../../hooks';
+import { PhrasesTable } from '../../components/PhrasesTable/PhrasesTable';
+import { ImportFromFileButton } from '../../components/ImportFromFileButton/ImportFromFileButton';
+import { ExportToGistButton } from '../../components/ExportToGistButton/ExportToGistButton';
+import { ImportFromGistButton } from '../../components/ImportFromGistButton/ImportFromGistButton';
+import { Pagination } from '../../components/Pagination/Pagination';
+import { ExportToFileButton } from '../../components/ExportToFileButton/ExportToFileButton';
+import { Confirm } from '../../components/Confirm/Confirm';
+import { InputText } from '../../components/InputText/InputText';
+import { DropButton } from '../../components/DropButton/DropButton';
 
-const PHRASES_ON_PAGE_COUNT = 30;
-const REMOVE_MARKDOWN_REGEX = /([*_~]{2})+/gim;
+const PHRASES_PER_PAGE = 50;
+const SEARCH_MIN_LENGTH = 3;
+const MAIN_USER_ID = 1;
 
 export default function Admin() {
-  const [modalApi, contextModal] = Modal.useModal();
-  const [notificationApi, contextNotification] = notification.useNotification();
+  const { allPhrases, exportPhrasesDTOToFile, deleteAllPhrases, allSettings, setIsImportFromJSONOpen } =
+    useActionsContext();
+  const { addNotification } = useNotificationContext();
+  const { editPhraseContent, startEditingPhrase } = useEditPhrase();
+  const { phraseConflictsResolverContent } = usePhraseConflictsResolver();
+  const { importFromJSONContent } = useImportFromJSON();
 
-  const tableRef: Parameters<typeof Table>[0]['ref'] = useRef(null);
+  const [isConfirmDeleteAllPhrasesOpen, setIsConfirmDeleteAllPhrasesOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [shownPhrasesCounter, setShownPhrasesCounter] = useState(0);
+  const [searchString, setSearchString] = useState('');
+  const [thisUserSettings, setThisUserSettings] = useState<UserSettings | undefined>(undefined);
 
-  const { token, gistId } = useSettingsContext();
+  const thereArePhrases = !!allPhrases?.length;
+  const canTrySyncToGist = !!(thisUserSettings?.token && thisUserSettings?.gistId);
 
-  const gist = Gist.getInstance({ token, gistId });
-
-  const [filter, setFilter] = useState<PhrasesFilterFunction>(DEXIE_DEFAULT_FILTER_FUNC_OBJ);
-  const [paginationPage, setPaginationPage] = useState(1);
-  const [phrasesCounterStart, setPhrasesCounterStart] = useState(0);
-  const [phrasesCounter, setPhrasesCounter] = useState(0);
-
-  const [canSynchronized, setCanSynchronized] = useState(false);
-
-  const [editedPhraseData, setEditedPhraseData] = useState<Partial<Phrase> | null>(null);
-
-  const phrasesInTheSelection = useLiveQuery(
-    () =>
-      DexieIndexedDB[DEXIE_TABLE_NAME].orderBy('id')
-        .reverse()
-        .filter(filter.func)
-        .offset(phrasesCounterStart)
-        .limit(PHRASES_ON_PAGE_COUNT)
-        .toArray(),
-    [phrasesCounterStart, filter],
-  );
-
-  const onPaginationChange: PaginationProps['onChange'] = (page) => {
-    setPaginationPage(page);
-    setPhrasesCounterStart((page - 1) * PHRASES_ON_PAGE_COUNT);
-    tableRef.current?.scrollTo({ index: 0 });
+  const onPageChange = (newPage: number) => {
+    setCurrentPage(newPage);
   };
 
-  const onFilterSubmit = (value: { search: string }) => {
-    const search = value?.search?.toLowerCase().trim();
-
-    if (search === '') {
-      setFilter(DEXIE_DEFAULT_FILTER_FUNC_OBJ);
-      return;
-    }
-
-    if (search && search !== '' && search?.length < 2) {
-      notificationApi.warning({
-        message: 'Enter 2+ characters',
-      });
-      setFilter(DEXIE_DEFAULT_FILTER_FUNC_OBJ);
-      return;
-    }
-
-    setPaginationPage(1);
-
-    setFilter({
-      func: (phrase: Phrase) =>
-        String(phrase.id).includes(search) ||
-        phrase.first.toLowerCase().replace(REMOVE_MARKDOWN_REGEX, '').includes(search) ||
-        phrase?.firstD?.toLowerCase().replace(REMOVE_MARKDOWN_REGEX, '').includes(search) ||
-        phrase.second.toLowerCase().replace(REMOVE_MARKDOWN_REGEX, '').includes(search) ||
-        phrase?.secondD?.toLowerCase().replace(REMOVE_MARKDOWN_REGEX, '').includes(search) ||
-        false,
-    });
+  const onEditPhrase = (phraseId: number) => {
+    const phrase = allPhrases.find(({ id }) => id === phraseId) || {};
+    startEditingPhrase(phrase);
   };
 
-  const filterInputChange = async (event: BaseSyntheticEvent) => {
-    if (!event.target.value) setFilter(DEXIE_DEFAULT_FILTER_FUNC_OBJ);
+  const onDeleteAllPhrases = () => {
+    setIsConfirmDeleteAllPhrasesOpen(true);
   };
 
-  const onRowClick = (thisPhrase: Phrase) => {
-    setEditedPhraseData(thisPhrase);
-  };
-
-  const onClickAddPhraseBtn = () => {
-    setEditedPhraseData({});
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const onFileUpload = (event: any) => {
-    const reader = new FileReader();
-    reader.readAsText(event.file);
-
-    reader.onload = () => {
-      const content = reader.result;
-
-      try {
-        const newPhrasesDTO = JSON.parse(content as string);
-
-        if (!newPhrasesDTO.length) {
-          const errorText = 'The imported file is not a valid JSON.';
-          console.error(errorText);
-          notificationApi.error({
-            message: 'Import failed',
-            description: errorText,
-          });
-          throw Error(errorText);
-        }
-
-        importPhrases({ newPhrasesDTO, notificationApi });
-      } catch (error) {
-        const errorText = 'The imported file does not contain phrases.';
-        console.error(errorText, error);
-        notificationApi.error({
-          message: 'Import failed',
-          description: errorText,
-        });
-      }
-    };
-  };
-
-  const onDeleteAllLocalPhrases = () => {
-    deleteAllPhrasesLocally()
-      .then(() => {
-        notificationApi.success({
-          message: 'Cleared',
-          description: 'The local storage has been cleared. I hope you have a backup.',
-        });
+  const onConfirmDeleteAllPhrases = () => {
+    exportPhrasesDTOToFile()
+      .then((result) => {
+        addNotification(result);
+        deleteAllPhrases()
+          .then((result) => addNotification(result))
+          .catch((result) => addNotification(result));
       })
-      .catch((error) => {
-        console.error(error);
-        notificationApi.error({
-          message: 'Clear failed',
-          description: String(error),
-        });
-      });
+      .catch((result) => addNotification(result));
+    setIsConfirmDeleteAllPhrasesOpen(false);
   };
 
-  // Set PhrasesCounter
+  const onCancelDeleteAllPhrases = () => {
+    setIsConfirmDeleteAllPhrasesOpen(false);
+  };
+
+  const shownPhrases = useMemo(() => {
+    if (!allPhrases.length) return [];
+
+    if (searchString.length < SEARCH_MIN_LENGTH) {
+      setShownPhrasesCounter(allPhrases.length);
+      return allPhrases.slice((currentPage - 1) * PHRASES_PER_PAGE, currentPage * PHRASES_PER_PAGE);
+    }
+
+    const actualPhrases = allPhrases.filter(
+      (phrase) =>
+        String(phrase.id) === searchString ||
+        phrase.first.toLowerCase().includes(searchString) ||
+        phrase.second.toLowerCase().includes(searchString),
+    );
+
+    setShownPhrasesCounter(actualPhrases.length);
+
+    return actualPhrases.slice((currentPage - 1) * PHRASES_PER_PAGE, currentPage * PHRASES_PER_PAGE);
+  }, [allPhrases, currentPage, searchString]);
+
+  // Set shown phrases at the first load
   useEffect(() => {
-    if (!phrasesInTheSelection) return;
+    setShownPhrasesCounter(allPhrases.length);
+  }, [allPhrases.length]);
 
-    const checkCounter = async () => {
-      const counter = await DexieIndexedDB[DEXIE_TABLE_NAME].filter(filter.func).count();
-      setPhrasesCounter(counter);
-    };
-
-    checkCounter();
-  }, [filter, phrasesInTheSelection]);
-
-  // Show or hide SYNC button
+  // Set actual user settings
   useEffect(() => {
-    setCanSynchronized(!!token?.trim() && !!gistId?.trim());
-  }, [gistId, token]);
+    const thisMainUserData: UserSettings | undefined = allSettings?.find(
+      (item) => item.userId === MAIN_USER_ID,
+    );
+    setThisUserSettings(thisMainUserData);
+  }, [allSettings]);
 
   return (
-    <div className="lp-admin-page">
-      <Row gutter={[16, 0]} wrap={false} style={{ marginBottom: '1em' }}>
-        <Col flex="1 1 40%" style={{ minWidth: 0 }}>
-          <Form onFinish={onFilterSubmit} autoComplete="on">
-            <Form.Item name="search" style={{ marginBottom: 0 }}>
-              <Input placeholder="Search (2+ characters)" onChange={filterInputChange} />
-            </Form.Item>
-          </Form>
-        </Col>
-        <Col
-          flex="1 1 60%"
-          style={{
-            minWidth: 230,
-            display: 'flex',
-            justifyContent: 'flex-end',
-            alignItems: 'center',
-            marginLeft: 'auto',
-          }}
+    <div className="admin">
+      <div className="admin__sup-table">
+        <InputText
+          key="searchInput"
+          className="admin__search"
+          placeholder="Search (3+ characters)"
+          name="search"
+          onChange={(value) => setSearchString(value.toLowerCase())}
+        />
+        <div className="admin__to-right">
+          {thereArePhrases && (
+            <Pagination
+              totalItems={shownPhrasesCounter}
+              itemsPerPage={PHRASES_PER_PAGE}
+              changePage={onPageChange}
+            />
+          )}
+        </div>
+      </div>
+
+      <div className="admin__phrase-table">
+        <PhrasesTable
+          phrases={shownPhrases}
+          onRowClick={onEditPhrase}
+          noPhrasesMessage={
+            searchString.length ? (
+              'No phrases found'
+            ) : (
+              <>
+                There are no phrases here yet.
+                <br />
+                It's time{' '}
+                <button type="button" className="link" onClick={() => startEditingPhrase({})}>
+                  to add a few
+                </button>{' '}
+                or <ImportFromFileButton className="link">import from file</ImportFromFileButton> or{' '}
+                <button onClick={() => setIsImportFromJSONOpen(true)} className="link">
+                  import from JSON
+                </button>
+                .
+              </>
+            )
+          }
+        />
+      </div>
+
+      <div className="admin__sub-table">Phrases counter: {allPhrases.length}</div>
+
+      {canTrySyncToGist && (
+        <ImportFromGistButton
+          className="admin__btn  btn-circle"
+          classNameLoading="btn-circle--loading"
+          style={{ right: '2em', top: '4em' }}
         >
-          <Pagination
-            style={{ marginBottom: 0 }}
-            size="small"
-            current={paginationPage}
-            onChange={onPaginationChange}
-            total={phrasesCounter}
-            pageSize={PHRASES_ON_PAGE_COUNT}
-            showSizeChanger={false}
-            simple
-          />
-        </Col>
-      </Row>
-
-      <PhrasesTable
-        wrapperSelector=".lp-admin-page"
-        phrasesInTheSelection={phrasesInTheSelection}
-        onRowClick={onRowClick}
-        tableRef={tableRef}
-      />
-
-      {editedPhraseData && (
-        <EditPhraseModal
-          editedPhraseData={editedPhraseData}
-          setEditedPhraseData={setEditedPhraseData}
-          notificationApi={notificationApi}
-        />
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18">
+            <use xlinkHref="#download" />
+          </svg>
+        </ImportFromGistButton>
       )}
 
-      <FloatButton
-        shape="circle"
-        type="primary"
-        style={getFloatButtonPositionStyle([0, 0])}
-        icon={<PlusOutlined />}
-        tooltip="Add phrase"
-        onClick={onClickAddPhraseBtn}
-      />
-
-      {canSynchronized && (
-        <>
-          <ImportFromGistFloatButton
-            buttonPosition={getFloatButtonPositionStyle([0, 3])}
-            gist={gist}
-            notificationApi={notificationApi}
-            modalApi={modalApi}
-          />
-          <ExportToGistFloatButton
-            buttonPosition={getFloatButtonPositionStyle([0, 4])}
-            gist={gist}
-            notificationApi={notificationApi}
-          />
-        </>
+      {canTrySyncToGist && (
+        <ExportToGistButton
+          className="admin__btn  btn-circle"
+          classNameLoading="btn-circle--loading"
+          style={{ right: '2em', top: '8em' }}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18">
+            <use xlinkHref="#upload" />
+          </svg>
+        </ExportToGistButton>
       )}
 
-      <Upload customRequest={onFileUpload}>
-        <FloatButton
-          shape="circle"
-          style={getFloatButtonPositionStyle([0, 1])}
-          icon={<DownloadOutlined />}
-          tooltip="Import phrases from file"
-        />
-      </Upload>
+      {thereArePhrases && (
+        <button
+          className="admin__btn  btn-circle"
+          style={{ right: '2em', bottom: '10em' }}
+          onClick={onDeleteAllPhrases}
+          title="Delete ALL phrases"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18">
+            <use xlinkHref="#trash" />
+          </svg>
+        </button>
+      )}
 
-      <FloatButton
-        shape="circle"
-        style={getFloatButtonPositionStyle([0, 2])}
-        icon={<SaveOutlined />}
-        onClick={() => exportAndDownloadPhrases({ notificationApi })}
-        tooltip="Export phrases to file"
-      />
+      <div className="admin__btn" style={{ right: '2em', bottom: '6em' }}>
+        <DropButton
+          className=""
+          buttonContent={
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18">
+              <path d="m4 10-3 3 3 3h1v-2h12v-2H5v-2zM13 2v2H1v2h12v2h1l3-3-3-3Z" />
+            </svg>
+          }
+          buttonClassName="btn-circle"
+          direction="left-top"
+          title="Import / Export phrases"
+        >
+          <ul className="menu">
+            <li>
+              <button onClick={() => setIsImportFromJSONOpen(true)} className="btn  btn--secondary  btn--sm">
+                Import phrases from JSON
+              </button>
+            </li>
+            <li>
+              <ImportFromFileButton className="btn  btn--secondary  btn--sm" />
+            </li>
+            {thereArePhrases && (
+              <li>
+                <ExportToFileButton className="btn  btn--secondary  btn--sm" />
+              </li>
+            )}
+          </ul>
+        </DropButton>
+      </div>
 
-      <Popconfirm
-        placement="left"
-        title="Delete all local phrases?"
-        onConfirm={onDeleteAllLocalPhrases}
-        okText="Yes"
-        okButtonProps={{ size: 'middle', danger: true }}
-        cancelButtonProps={{ size: 'middle' }}
-        cancelText="No"
-        icon={<QuestionCircleOutlined />}
+      <button
+        className="admin__btn  btn-circle  btn-circle--accent"
+        style={{ right: '2em', bottom: '2em' }}
+        onClick={() => startEditingPhrase({})}
+        title="Add phrase"
       >
-        <FloatButton
-          shape="circle"
-          style={getFloatButtonPositionStyle([0, 5])}
-          icon={<DeleteOutlined />}
-          tooltip="Delete all local phrases"
-        />
-      </Popconfirm>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18">
+          <use xlinkHref="#plus" />
+        </svg>
+      </button>
 
-      {contextModal}
-      {contextNotification}
+      {editPhraseContent}
+
+      <Confirm
+        isOpen={isConfirmDeleteAllPhrasesOpen}
+        title="Are you sure you want to delete all phrases?"
+        message={
+          <>
+            <p>This action is irreversible.</p>
+            <p>The backup copy will be saved to a file first.</p>
+          </>
+        }
+        confirmButtonText="Yes, delete all local phrases"
+        onConfirm={onConfirmDeleteAllPhrases}
+        onCancel={onCancelDeleteAllPhrases}
+      />
+
+      {phraseConflictsResolverContent}
+      {importFromJSONContent}
     </div>
   );
 }

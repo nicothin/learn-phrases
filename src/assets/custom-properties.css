@@ -1,0 +1,62 @@
+:root {
+  --white:         #ffffff;
+  --gray-lightest: #f3f3f3;
+  --gray-lighter:  #dbdbdb;
+  --gray-light:    #a3a7aa;
+  --gray:          #75787a;
+  --gray-dark:     #525557;
+  --gray-darker:   #202020;
+  --gray-darkest:  #0f0f0f;
+  --black:         #000000;
+
+  --primary-color: #007bff;
+  --secondary-color: var(--gray-dark);
+
+  --success-color: #28a72e;
+  --info-color:    #FADB14;
+  --danger-color:  #dc3545;
+
+  --font-family-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  --box-shadow:    0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  --box-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+
+  --text-size-xxxl: 2.714285rem;
+  --text-size-xxl:  2rem;
+  --text-size-xl:   1.714285rem;
+  --text-size-lg:   1.285714rem;
+  --text-size:      1rem;
+  --text-size-sm:   0.785714rem;
+  --phrase-main-text-size:   clamp(var(--text-size-xl), 4vw, var(--text-size-xxxl));
+  --phrase-second-text-size: clamp(var(--text-size), 2vw, var(--text-size-lg));
+
+  --text-color:           var(--gray-darkest);
+  --text-color-secondary: var(--gray-light);
+  --body-bg-color:        var(--gray-lightest);
+  --bg-color:             var(--white);
+  --link-color:           var(--primary-color);
+  --border-color:         var(--gray-lighter);
+  --border-radius:        0.4rem;
+
+  --gap: 0.5em;
+}
+
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --white: #000000;
+    --gray-lightest: #0f0f0f;
+    --gray-lighter: #2b2b2b;
+    --gray-light: #525557;
+    --gray: #8a8a8a;
+    --gray-dark: #a3a7aa;
+    --gray-darker: #dbdbdb;
+    --gray-darkest: #f3f3f3;
+    --black: #ffffff;
+
+    --primary: #68b1ff;
+
+    --box-shadow: 0 6px 16px 0 rgba(255, 255, 255, 0.08), 0 3px 6px -4px rgba(255, 255, 255, 0.12), 0 9px 28px 8px rgba(255, 255, 255, 0.05);
+    --box-shadow-sm: 0 1px 2px 0 rgba(255, 255, 255, 0.03), 0 1px 6px -1px rgba(255, 255, 255, 0.02), 0 2px 4px 0 rgba(255, 255, 255, 0.02);
+  }
+} */

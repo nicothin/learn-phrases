@@ -1,12 +1,15 @@
 import { Octokit } from '@octokit/core';
 
-import { FILE_NAMES } from '../enums';
-import { PhrasesDTO } from '../types';
+import { PhraseDTO } from '../types';
 
 type GistConfig = {
   token?: string;
   gistId?: string;
 };
+
+enum FILE_NAMES {
+  PHRASES = 'phrases.json',
+}
 
 export type OctokitResponse = {
   data: {
@@ -34,36 +37,38 @@ export class Gist {
     if (!config.token || !config.gistId) {
       return null;
     }
-    if (
-      !Gist.instance ||
-      config.token !== Gist.instance.token ||
-      config.gistId !== Gist.instance.gistId
-    ) {
+
+    if (!Gist.instance || config.token !== Gist.instance.token || config.gistId !== Gist.instance.gistId) {
       Gist.instance = new Gist(config);
     }
     return Gist.instance;
   }
 
-  public async getAllPhrases(): Promise<PhrasesDTO> {
+  public async getAllPhrases(): Promise<PhraseDTO[]> {
     const response = await this.octokit.request('GET /gists/{gist_id}', { gist_id: this.gistId });
 
     if (!response?.data?.files?.[FILE_NAMES.PHRASES]) {
-      throw new Error(`File ${FILE_NAMES.PHRASES} not found in gist`);
+      throw new Error(`File ${FILE_NAMES.PHRASES} not found in gist.`);
     }
 
     const gistContent = response?.data?.files?.[FILE_NAMES.PHRASES]?.content ?? '[]';
 
     try {
       const result = JSON.parse(gistContent);
+
+      if (!Array.isArray(result) || !result.length) {
+        throw new Error(`${FILE_NAMES.PHRASES} does not contain phrases.`);
+      }
+
       return result;
     } catch (error) {
-      throw new Error(`The data is received, but this .json is incorrect. ${error}`);
+      throw new Error(`Invalid JSON: ${error}`);
     }
   }
 
-  public async setAllPhrases(phrasesDTO: PhrasesDTO): Promise<OctokitResponse> {
+  public async setAllPhrases(phrasesDTO: PhraseDTO[]): Promise<OctokitResponse> {
     if (!Array.isArray(phrasesDTO) || !phrasesDTO?.length) {
-      throw new Error('Saved phrases is not array or is empty');
+      throw new Error('Saved phrases is not array or is empty.');
     }
 
     try {

@@ -1,34 +1,45 @@
-import { FloatButton } from 'antd';
-import {
-  CaretRightOutlined,
-  EditOutlined,
-  MenuUnfoldOutlined,
-  QuestionOutlined,
-  SettingOutlined,
-} from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
-import { getFloatButtonPositionStyle } from '../../utils';
+import './MainMenu.css';
+import '../../assets/btn-circle.css';
+import '../../assets/menu.css';
 
-export default function MainMenu() {
+import { DropButton } from '../DropButton/DropButton';
+
+export function MainMenu() {
   return (
-    <FloatButton.Group
-      trigger="hover"
-      style={getFloatButtonPositionStyle([0, 0], { isLeft: true })}
-      icon={<MenuUnfoldOutlined />}
-    >
-      <Link to="/settings" style={{ display: 'block', marginBottom: 16 }}>
-        <FloatButton icon={<SettingOutlined />} tooltip="Your settings" />
-      </Link>
-      <Link to="/about" style={{ display: 'block', marginBottom: 16 }}>
-        <FloatButton icon={<QuestionOutlined />} tooltip="About this project" />
-      </Link>
-      <Link to="/admin" style={{ display: 'block', marginBottom: 16 }}>
-        <FloatButton icon={<EditOutlined />} tooltip="Edit phrases" />
-      </Link>
-      <Link to="/" style={{ display: 'block', marginBottom: 16 }}>
-        <FloatButton icon={<CaretRightOutlined />} tooltip="Learn phrases" />
-      </Link>
-    </FloatButton.Group>
+    <nav className="main-menu">
+      <DropButton
+        className="main-menu__dropdown"
+        buttonContent={
+          <>
+            <p className="main-menu__title" title="Learn phrases">
+              LP
+            </p>
+            <svg className="main-menu__burger" xmlns="http://www.w3.org/2000/svg" width="18" height="18">
+              <rect width="16" height="2" x="1" y="2" ry="1" />
+              <rect width="16" height="2" x="1" y="14" ry="1" />
+              <rect width="16" height="2" x="1" y="8" ry="1" />
+            </svg>
+          </>
+        }
+        buttonClassName="main-menu__button  btn-circle"
+      >
+        <ul className="main-menu__list  menu">
+          <li>
+            <NavLink to="/">Learn</NavLink>
+          </li>
+          <li>
+            <NavLink to="/admin">Admin</NavLink>
+          </li>
+          <li>
+            <NavLink to="/about">About</NavLink>
+          </li>
+          <li>
+            <NavLink to="/settings">Settings</NavLink>
+          </li>
+        </ul>
+      </DropButton>
+    </nav>
   );
 }

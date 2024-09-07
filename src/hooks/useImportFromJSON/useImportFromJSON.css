@@ -1,0 +1,66 @@
+.import-from-json {
+  display: flex;
+  gap: var(--gap);
+  flex-direction: column;
+  height: 80%;
+}
+
+.import-from-json__header {
+  flex-shrink: 0;
+}
+
+.import-from-json__wrapper {
+  display: flex;
+  gap: var(--gap);
+  flex-direction: column;
+  flex-grow: 1;
+  flex-shrink: 1;
+  height: 1em;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.import-from-json__footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap);
+  padding-top: 0.5rem;
+  flex-shrink: 0;
+}
+
+.import-from-json__primary-btn {
+  margin-left: auto;
+}
+
+.import-from-json__header-content {
+  margin-bottom: 1em;
+}
+
+.import-from-json__input-wrapper {
+  flex-grow: 1;
+  flex-shrink: 1;
+  height: 1em;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.import-from-json__input {
+  height: 100%;
+
+  .input-text__label,
+  .input-text__input {
+    height: 100%;
+  }
+
+  .input-text__input {
+    font-family: var(--font-family-monospace);
+  }
+}
+
+.import-from-json__validate-msg:not(:empty) {
+  margin-top: 1em;
+}
+
+.import-from-json__validate-msg--error {
+  color: var(--danger-color);
+}

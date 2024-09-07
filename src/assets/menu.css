@@ -1,0 +1,50 @@
+.menu {
+  margin: 0;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  padding: 0;
+  list-style: none;
+
+  li:not(:last-child) {
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  a,
+  button,
+  .btn,
+  [role="button"] {
+    display: block;
+    width: 100%;
+    border: 0;
+    border-radius: 0;
+    padding: 0.5em 1.2em;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    text-align-last: left;
+    color: var(--text-color);
+    text-decoration: none;
+    transition: all 0.3s;
+  }
+
+  a.active,
+  a:hover,
+  button.active,
+  button:hover,
+  .btn.active,
+  .btn:hover,
+  [role="button"].active,
+  [role="button"]:hover {
+    outline: none;
+    background-color: var(--gray-lightest);
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  .btn:focus-visible,
+  .btn:has(:focus-visible),
+  [role="button"]:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--black);
+  }
+}

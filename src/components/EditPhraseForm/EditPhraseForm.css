@@ -1,0 +1,35 @@
+.edit-phrase-form__item-main {
+  margin-bottom: 0.6em;
+}
+
+.edit-phrase-form__item {
+  margin-bottom: 1.5em;
+}
+
+.edit-phrase-form__title-wrap {
+  margin: 0 0 1em;
+}
+
+.edit-phrase-form__memo {
+  display: flex;
+  align-items: top;
+}
+
+.edit-phrase-form__memo-label {
+  padding: 0.3em 1em 0 0;
+  flex-shrink: 0;
+}
+
+.edit-phrase-form__footer {
+  display: flex;
+  gap: 0.8em;
+  margin-top: 1.5em;
+  border-top: 1px solid var(--border-color);
+  padding-top: 1.5em;
+}
+
+.edit-phrase-form__footer-main-btns {
+  display: flex;
+  gap: 0.8em;
+  margin-left: auto;
+}

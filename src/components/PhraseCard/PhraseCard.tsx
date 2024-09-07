@@ -1,97 +1,81 @@
-import { Dispatch, SetStateAction } from 'react';
-import { Card, Collapse, Typography, Rate, CollapseProps, Button } from 'antd';
-import { CheckCircleOutlined } from '@ant-design/icons';
-import ReactMarkdown from 'react-markdown';
+import { useEffect, useRef, useState } from 'react';
 
 import './PhraseCard.css';
 
 import { Phrase } from '../../types';
-import { renderTags } from '../../utils';
-import { useSettingsContext } from '../../hooks';
+import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
+import { Rating } from '../Rating/Rating';
 
-const { Text } = Typography;
+interface PhraseCardProps {
+  phrase: Phrase;
+  onEditPhrase?: (id: Phrase['id']) => void;
+  openedCardId?: Phrase['id'];
+}
 
-type PhraseCardProps = {
-  readonly cardData?: Phrase;
-  readonly activeKey?: number;
-  readonly setOpenedCardId: Dispatch<SetStateAction<number | undefined>>;
-  readonly onEditPhrase: (data: Phrase) => void;
-};
+export function PhraseCard(data: PhraseCardProps) {
+  const { phrase, onEditPhrase, openedCardId } = data;
 
-export default function PhraseCard({
-  cardData,
-  activeKey,
-  setOpenedCardId,
-  onEditPhrase,
-}: PhraseCardProps) {
-  const { tags } = useSettingsContext();
+  const [isOpenNow, setIsOpenNow] = useState(false);
+  const [collapsableWrapMaxHeight, setCollapsableWrapMaxHeight] = useState('0px');
 
-  if (!cardData) return null;
+  const collapsableWrapRef = useRef<HTMLDivElement>(null);
+  const collapsableRef = useRef<HTMLDivElement>(null);
 
-  const onCardHeaderClick = () => setOpenedCardId(cardData.id);
+  const onToggle = () => {
+    setIsOpenNow(!isOpenNow);
+  };
 
-  const item: CollapseProps['items'] = [
-    {
-      key: cardData.id,
-      label: (
-        <div
-          className="lp-phrase-card__shown"
-          onClick={onCardHeaderClick}
-          role="button"
-          tabIndex={0}
-        >
-          <ReactMarkdown className="lp-phrase-card__title">{cardData.first}</ReactMarkdown>
+  useEffect(() => {
+    setIsOpenNow(openedCardId === phrase.id);
+  }, [openedCardId, phrase.id]);
 
-          {cardData?.firstD && (
-            <Text className="lp-phrase-card__description" type="secondary">
-              <ReactMarkdown>{cardData?.firstD}</ReactMarkdown>
-            </Text>
-          )}
-
-          {cardData.knowledgeLvl > 8 && (
-            <CheckCircleOutlined className="lp-phrase-card__done-icon" />
-          )}
-        </div>
-      ),
-      children: (
-        <div className="lp-phrase-card__hidden">
-          <ReactMarkdown className="lp-phrase-card__title">{cardData.second}</ReactMarkdown>
-
-          {cardData.secondD && (
-            <Text className="lp-phrase-card__description" type="secondary">
-              <ReactMarkdown>{cardData.secondD}</ReactMarkdown>
-            </Text>
-          )}
-
-          <Rate
-            className="lp-phrase-card__rate"
-            character={<CheckCircleOutlined />}
-            count={9}
-            value={cardData.knowledgeLvl}
-            disabled
-          />
-
-          {cardData?.tags?.length ? (
-            <p className="lp-phrase-card__tags">{renderTags(cardData, tags)}</p>
-          ) : null}
-        </div>
-      ),
-      showArrow: false,
-    },
-  ];
+  useEffect(() => {
+    if (isOpenNow) {
+      setCollapsableWrapMaxHeight(`${collapsableRef.current?.scrollHeight}px`);
+    } else {
+      setCollapsableWrapMaxHeight('0px');
+    }
+  }, [phrase, isOpenNow]);
 
   return (
-    <Card className="lp-phrase-card" bordered={false}>
-      <Collapse items={item} collapsible="header" activeKey={[activeKey ?? 'UNKNOWN']} ghost />
+    <div className={`phrase-card ${isOpenNow ? 'phrase-card--open' : ''}`}>
+      <div className="phrase-card__main" onClick={() => onToggle()} role="button">
+        <div className="phrase-card__main-text-wrap">
+          <MarkdownRenderer>{phrase.first}</MarkdownRenderer>
+        </div>
+        {phrase.firstD && (
+          <div className="phrase-card__description-text-wrap  text-secondary">
+            <MarkdownRenderer>{phrase.firstD}</MarkdownRenderer>
+          </div>
+        )}
+      </div>
 
-      <p className="lp-phrase-card__bottom-info">
-        <Text type="secondary">
-          ID: {cardData.id}.
-          <Button type="text" size="small" onClick={() => onEditPhrase(cardData)}>
-            Edit
-          </Button>
-        </Text>
+      <div
+        className="phrase-card__collapsable-wrap"
+        ref={collapsableWrapRef}
+        style={{ maxHeight: collapsableWrapMaxHeight }}
+      >
+        <div className="phrase-card__collapsable" ref={collapsableRef}>
+          <div className="phrase-card__main-text-wrap">
+            <MarkdownRenderer>{phrase.second}</MarkdownRenderer>
+          </div>
+
+          {phrase.secondD && (
+            <div className="phrase-card__description-text-wrap  text-secondary">
+              <MarkdownRenderer>{phrase.secondD}</MarkdownRenderer>
+            </div>
+          )}
+
+          <Rating className="phrase-card__memo-rating" level={phrase?.knowledgeLvl} />
+        </div>
+      </div>
+
+      <p className="phrase-card__bottom-info">
+        <span className="text-secondary">ID: {phrase.id}.</span>
+        <button type="button" className="btn  btn--text  btn--xs" onClick={() => onEditPhrase?.(phrase.id)}>
+          Edit
+        </button>
       </p>
-    </Card>
+    </div>
   );
 }

@@ -1,12 +1,10 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import dotenv from 'dotenv';
-
-dotenv.config();
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { visualizer } from 'rollup-plugin-visualizer';
 
 export default defineConfig({
-  plugins: [react()],
-  define: {
-    'process.env': {},
-  },
+  plugins: [
+    react(),
+    visualizer({ open: true }),
+  ],
 })

@@ -1,0 +1,81 @@
+.btn {
+  display: inline-block;
+  min-height: calc(1em + 1.4em + 2px);
+  border: 1px solid var(--primary-color);
+  border-radius: var(--border-radius);
+  padding: 0.5em 1.2em;
+  font-family: inherit;
+  font-weight: 400;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  user-select: none;
+  font-size: 1em;
+  line-height: 1.4em;
+  background-color: var(--primary-color);
+  color: #fff;
+  transition: all .2s ease-in-out;
+  cursor: pointer;
+}
+
+.btn:not(:disabled):focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--black);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn--secondary {
+  color: var(--text-color);
+  border-color: var(--border-color);
+  background-color: transparent;
+}
+
+.btn--danger {
+  border-color: var(--danger-color);
+  background-color: var(--danger-color);
+}
+
+.btn--text {
+  border-color: transparent;
+  color: inherit;
+  background-color: transparent;
+}
+
+.btn--sm {
+  min-height: calc(0.6em + 1.4em + 2px);
+  padding: 0.3em 0.7rem;
+}
+
+.btn--xs {
+  min-height: calc(0.2em + 1.4em + 2px);
+  padding: 0.1em 0.5rem;
+}
+
+@supports (color: hsl(from var(--primary-color) h s calc(l + 8))) {
+  .btn:not(:disabled):hover {
+    border-color: hsl(from var(--primary-color) h s calc(l + 8));
+    background-color: hsl(from var(--primary-color) h s calc(l + 8));
+  }
+
+  .btn--secondary:not(:disabled):hover,
+  .btn--secondary:not(:disabled):focus-visible {
+    background-color: var(--gray-lightest);
+  }
+
+  .btn--danger:not(:disabled):hover,
+  .btn--danger:not(:disabled):focus-visible {
+    border-color: hsl(from var(--danger-color) h s calc(l + 10));
+    background-color: hsl(from var(--danger-color) h s calc(l + 10));
+  }
+
+  .btn--text:not(:disabled):hover,
+  .btn--text:not(:disabled):focus-visible {
+    border-color: transparent;
+    color: inherit;
+    background-color: var(--gray-lighter);
+  }
+}

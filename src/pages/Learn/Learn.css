@@ -1,52 +1,54 @@
-.lp-learn-page__carousel {
-  position: fixed !important; /* hello from Made-in-China-Carousel! */
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-}
-
-.lp-learn-page__carousel .slick-list,
-.lp-learn-page__carousel .slick-track,
-.lp-learn-page__carousel .slick-slide,
-.lp-learn-page__carousel .slick-slide > div {
+.learn {
   height: 100%;
 }
 
-.lp-learn-page__slide {
-  display: inline-flex !important;
+.learn__empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  margin: 0;
+  font-size: var(--text-size-xl);
+}
+
+.learn__carousel {
+  height: 100%;
+}
+
+.learn__slide {
+  display: flex;
   align-items: center;
   justify-content: center;
   height: 100%;
   padding: 0.5em;
-  outline: none;
 }
 
-.lp-learn-page__common-progress {
+.learn__btn {
   position: fixed;
-  right: 0;
+  z-index: 1000;
+}
+
+.learn__common-progress {
+  position: fixed !important;
   top: 0;
   left: 0;
-}
-
-.lp-learn-page__progress {
-  position: fixed;
   right: 0;
-  top: 6px;
-  left: 0;
-}
-.lp-learn-page .ant-progress-inner {
-  display: block;
-}
-.lp-learn-page .ant-progress-outer {
-  display: block;
-  padding: 0 !important;
+
+  .progress__text {
+    top: 0.6rem;
+    left: auto;
+    right: 0.5rem;
+    text-align: right;
+  }
 }
 
-.lp-learn-page__common-progress .ant-progress-text {
-  position: absolute;
-  top: 17px;
-  right: 8px;
-  width: auto;
-  opacity: 0.5;
+.learn__unlearned-progress {
+  position: fixed !important;
+  top: 0.3rem;
+  left: 0;
+  right: 0;
+}
+
+.learn__common-progress-info {
+  margin: 0;
 }
