@@ -3,13 +3,13 @@ import { useCallback, useEffect, useState } from 'react';
 import './PhraseConflictsResolver.css';
 
 import { Conflict, Phrase } from '../../types';
+import { STATUS } from '../../enums';
 import { useMainContext, useNotificationContext } from '../../hooks';
 import { arePhrasesDifferent } from '../../utils';
 import { getTextWithBreaks, getClass } from './utils';
 import { Modal } from '../Modal/Modal';
 import { Rating } from '../Rating/Rating';
-import { ExportButton } from '../ExportButton/ExportButton';
-import { STATUS } from '../../enums';
+import { ExportToFileButton } from '../ExportToFileButton/ExportToFileButton';
 
 export function PhraseConflictsResolver() {
   const { allPhrases, addPhrases, phrasesToResolveConflicts, setPhrasesToResolveConflicts } =
@@ -225,7 +225,7 @@ export function PhraseConflictsResolver() {
         <button type="button" className="btn btn--secondary" onClick={() => onSelectAll(false)}>
           Select all existing
         </button>
-        <ExportButton className="btn btn--secondary">Export local phrases to file</ExportButton>
+        <ExportToFileButton className="btn btn--secondary">Export local phrases to file</ExportToFileButton>
         <div className="resolver__primary-btn">
           <button type="button" className="btn btn--secondary" onClick={onCancel}>
             Cancel
