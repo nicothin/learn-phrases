@@ -48,6 +48,7 @@ export interface UserSettings {
   token: string;
   gistId: string;
   syncOn100percent: boolean;
+  checkGistWhenSwitchingToLearn: boolean;
 }
 
 export interface Conflict {

@@ -37,7 +37,7 @@
   [role="button"].active,
   [role="button"]:hover {
     outline: none;
-    background-color: var(--gray-lighter);
+    background-color: var(--gray-lightest);
   }
 
   a:focus-visible,
@@ -46,5 +46,23 @@
   .btn:has(:focus-visible),
   [role="button"]:focus-visible {
     box-shadow: inset 0 0 0 2px var(--black);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+
+  .menu {
+
+    a.active,
+    a:hover,
+    button.active,
+    button:hover,
+    .btn.active,
+    .btn:hover,
+    [role="button"].active,
+    [role="button"]:hover {
+      outline: none;
+      background-color: var(--gray-lighter);
+    }
   }
 }

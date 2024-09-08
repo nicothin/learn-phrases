@@ -17,6 +17,7 @@ export default function Settings() {
     token: '',
     gistId: '',
     syncOn100percent: false,
+    checkGistWhenSwitchingToLearn: false,
   });
 
   const onSaveSyncSettings = (event: FormEvent<HTMLFormElement>) => {
@@ -47,6 +48,7 @@ export default function Settings() {
       token: thisMainUserData.token ?? '',
       gistId: thisMainUserData.gistId ?? '',
       syncOn100percent: thisMainUserData.syncOn100percent,
+      checkGistWhenSwitchingToLearn: thisMainUserData.checkGistWhenSwitchingToLearn,
     });
   }, [allSettings]);
 
@@ -64,6 +66,17 @@ export default function Settings() {
         and then the data will be periodically saved to it.
       </p>
 
+      <p>
+        Gist is a service from <a href="https://github.com/">github</a> for storing small sets of files with a
+        history of changes.
+        <br />
+        It's free. You can read about tokens{' '}
+        <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens">
+          here
+        </a>
+        .
+      </p>
+
       <form className="settings__form" onSubmit={onSaveSyncSettings}>
         <InputText
           className="settings__form-item"
@@ -73,19 +86,11 @@ export default function Settings() {
           onChange={(value) => handleInputChange({ name: 'token', value })}
           description={
             <>
-              Gist is a service from <a href="https://github.com/">github</a> for storing small sets of files
-              with a history of changes. It's free.
-              <br />
-              You can read about tokens{' '}
-              <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens">
-                here
-              </a>
-              . This project stores your token ONLY in your browser.
-              <br />
-              You can create your own token <a href="https://github.com/settings/tokens">here</a> (the token
-              must allow to work with gists).
+              You can create your own token <a href="https://github.com/settings/tokens">here</a> (it should
+              be able to work with gist).
             </>
           }
+          placeholder="ghp_KurwaBober1234567T4HfQWbczMnL3b0e5Xv"
         />
 
         <InputText
@@ -95,6 +100,7 @@ export default function Settings() {
           value={syncFormData.gistId}
           onChange={(value) => handleInputChange({ name: 'gistId', value })}
           description="This can be copied from the gist's URL."
+          placeholder="bobrKurwa1234567d571b2e609678321c"
         />
 
         <div className="settings__form-item  settings__form-item--checkbox">
@@ -108,6 +114,20 @@ export default function Settings() {
               }
             />{' '}
             Synchronization with gist when 100% viewing of unlearned phrases is reached.
+          </label>
+        </div>
+
+        <div className="settings__form-item  settings__form-item--checkbox">
+          <label>
+            <input
+              name="checkGistWhenSwitchingToLearn"
+              type="checkbox"
+              checked={syncFormData.checkGistWhenSwitchingToLearn}
+              onChange={(event) =>
+                handleInputChange({ name: 'checkGistWhenSwitchingToLearn', value: event.target.checked })
+              }
+            />{' '}
+            Check the difference with gist when switching to Learn.
           </label>
         </div>
 
