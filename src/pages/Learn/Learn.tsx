@@ -105,11 +105,14 @@ export default function Learn() {
         return;
       }
 
-      newPhrase.knowledgeLvl = convertToKnowledgeLvl(newPhrase.knowledgeLvl + (isPlus ? 1 : -1));
+      const newKnowledgeLvl = convertToKnowledgeLvl(newPhrase.knowledgeLvl + (isPlus ? 1 : -1));
+      newPhrase.knowledgeLvl = newKnowledgeLvl;
 
       addPhrases([newPhrase])
         .then(() => {
-          carouselRef.current?.next();
+          if (newKnowledgeLvl < 9) {
+            carouselRef.current?.next();
+          }
           setOpenedCardId(undefined);
         })
         .catch((result) => addNotification(result));
