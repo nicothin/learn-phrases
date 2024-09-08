@@ -56,9 +56,10 @@
   grid-template-columns: subgrid;
   grid-template-rows: subgrid;
   padding: 0;
-  border: 3px solid var(--gray-lightest);
+  border: 3px solid var(--gray-lighter);
   font-family: inherit;
   font-size: inherit;
+  color: inherit;
   line-height: inherit;
   text-align: left;
   background: transparent;
@@ -140,3 +141,8 @@ button.resolver__item-data:hover {
   background-color: var(--gray-lightest);
 }
 
+@media (prefers-color-scheme: dark) {
+  .resolver__text--accent {
+    background-color: var(--gray-lighter);
+  }
+}

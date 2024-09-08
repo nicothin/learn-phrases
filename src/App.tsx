@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 
-import { useActionsContext, useNotificationContext } from './hooks';
+import { useMainContext, useNotificationContext } from './hooks';
 import { Icons } from './components/Icons/Icons';
 import { MainMenu } from './components/MainMenu/MainMenu';
 
@@ -12,7 +12,7 @@ import Settings from './pages/Settings/Settings';
 import PageNotFound from './pages/PageNotFound/PageNotFound';
 
 export default function App() {
-  const { checkIDBExist } = useActionsContext();
+  const { checkIDBExist } = useMainContext();
   const { addNotification } = useNotificationContext();
 
   // Check if IDB exists, and if not, create it

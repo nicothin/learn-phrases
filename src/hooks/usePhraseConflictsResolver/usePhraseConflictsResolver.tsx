@@ -5,7 +5,7 @@ import './usePhraseConflictsResolver.css';
 import { Conflict, Phrase } from '../../types';
 import { STATUS } from '../../enums';
 import { arePhrasesDifferent } from '../../utils';
-import { useActionsContext } from '../useActionsContext';
+import { useMainContext } from '../useMainContext';
 import { useNotificationContext } from '../useNotificationContext';
 import { getClass, getTextWithBreaks } from './utils';
 import { Modal } from '../../components/Modal/Modal';
@@ -19,7 +19,7 @@ type PhraseConflictsResolverResult = {
 
 export const usePhraseConflictsResolver = (): PhraseConflictsResolverResult => {
   const { allPhrases, addPhrases, phrasesToResolveConflicts, setPhrasesToResolveConflicts } =
-    useActionsContext();
+    useMainContext();
   const { addNotification } = useNotificationContext();
 
   const [conflicts, setConflicts] = useState<Conflict[]>([]);
@@ -62,6 +62,7 @@ export const usePhraseConflictsResolver = (): PhraseConflictsResolverResult => {
       }
     });
 
+    setPhrasesToResolveConflicts([]);
     setIncomingPhraseWithoutConflicts((prev) => [...prev, ...phrases]);
     setConflicts([]);
   };

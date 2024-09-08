@@ -7,7 +7,7 @@ import './EditPhraseForm.css';
 import { Phrase } from '../../types';
 import { formatDate } from '../../utils';
 import { STATUS } from '../../enums';
-import { useActionsContext, useNotificationContext } from '../../hooks';
+import { useMainContext, useNotificationContext } from '../../hooks';
 import { InputText, InputTextHandle } from '../InputText/InputText';
 import { Rating } from '../Rating/Rating';
 import { Confirm } from '../Confirm/Confirm';
@@ -20,7 +20,7 @@ interface EditPhraseFormProps {
 export function EditPhraseForm(data: EditPhraseFormProps) {
   const { phrase, onCancel } = data;
 
-  const { addPhrases, deletePhrases } = useActionsContext();
+  const { addPhrases, deletePhrases } = useMainContext();
   const { addNotification } = useNotificationContext();
 
   const [nowPhrase, setNowPhrase] = useState<Partial<Phrase>>({});

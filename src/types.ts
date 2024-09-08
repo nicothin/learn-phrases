@@ -48,6 +48,7 @@ export interface UserSettings {
   token: string;
   gistId: string;
   syncOn100percent: boolean;
+  checkGistWhenSwitchingToLearn: boolean;
 }
 
 export interface Conflict {
@@ -55,4 +56,9 @@ export interface Conflict {
   existingPhrase: Phrase | undefined;
   differentFields: (keyof Phrase)[];
   isIncomingSelected: boolean;
+}
+
+export interface ImportPhrasesDTOFromGist {
+  notification: Notification;
+  payload: PhraseDTO[];
 }

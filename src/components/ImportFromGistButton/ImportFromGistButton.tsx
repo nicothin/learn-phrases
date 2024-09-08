@@ -1,6 +1,6 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode } from 'react';
 
-import { useActionsContext, useNotificationContext } from '../../hooks';
+import { useMainContext, useNotificationContext } from '../../hooks';
 import { getAllPhrasesFromAllPhrasesDTO } from '../../services';
 import { STATUS } from '../../enums';
 
@@ -16,15 +16,16 @@ const MAIN_USER_ID = 1;
 export function ImportFromGistButton(data: ImportFromGistButtonProps) {
   const { children, className = '', classNameLoading = '', style } = data;
 
-  const { getPhrasesDTOFromGist, setPhrasesToResolveConflicts } = useActionsContext();
+  const {
+    importPhrasesDTOFromGist,
+    setPhrasesToResolveConflicts,
+    isDataExchangeWithGist,
+    isImportingDataFromGist,
+  } = useMainContext();
   const { addNotification } = useNotificationContext();
 
-  const [isLoading, setIsLoading] = useState(false);
-
   const onImportPhrases = () => {
-    setIsLoading(true);
-
-    getPhrasesDTOFromGist(MAIN_USER_ID)
+    importPhrasesDTOFromGist(MAIN_USER_ID)
       .then((result) => {
         addNotification(result.notification);
         const conversion = getAllPhrasesFromAllPhrasesDTO(result.payload);
@@ -35,18 +36,17 @@ export function ImportFromGistButton(data: ImportFromGistButtonProps) {
       })
       .catch((result) => {
         addNotification(result.notification);
-      })
-      .finally(() => setIsLoading(false));
+      });
   };
 
   return (
     <button
-      className={`import-from-gist-button ${className} ${isLoading && classNameLoading ? classNameLoading : ''}`}
+      className={`import-from-gist-button ${className} ${isImportingDataFromGist && classNameLoading ? classNameLoading : ''}`}
       style={style ?? undefined}
       title="Import phrases from gist"
       type="button"
       onClick={onImportPhrases}
-      disabled={isLoading}
+      disabled={isDataExchangeWithGist}
     >
       {children}
     </button>

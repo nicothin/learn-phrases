@@ -5,7 +5,7 @@ import '../../assets/btn.css';
 
 import { UserSettings } from '../../types';
 import {
-  useActionsContext,
+  useMainContext,
   useNotificationContext,
   useEditPhrase,
   usePhraseConflictsResolver,
@@ -27,7 +27,7 @@ const MAIN_USER_ID = 1;
 
 export default function Admin() {
   const { allPhrases, exportPhrasesDTOToFile, deleteAllPhrases, allSettings, setIsImportFromJSONOpen } =
-    useActionsContext();
+    useMainContext();
   const { addNotification } = useNotificationContext();
   const { editPhraseContent, startEditingPhrase } = useEditPhrase();
   const { phraseConflictsResolverContent } = usePhraseConflictsResolver();

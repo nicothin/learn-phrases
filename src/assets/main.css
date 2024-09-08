@@ -97,3 +97,15 @@ code {
 .app__content {
   flex-grow: 1;
 }
+
+
+@media (prefers-color-scheme: dark) {
+
+  @supports (color: hsl(from var(--primary-color) h s calc(l + 8))) {
+    a,
+    .link {
+      color: hsl(from var(--primary-color) h s calc(l + 30));
+    }
+  }
+
+}

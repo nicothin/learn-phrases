@@ -1,4 +1,4 @@
-import { useActionsContext, useNotificationContext } from '../../hooks';
+import { useMainContext, useNotificationContext } from '../../hooks';
 
 interface ExportToFileButtonProps {
   className?: string;
@@ -7,7 +7,7 @@ interface ExportToFileButtonProps {
 
 export const ExportToFileButton = (data: ExportToFileButtonProps) => {
   const { className, children } = data;
-  const { exportPhrasesDTOToFile } = useActionsContext();
+  const { exportPhrasesDTOToFile } = useMainContext();
   const { addNotification } = useNotificationContext();
 
   const exportToFile = () => {

@@ -27,3 +27,6 @@
   line-height: 1;
   cursor: default;
 }
+
+
+@media (prefers-color-scheme: dark) {}

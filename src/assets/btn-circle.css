@@ -23,11 +23,16 @@
   }
 }
 
-.btn-circle:hover {
+.btn-circle:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.btn-circle:not(:disabled):hover {
   background-color: var(--gray-lightest);
 }
 
-.btn-circle:focus-visible {
+.btn-circle:not(:disabled):focus-visible {
   border-color: var(--black);
 }
 
@@ -35,15 +40,15 @@
   color: var(--white);
   background-color: var(--primary-color);
 }
-.btn-circle--accent:hover,
-.btn-circle--accent:focus-visible {
+.btn-circle--accent:not(:disabled):hover,
+.btn-circle--accent:not(:disabled):focus-visible {
   color: var(--white);
   background-color: var(--primary-color);
 }
 
 @supports (color: hsl(from var(--primary-color) h s calc(l + 8))) {
-  .btn-circle--accent:hover,
-  .btn-circle--accent:focus-visible {
+  .btn-circle--accent:not(:disabled):hover,
+  .btn-circle--accent:not(:disabled):focus-visible {
     background-color: hsl(from var(--primary-color) h s calc(l + 8));
   }
 }
@@ -77,4 +82,16 @@
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+@media (prefers-color-scheme: dark) {
+  .btn-circle:not(:disabled):not(.btn-circle--accent) {
+    border-color: var(--gray-light);
+    background-color: var(--gray-lighter);
+  }
+
+  .btn-circle:not(:disabled):not(.btn-circle--accent):hover {
+    border-color: var(--gray);
+    background-color: var(--gray-light);
+  }
 }
