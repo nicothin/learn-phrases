@@ -3,14 +3,41 @@
   margin-bottom: 1em;
 }
 
-.settings__submit-btn {
-  margin-top: 2em;
-}
-
 .settings__form-item--checkbox {
   input {
     display: inline-block;
     vertical-align: baseline;
     margin: 0 0.6rem 0;
+  }
+}
+
+.settings__form-item--buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--gap);
+  margin-top: 2em;
+}
+
+.settings__left-buttons {
+  margin-right: auto;
+}
+
+.settings__right-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--gap);
+}
+
+.settings__import-btn {
+  position: relative;
+
+  input {
+    position: absolute;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    opacity: 0;
   }
 }

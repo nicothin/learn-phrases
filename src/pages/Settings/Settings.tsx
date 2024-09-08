@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 
 import './Settings.css';
 
@@ -9,7 +9,7 @@ import { InputText } from '../../components/InputText/InputText';
 const MAIN_USER_ID = 1;
 
 export default function Settings() {
-  const { allSettings, setSettings } = useMainContext();
+  const { allSettings, setSettings, exportSettingsToFile, importSettingsFromFile } = useMainContext();
   const { addNotification } = useNotificationContext();
 
   const [syncFormData, setSyncFormData] = useState<UserSettings>({
@@ -28,12 +28,24 @@ export default function Settings() {
       .catch((result) => addNotification(result));
   };
 
-  const handleInputChange = (data: { name: string; value: string | boolean }) => {
+  const onInputChange = (data: { name: string; value: string | boolean }) => {
     const { name, value } = data;
     setSyncFormData({
       ...syncFormData,
       [name]: value,
     });
+  };
+
+  const onExportSettings = () => {
+    exportSettingsToFile(MAIN_USER_ID)
+      .then((result) => addNotification(result))
+      .catch((result) => addNotification(result));
+  };
+
+  const onImportSettings = (event: ChangeEvent<HTMLInputElement>) => {
+    importSettingsFromFile(event)
+      .then((result) => addNotification(result))
+      .catch((result) => addNotification(result));
   };
 
   useEffect(() => {
@@ -83,7 +95,7 @@ export default function Settings() {
           name="token"
           label="Token"
           value={syncFormData.token}
-          onChange={(value) => handleInputChange({ name: 'token', value })}
+          onChange={(value) => onInputChange({ name: 'token', value })}
           description={
             <>
               You can create your own token <a href="https://github.com/settings/tokens">here</a> (it should
@@ -98,7 +110,7 @@ export default function Settings() {
           name="gistId"
           label="Gist ID"
           value={syncFormData.gistId}
-          onChange={(value) => handleInputChange({ name: 'gistId', value })}
+          onChange={(value) => onInputChange({ name: 'gistId', value })}
           description="This can be copied from the gist's URL."
           placeholder="bobrKurwa1234567d571b2e609678321c"
         />
@@ -109,9 +121,7 @@ export default function Settings() {
               name="syncOn100percent"
               type="checkbox"
               checked={syncFormData.syncOn100percent}
-              onChange={(event) =>
-                handleInputChange({ name: 'syncOn100percent', value: event.target.checked })
-              }
+              onChange={(event) => onInputChange({ name: 'syncOn100percent', value: event.target.checked })}
             />{' '}
             Synchronization with gist when 100% viewing of unlearned phrases is reached.
           </label>
@@ -124,16 +134,29 @@ export default function Settings() {
               type="checkbox"
               checked={syncFormData.checkGistWhenSwitchingToLearn}
               onChange={(event) =>
-                handleInputChange({ name: 'checkGistWhenSwitchingToLearn', value: event.target.checked })
+                onInputChange({ name: 'checkGistWhenSwitchingToLearn', value: event.target.checked })
               }
             />{' '}
             Check the difference with gist when switching to Learn.
           </label>
         </div>
 
-        <button className="btn  settings__submit-btn" type="submit">
-          Save sync settings
-        </button>
+        <div className="settings__form-item  settings__form-item--buttons">
+          <div className="settings__left-buttons">
+            <button className="btn  settings__submit-btn" type="submit">
+              Save settings
+            </button>
+          </div>
+          <div className="settings__right-buttons">
+            <label className="btn  btn--secondary  settings__import-btn">
+              <input type="file" accept=".json, application/json" onChange={onImportSettings} />
+              <span className="import-from-file-button__text">Import settings from file</span>
+            </label>
+            <button className="btn  btn--secondary" type="button" onClick={onExportSettings}>
+              Export settings to file
+            </button>
+          </div>
+        </div>
       </form>
     </div>
   );

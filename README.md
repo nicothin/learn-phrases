@@ -6,8 +6,6 @@ ad14d17a04eec0d1217309e54f7c312e
 
 ## TODO
 
-2. setting: check gist content on load
-3. manage settings (export-import)
 4. learn: learning direction (firct to second, second to first)
 5. groups of phrases, switch groups
 6. public mocks (english)

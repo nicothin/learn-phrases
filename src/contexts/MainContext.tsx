@@ -1,4 +1,4 @@
-import { createContext, FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, createContext, FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { ImportPhrasesDTOFromGist, Notification, Phrase, UserSettings } from '../types';
 import { IDB_NAME, IDB_TABLES, IDB_VERSION, PHRASES_TABLE_NAME, SETTINGS_TABLE_NAME } from '../constants';
@@ -11,8 +11,9 @@ import {
   putRecords,
   startDownloadFile,
   Gist,
+  getAllPhrasesFromAllPhrasesDTO,
 } from '../services';
-import { getValidatedPhrase } from '../utils';
+import { getExportJSONFileName, getValidatedPhrase } from '../utils';
 import { STATUS } from '../enums';
 
 interface MainContextType {
@@ -20,12 +21,15 @@ interface MainContextType {
 
   allSettings: UserSettings[];
   setSettings: (settings: UserSettings) => Promise<Notification>;
+  importSettingsFromFile: (event: ChangeEvent<HTMLInputElement>) => Promise<Notification>;
+  exportSettingsToFile: (userId: number) => Promise<Notification>;
 
   allPhrases: Phrase[];
   addPhrases: (phrases: Partial<Phrase>[]) => Promise<Notification>;
   deletePhrases: (phraseIds: Phrase['id'][]) => Promise<Notification>;
   deleteAllPhrases: () => Promise<Notification>;
 
+  importPhrasesDTOFromFile: (event: ChangeEvent<HTMLInputElement>) => Promise<Notification>;
   exportPhrasesDTOToFile: () => Promise<Notification>;
 
   isImportFromJSONOpen: boolean;
@@ -127,14 +131,14 @@ export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) =
         })
         .then(() => {
           resolve({
-            text: `Settings saved successfully.`,
+            text: 'Settings saved successfully.',
             type: STATUS.SUCCESS,
             duration: 3000,
           });
         })
         .catch((error) => {
           reject({
-            text: `Save settings error.`,
+            text: 'Save settings error.',
             type: STATUS.ERROR,
             description: 'See the console logs for more information.',
             consoleDescription: error,
@@ -255,6 +259,55 @@ export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) =
     });
   }, []);
 
+  const importPhrasesDTOFromFile = useCallback(
+    (event: ChangeEvent<HTMLInputElement>): Promise<Notification> => {
+      const file = event.target.files?.[0];
+
+      if (!file) {
+        return Promise.reject({
+          text: 'Is not a file',
+          type: STATUS.ERROR,
+        });
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const jsonData = JSON.parse(event.target?.result as string);
+          const conversion = getAllPhrasesFromAllPhrasesDTO(jsonData);
+          if (conversion.notification.type === STATUS.ERROR) {
+            return Promise.reject(conversion.notification);
+          }
+          setPhrasesToResolveConflicts(conversion.phrases);
+          return Promise.resolve({
+            text: 'File parsing success.',
+            type: STATUS.SUCCESS,
+          });
+        } catch (error) {
+          return Promise.reject({
+            text: 'File parsing error.',
+            consoleDescription: error,
+            type: STATUS.ERROR,
+          });
+        }
+      };
+      reader.onerror = (error) => {
+        return Promise.reject({
+          text: 'File reading error.',
+          consoleDescription: error,
+          type: STATUS.ERROR,
+        });
+      };
+      reader.readAsText(file);
+
+      return Promise.resolve({
+        text: 'File parsing success.',
+        type: STATUS.SUCCESS,
+      });
+    },
+    [],
+  );
+
   const exportPhrasesDTOToFile = useCallback((): Promise<Notification> => {
     if (!Array.isArray(allPhrases)) {
       return Promise.reject({
@@ -276,8 +329,7 @@ export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) =
     }
 
     const text = JSON.stringify(exportedPhrases).replace(/],\[/g, '],\n[');
-    const now = new Date();
-    const fileName = `LP_${window.location.hostname.replace('.', '_')}_phrases_${now.toISOString().slice(0, 10)}_${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }).replace(/:/g, '-')}.json`;
+    const fileName = getExportJSONFileName({ contentType: 'phrases' });
     startDownloadFile(fileName, text);
 
     return Promise.resolve({
@@ -286,6 +338,90 @@ export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) =
       duration: 3000,
     });
   }, [allPhrases]);
+
+  const importSettingsFromFile = useCallback(
+    (event: ChangeEvent<HTMLInputElement>): Promise<Notification> => {
+      const file = event.target.files?.[0];
+
+      if (!file) {
+        return Promise.reject({
+          text: 'Is not a file',
+          type: STATUS.ERROR,
+        });
+      }
+
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          try {
+            const newSettings = JSON.parse(event.target?.result as string);
+
+            if (!newSettings?.userId) {
+              reject({
+                text: 'These are not settings.',
+                consoleDescription: newSettings,
+                type: STATUS.ERROR,
+              });
+              return;
+            }
+
+            const oldSettings: UserSettings | undefined = allSettings.find(
+              (item) => item.userId === newSettings.userId,
+            );
+
+            const settingsToSave = {
+              ...oldSettings,
+              ...newSettings,
+            };
+
+            setSettings(settingsToSave)
+              .then((result) => resolve(result))
+              .catch((result) => reject(result));
+          } catch (error) {
+            reject({
+              text: 'File parsing error.',
+              consoleDescription: error,
+              type: STATUS.ERROR,
+            });
+          }
+        };
+        reader.onerror = (error) => {
+          reject({
+            text: 'File reading error..',
+            consoleDescription: error,
+            type: STATUS.ERROR,
+          });
+        };
+        reader.readAsText(file);
+      });
+    },
+    [allSettings, setSettings],
+  );
+
+  const exportSettingsToFile = useCallback(
+    (userId: number): Promise<Notification> => {
+      const data: UserSettings | undefined = allSettings.find((item) => item.userId === userId);
+
+      if (!data?.userId) {
+        return Promise.reject({
+          text: `The exported data is not a settings.`,
+          consoleDescription: data,
+          type: STATUS.ERROR,
+        });
+      }
+
+      const text = JSON.stringify(data);
+      const fileName = getExportJSONFileName({ contentType: `settings_user_${data.userId}` });
+      startDownloadFile(fileName, text);
+
+      return Promise.resolve({
+        text: `Settings were successfully exported to file.`,
+        type: STATUS.SUCCESS,
+        duration: 3000,
+      });
+    },
+    [allSettings],
+  );
 
   const importPhrasesDTOFromGist = useCallback(
     (userId: number): Promise<ImportPhrasesDTOFromGist> => {
@@ -425,6 +561,7 @@ export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) =
       addPhrases,
       deletePhrases,
       deleteAllPhrases,
+      importPhrasesDTOFromFile,
       exportPhrasesDTOToFile,
       importPhrasesDTOFromGist,
       exportPhrasesDTOToGist,
@@ -432,6 +569,8 @@ export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) =
       setPhrasesToResolveConflicts,
       isExportingDataToGist,
       isImportingDataFromGist,
+      importSettingsFromFile,
+      exportSettingsToFile,
     };
   }, [
     allSettings,
@@ -443,6 +582,7 @@ export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) =
     addPhrases,
     deletePhrases,
     deleteAllPhrases,
+    importPhrasesDTOFromFile,
     exportPhrasesDTOToFile,
     importPhrasesDTOFromGist,
     exportPhrasesDTOToGist,
@@ -450,6 +590,8 @@ export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) =
     setPhrasesToResolveConflicts,
     isExportingDataToGist,
     isImportingDataFromGist,
+    importSettingsFromFile,
+    exportSettingsToFile,
   ]);
 
   return <MainContext.Provider value={value}>{children}</MainContext.Provider>;
