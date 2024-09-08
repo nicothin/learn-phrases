@@ -41,15 +41,7 @@ export const useCheckForPhraseMatchesInGist = () => {
 
       importPhrasesDTOFromGist(MAIN_USER_ID)
         .then((result: ImportPhrasesDTOFromGist) => {
-          addNotification({
-            ...result.notification,
-            description: (
-              <span>
-                In the <NavLink to="/settings">Settings</NavLink> it is specified to synchronize when
-                switching to Learn.
-              </span>
-            ),
-          });
+          addNotification(result.notification);
           const conversion = getAllPhrasesFromAllPhrasesDTO(result.payload);
           if (conversion.notification.type === STATUS.ERROR) {
             addNotification(conversion.notification);
