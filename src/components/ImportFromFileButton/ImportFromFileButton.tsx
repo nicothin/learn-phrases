@@ -3,7 +3,7 @@ import { ChangeEvent } from 'react';
 import './ImportFromFileButton.css';
 
 import { STATUS } from '../../enums';
-import { useActionsContext, useNotificationContext } from '../../hooks';
+import { useMainContext, useNotificationContext } from '../../hooks';
 import { getAllPhrasesFromAllPhrasesDTO } from '../../services';
 
 interface ImportFromFileButtonProps {
@@ -13,7 +13,7 @@ interface ImportFromFileButtonProps {
 
 export const ImportFromFileButton = (data: ImportFromFileButtonProps) => {
   const { className, children } = data;
-  const { setPhrasesToResolveConflicts } = useActionsContext();
+  const { setPhrasesToResolveConflicts } = useMainContext();
   const { addNotification } = useNotificationContext();
 
   const onFileChange = (event: ChangeEvent<HTMLInputElement>) => {

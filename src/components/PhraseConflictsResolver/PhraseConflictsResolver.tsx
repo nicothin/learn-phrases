@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import './PhraseConflictsResolver.css';
 
 import { Conflict, Phrase } from '../../types';
-import { useActionsContext, useNotificationContext } from '../../hooks';
+import { useMainContext, useNotificationContext } from '../../hooks';
 import { arePhrasesDifferent } from '../../utils';
 import { getTextWithBreaks, getClass } from './utils';
 import { Modal } from '../Modal/Modal';
@@ -13,7 +13,7 @@ import { STATUS } from '../../enums';
 
 export function PhraseConflictsResolver() {
   const { allPhrases, addPhrases, phrasesToResolveConflicts, setPhrasesToResolveConflicts } =
-    useActionsContext();
+    useMainContext();
   const { addNotification } = useNotificationContext();
 
   const [conflicts, setConflicts] = useState<Conflict[]>([]);

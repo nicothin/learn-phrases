@@ -5,7 +5,7 @@ import { HashRouter as BrowserRouter } from 'react-router-dom';
 import './assets/custom-properties.css';
 import './assets/main.css';
 
-import { ActionsContextProvider } from './contexts/ActionsContext';
+import { MainContextProvider } from './contexts/MainContext';
 import { NotificationContextProvider } from './contexts/NotificationContext/NotificationsContext';
 
 import App from './App';
@@ -13,11 +13,11 @@ import App from './App';
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <NotificationContextProvider>
-      <ActionsContextProvider>
+      <MainContextProvider>
         <BrowserRouter future={{ v7_startTransition: true }}>
           <App />
         </BrowserRouter>
-      </ActionsContextProvider>
+      </MainContextProvider>
     </NotificationContextProvider>
   </StrictMode>,
 );

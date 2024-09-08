@@ -1,6 +1,6 @@
 import { createContext, FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { Notification, Phrase, PhraseDTO, UserSettings } from '../types';
+import { ImportPhrasesDTOFromGist, Notification, Phrase, UserSettings } from '../types';
 import { IDB_NAME, IDB_TABLES, IDB_VERSION, PHRASES_TABLE_NAME, SETTINGS_TABLE_NAME } from '../constants';
 import {
   checkIDBExistence,
@@ -15,35 +15,42 @@ import {
 import { getValidatedPhrase } from '../utils';
 import { STATUS } from '../enums';
 
-interface GetPhrasesDTOFromGist {
-  notification: Notification;
-  payload: PhraseDTO[];
-}
+interface MainContextType {
+  checkIDBExist: () => Promise<Notification>;
 
-interface ActionsContextType {
   allSettings: UserSettings[];
   setSettings: (settings: UserSettings) => Promise<Notification>;
+
   allPhrases: Phrase[];
-  phrasesToResolveConflicts: Partial<Phrase>[];
-  isImportFromJSONOpen: boolean;
-  setIsImportFromJSONOpen: (payload: boolean) => void;
-  checkIDBExist: () => Promise<Notification>;
   addPhrases: (phrases: Partial<Phrase>[]) => Promise<Notification>;
   deletePhrases: (phraseIds: Phrase['id'][]) => Promise<Notification>;
   deleteAllPhrases: () => Promise<Notification>;
+
   exportPhrasesDTOToFile: () => Promise<Notification>;
-  getPhrasesDTOFromGist: (userId: number) => Promise<GetPhrasesDTOFromGist>;
-  savePhrasesDTOToGist: (userId: number) => Promise<Notification>;
+
+  isImportFromJSONOpen: boolean;
+  setIsImportFromJSONOpen: (payload: boolean) => void;
+
+  importPhrasesDTOFromGist: (userId: number) => Promise<ImportPhrasesDTOFromGist>;
+  exportPhrasesDTOToGist: (userId: number) => Promise<Notification>;
+  isDataExchangeWithGist: boolean;
+  isExportingDataToGist: boolean;
+  isImportingDataFromGist: boolean;
+
+  phrasesToResolveConflicts: Partial<Phrase>[];
   setPhrasesToResolveConflicts: (phrases: Partial<Phrase>[]) => void;
 }
 
-const ActionsContext = createContext<ActionsContextType | undefined>(undefined);
+const MainContext = createContext<MainContextType | undefined>(undefined);
 
-export const ActionsContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
+export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [allPhrases, setAllPhrases] = useState<Phrase[]>([]);
   const [allSettings, setAllSettings] = useState<UserSettings[]>([]);
   const [phrasesToResolveConflicts, setPhrasesToResolveConflicts] = useState<Partial<Phrase>[]>([]);
   const [isImportFromJSONOpen, setIsImportFromJSONOpen] = useState(false);
+  const [isExportingDataToGist, setIsExportingDataToGist] = useState(false);
+  const [isImportingDataFromGist, setIsImportingDataFromGist] = useState(false);
+  const [isDataExchangeWithGist, setIsDataExchangeWithGist] = useState(false);
 
   const checkIDBExist = (): Promise<Notification> => {
     return new Promise((resolve, reject) => {
@@ -280,8 +287,8 @@ export const ActionsContextProvider: FC<{ children: ReactNode }> = ({ children }
     });
   }, [allPhrases]);
 
-  const getPhrasesDTOFromGist = useCallback(
-    (userId: number): Promise<GetPhrasesDTOFromGist> => {
+  const importPhrasesDTOFromGist = useCallback(
+    (userId: number): Promise<ImportPhrasesDTOFromGist> => {
       const data: UserSettings | undefined = allSettings.find((item) => item.userId === userId);
 
       const gist = Gist.getInstance(data ?? {});
@@ -294,6 +301,9 @@ export const ActionsContextProvider: FC<{ children: ReactNode }> = ({ children }
           type: STATUS.ERROR,
         });
       }
+
+      setIsDataExchangeWithGist(true);
+      setIsImportingDataFromGist(true);
 
       return new Promise((resolve, reject) => {
         gist
@@ -316,13 +326,17 @@ export const ActionsContextProvider: FC<{ children: ReactNode }> = ({ children }
               },
               payload: [],
             });
+          })
+          .finally(() => {
+            setIsDataExchangeWithGist(false);
+            setIsImportingDataFromGist(false);
           });
       });
     },
     [allSettings],
   );
 
-  const savePhrasesDTOToGist = useCallback(
+  const exportPhrasesDTOToGist = useCallback(
     (userId: number): Promise<Notification> => {
       const data: UserSettings | undefined = allSettings.find((item) => item.userId === userId);
 
@@ -356,6 +370,9 @@ export const ActionsContextProvider: FC<{ children: ReactNode }> = ({ children }
         });
       }
 
+      setIsDataExchangeWithGist(true);
+      setIsExportingDataToGist(true);
+
       return new Promise((resolve, reject) => {
         gist
           .setAllPhrases(exportedPhrases)
@@ -380,6 +397,10 @@ export const ActionsContextProvider: FC<{ children: ReactNode }> = ({ children }
               text: error.message,
               type: STATUS.ERROR,
             });
+          })
+          .finally(() => {
+            setIsDataExchangeWithGist(false);
+            setIsExportingDataToGist(false);
           });
       });
     },
@@ -405,9 +426,12 @@ export const ActionsContextProvider: FC<{ children: ReactNode }> = ({ children }
       deletePhrases,
       deleteAllPhrases,
       exportPhrasesDTOToFile,
-      getPhrasesDTOFromGist,
-      savePhrasesDTOToGist,
+      importPhrasesDTOFromGist,
+      exportPhrasesDTOToGist,
+      isDataExchangeWithGist,
       setPhrasesToResolveConflicts,
+      isExportingDataToGist,
+      isImportingDataFromGist,
     };
   }, [
     allSettings,
@@ -420,12 +444,15 @@ export const ActionsContextProvider: FC<{ children: ReactNode }> = ({ children }
     deletePhrases,
     deleteAllPhrases,
     exportPhrasesDTOToFile,
-    getPhrasesDTOFromGist,
-    savePhrasesDTOToGist,
+    importPhrasesDTOFromGist,
+    exportPhrasesDTOToGist,
+    isDataExchangeWithGist,
     setPhrasesToResolveConflicts,
+    isExportingDataToGist,
+    isImportingDataFromGist,
   ]);
 
-  return <ActionsContext.Provider value={value}>{children}</ActionsContext.Provider>;
+  return <MainContext.Provider value={value}>{children}</MainContext.Provider>;
 };
 
-export default ActionsContext;
+export default MainContext;

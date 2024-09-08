@@ -57,3 +57,8 @@ export interface Conflict {
   differentFields: (keyof Phrase)[];
   isIncomingSelected: boolean;
 }
+
+export interface ImportPhrasesDTOFromGist {
+  notification: Notification;
+  payload: PhraseDTO[];
+}

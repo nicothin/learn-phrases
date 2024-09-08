@@ -4,7 +4,7 @@ import './useImportFromJSON.css';
 
 import { Phrase } from '../../types';
 import { getAllPhrasesFromAllPhrasesDTO } from '../../services';
-import { useActionsContext } from '../useActionsContext';
+import { useMainContext } from '../useMainContext';
 import { Modal } from '../../components/Modal/Modal';
 import { InputText } from '../../components/InputText/InputText';
 
@@ -14,7 +14,7 @@ type ImportFromJSONResult = {
 
 export const useImportFromJSON = (): ImportFromJSONResult => {
   const { allPhrases, isImportFromJSONOpen, setIsImportFromJSONOpen, setPhrasesToResolveConflicts } =
-    useActionsContext();
+    useMainContext();
 
   const [isError, setIsError] = useState(true);
   const [lastExistingId, setLastExistingId] = useState<number>(0);

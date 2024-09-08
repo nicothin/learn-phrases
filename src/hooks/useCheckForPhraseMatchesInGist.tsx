@@ -1,16 +1,20 @@
 import { useEffect, useState } from 'react';
 
-import { UserSettings } from '../types';
-import { useActionsContext } from './useActionsContext';
+import { ImportPhrasesDTOFromGist, UserSettings } from '../types';
+import { STATUS } from '../enums';
+import { getAllPhrasesFromAllPhrasesDTO } from '../services';
+import { useMainContext } from './useMainContext';
 import { useNotificationContext } from './useNotificationContext';
 
 const MAIN_USER_ID = 1;
 
 export const useCheckForPhraseMatchesInGist = () => {
-  const { allPhrases, allSettings } = useActionsContext();
+  const { allPhrases, allSettings, importPhrasesDTOFromGist, setPhrasesToResolveConflicts } =
+    useMainContext();
   const { addNotification } = useNotificationContext();
 
   const [thisUserSettings, setThisUserSettings] = useState<UserSettings | undefined>(undefined);
+  const [lastRequestTime, setLastRequestTime] = useState(0);
 
   // Set actual user settings
   useEffect(() => {
@@ -23,12 +27,45 @@ export const useCheckForPhraseMatchesInGist = () => {
   // Check the difference with gist
   useEffect(() => {
     if (
-      !(thisUserSettings?.token && thisUserSettings?.gistId) ||
+      !allPhrases.length ||
+      !thisUserSettings?.token ||
+      !thisUserSettings?.gistId ||
       !thisUserSettings.checkGistWhenSwitchingToLearn
     ) {
       return;
     }
 
-    console.log('11111', 11111);
-  }, [thisUserSettings]);
+    const now = Date.now();
+    if (now - lastRequestTime >= 30000) {
+      setLastRequestTime(now);
+
+      importPhrasesDTOFromGist(MAIN_USER_ID)
+        .then((result: ImportPhrasesDTOFromGist) => {
+          addNotification({
+            ...result.notification,
+            description: (
+              <span>
+                In the <NavLink to="/settings">Settings</NavLink> it is specified to synchronize when
+                switching to Learn.
+              </span>
+            ),
+          });
+          const conversion = getAllPhrasesFromAllPhrasesDTO(result.payload);
+          if (conversion.notification.type === STATUS.ERROR) {
+            addNotification(conversion.notification);
+          }
+          setPhrasesToResolveConflicts(conversion.phrases);
+        })
+        .catch((result: ImportPhrasesDTOFromGist) => {
+          addNotification(result.notification);
+        });
+    }
+  }, [
+    allPhrases,
+    thisUserSettings,
+    lastRequestTime,
+    importPhrasesDTOFromGist,
+    addNotification,
+    setPhrasesToResolveConflicts,
+  ]);
 };

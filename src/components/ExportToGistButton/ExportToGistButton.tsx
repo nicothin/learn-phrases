@@ -1,6 +1,6 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode } from 'react';
 
-import { useActionsContext, useNotificationContext } from '../../hooks';
+import { useMainContext, useNotificationContext } from '../../hooks';
 
 interface ExportToGistButtonProps {
   className?: string;
@@ -14,28 +14,23 @@ const MAIN_USER_ID = 1;
 export function ExportToGistButton(data: ExportToGistButtonProps) {
   const { children, className = '', classNameLoading = '', style } = data;
 
-  const { savePhrasesDTOToGist } = useActionsContext();
+  const { exportPhrasesDTOToGist, isDataExchangeWithGist, isExportingDataToGist } = useMainContext();
   const { addNotification } = useNotificationContext();
 
-  const [isLoading, setIsLoading] = useState(false);
-
   const onExportPhrases = () => {
-    setIsLoading(true);
-
-    savePhrasesDTOToGist(MAIN_USER_ID)
+    exportPhrasesDTOToGist(MAIN_USER_ID)
       .then((result) => addNotification(result))
-      .catch((result) => addNotification(result))
-      .finally(() => setIsLoading(false));
+      .catch((result) => addNotification(result));
   };
 
   return (
     <button
-      className={`export-to-gist ${className} ${isLoading && classNameLoading ? classNameLoading : ''}`}
+      className={`export-to-gist ${className} ${isExportingDataToGist && classNameLoading ? classNameLoading : ''}`}
       style={style ?? undefined}
       title="Export phrases to gist"
       type="button"
       onClick={onExportPhrases}
-      disabled={isLoading}
+      disabled={isDataExchangeWithGist}
     >
       {children}
     </button>

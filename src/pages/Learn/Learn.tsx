@@ -7,11 +7,12 @@ import { Phrase, UserSettings } from '../../types';
 import { convertToKnowledgeLvl, shuffleArray } from '../../utils';
 import { STATUS } from '../../enums';
 import {
-  useActionsContext,
+  useMainContext,
   useNotificationContext,
   useArrayNavigator,
   useEditPhrase,
   usePhraseConflictsResolver,
+  useCheckForPhraseMatchesInGist,
 } from '../../hooks';
 import { onSliderBeforeChange } from './utils/onSliderBeforeChange';
 import { Carousel, CarouselRef } from '../../components/Carousel/Carousel';
@@ -24,7 +25,7 @@ import { NavLink } from 'react-router-dom';
 const MAIN_USER_ID = 1;
 
 export default function Learn() {
-  const { allPhrases, addPhrases, allSettings, savePhrasesDTOToGist } = useActionsContext();
+  const { allPhrases, addPhrases, allSettings, exportPhrasesDTOToGist } = useMainContext();
   const { addNotification } = useNotificationContext();
   const { editPhraseContent, isEditPhraseModalOpen, startEditingPhrase } = useEditPhrase();
   const { phraseConflictsResolverContent, isPhraseConflictsResolverOpen } = usePhraseConflictsResolver();
@@ -140,6 +141,8 @@ export default function Learn() {
     [allPhrases, changeMyKnownLevel, startEditingPhrase, nowPhraseIndex, phrasesIDs, sliderData],
   );
 
+  useCheckForPhraseMatchesInGist();
+
   // Event listeners
   useEffect(() => {
     if (isEditPhraseModalOpen || isPhraseConflictsResolverOpen) return;
@@ -248,7 +251,7 @@ export default function Learn() {
       nowPhraseIndex === unlearnedIDs.length &&
       thisUserSettings?.syncOn100percent
     ) {
-      savePhrasesDTOToGist(MAIN_USER_ID)
+      exportPhrasesDTOToGist(MAIN_USER_ID)
         .then((result) => addNotification(result))
         .catch((result) => addNotification(result));
     }
@@ -257,7 +260,7 @@ export default function Learn() {
     canTrySyncToGist,
     isGoToNext,
     nowPhraseIndex,
-    savePhrasesDTOToGist,
+    exportPhrasesDTOToGist,
     thisUserSettings,
     unlearnedIDs.length,
   ]);

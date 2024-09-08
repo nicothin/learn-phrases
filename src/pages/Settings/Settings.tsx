@@ -3,13 +3,13 @@ import { FormEvent, useEffect, useState } from 'react';
 import './Settings.css';
 
 import { UserSettings } from '../../types';
-import { useActionsContext, useNotificationContext } from '../../hooks';
+import { useMainContext, useNotificationContext } from '../../hooks';
 import { InputText } from '../../components/InputText/InputText';
 
 const MAIN_USER_ID = 1;
 
 export default function Settings() {
-  const { allSettings, setSettings } = useActionsContext();
+  const { allSettings, setSettings } = useMainContext();
   const { addNotification } = useNotificationContext();
 
   const [syncFormData, setSyncFormData] = useState<UserSettings>({

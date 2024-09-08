@@ -1,4 +1,4 @@
-export * from './useActionsContext';
+export * from './useMainContext';
 export * from './useNotificationContext';
 
 export * from './useArrayNavigator';
