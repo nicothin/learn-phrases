@@ -411,7 +411,7 @@ export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) =
       }
 
       const text = JSON.stringify(data);
-      const fileName = getExportJSONFileName({ contentType: `settings_user_${data.userId}` });
+      const fileName = getExportJSONFileName({ contentType: 'settings' });
       startDownloadFile(fileName, text);
 
       return Promise.resolve({

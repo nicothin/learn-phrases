@@ -2,7 +2,7 @@ import { ReactNode, useCallback, useEffect, useState } from 'react';
 
 import './usePhraseConflictsResolver.css';
 
-import { Conflict, Phrase } from '../../types';
+import { Conflict, Phrase, UserSettings } from '../../types';
 import { STATUS } from '../../enums';
 import { arePhrasesDifferent } from '../../utils';
 import { useMainContext } from '../useMainContext';
@@ -17,9 +17,17 @@ type PhraseConflictsResolverResult = {
   isPhraseConflictsResolverOpen: boolean;
 };
 
+const MAIN_USER_ID = 1;
+
 export const usePhraseConflictsResolver = (): PhraseConflictsResolverResult => {
-  const { allPhrases, addPhrases, phrasesToResolveConflicts, setPhrasesToResolveConflicts } =
-    useMainContext();
+  const {
+    allPhrases,
+    addPhrases,
+    phrasesToResolveConflicts,
+    setPhrasesToResolveConflicts,
+    allSettings,
+    exportPhrasesDTOToGist,
+  } = useMainContext();
   const { addNotification } = useNotificationContext();
 
   const [conflicts, setConflicts] = useState<Conflict[]>([]);
@@ -131,12 +139,29 @@ export const usePhraseConflictsResolver = (): PhraseConflictsResolverResult => {
     onCancel,
   ]);
 
-  // Save the resolved phrases to the state
+  // Save the resolved phrases
   useEffect(() => {
     if (!conflicts.length && incomingPhraseWithoutConflicts.length) {
       importAllPhrasesAndResetStates(incomingPhraseWithoutConflicts);
+
+      const thisMainUserData: UserSettings | undefined = allSettings?.find(
+        (item) => item.userId === MAIN_USER_ID,
+      );
+
+      if (thisMainUserData?.token && thisMainUserData?.gistId) {
+        exportPhrasesDTOToGist(MAIN_USER_ID)
+          .then((result) => addNotification(result))
+          .catch((result) => addNotification(result));
+      }
     }
-  }, [importAllPhrasesAndResetStates, conflicts, incomingPhraseWithoutConflicts]);
+  }, [
+    importAllPhrasesAndResetStates,
+    conflicts,
+    incomingPhraseWithoutConflicts,
+    allSettings,
+    exportPhrasesDTOToGist,
+    addNotification,
+  ]);
 
   return {
     phraseConflictsResolverContent: conflicts?.length ? (
