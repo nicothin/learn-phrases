@@ -98,6 +98,16 @@ code {
   flex-grow: 1;
 }
 
+.version {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  margin: 0;
+  padding: 0.5em;
+  font-size: var(--text-size-sm);
+  color: var(--text-color-secondary);
+}
+
 
 @media (prefers-color-scheme: dark) {
 
