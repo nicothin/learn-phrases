@@ -49,16 +49,10 @@ export function DropButton(data: DropButtonProps) {
       }
     };
 
-    const onTouchEnd = () => {
-      setIsOpen(false);
-    };
-
     document.addEventListener('mousedown', onClickOutside);
-    window.addEventListener('touchend', onTouchEnd);
 
     return () => {
       document.removeEventListener('mousedown', onClickOutside);
-      window.removeEventListener('touchend', onTouchEnd);
     };
   }, [closeOnClickOutside]);
 
