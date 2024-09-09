@@ -19,6 +19,7 @@ export default function App() {
   useEffect(() => {
     checkIDBExist().catch((error) => addNotification(error));
     // NOTE[@nicothin]: This is a conscious decision
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // [addNotification, checkIDBExist]
 
   return (
