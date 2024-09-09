@@ -25,7 +25,13 @@ import { NavLink } from 'react-router-dom';
 const MAIN_USER_ID = 1;
 
 export default function Learn() {
-  const { allPhrases, addPhrases, allSettings, exportPhrasesDTOToGist } = useMainContext();
+  const {
+    allPhrases,
+    addPhrases,
+    allSettings,
+    exportPhrasesDTOToGist,
+    setIsNeedToCheckForPhraseMatchesInGist,
+  } = useMainContext();
   const { addNotification } = useNotificationContext();
   const { editPhraseContent, isEditPhraseModalOpen, startEditingPhrase } = useEditPhrase();
   const { phraseConflictsResolverContent, isPhraseConflictsResolverOpen } = usePhraseConflictsResolver();
@@ -264,6 +270,15 @@ export default function Learn() {
     thisUserSettings,
     unlearnedIDs.length,
   ]);
+
+  // Need to useCheckForPhraseMatchesInGist?
+  useEffect(() => {
+    setIsNeedToCheckForPhraseMatchesInGist(true);
+
+    return () => {
+      setIsNeedToCheckForPhraseMatchesInGist(false);
+    };
+  }, [setIsNeedToCheckForPhraseMatchesInGist]);
 
   return phrasesIDs.length ? (
     <div className="learn">

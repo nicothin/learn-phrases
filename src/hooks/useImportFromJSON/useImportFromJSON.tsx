@@ -13,8 +13,12 @@ type ImportFromJSONResult = {
 };
 
 export const useImportFromJSON = (): ImportFromJSONResult => {
-  const { allPhrases, isImportFromJSONOpen, setIsImportFromJSONOpen, setPhrasesToResolveConflicts } =
-    useMainContext();
+  const {
+    allPhrases,
+    isImportPhrasesFromJSONOpen,
+    setIsImportPhrasesFromJSONOpen,
+    setPhrasesToResolveConflicts,
+  } = useMainContext();
 
   const [isError, setIsError] = useState(true);
   const [lastExistingId, setLastExistingId] = useState<number>(0);
@@ -34,14 +38,14 @@ export const useImportFromJSON = (): ImportFromJSONResult => {
     setIsError(true);
     setMessageText('');
     setCorrectPhrases([]);
-    setIsImportFromJSONOpen(false);
+    setIsImportPhrasesFromJSONOpen(false);
   };
 
   const onSave = () => {
     setIsError(true);
     setMessageText('');
     setCorrectPhrases([]);
-    setIsImportFromJSONOpen(false);
+    setIsImportPhrasesFromJSONOpen(false);
     setPhrasesToResolveConflicts(correctPhrases);
   };
 
@@ -66,7 +70,7 @@ export const useImportFromJSON = (): ImportFromJSONResult => {
   useEffect(() => setLastExistingId(allPhrases?.[0]?.id ?? 0), [allPhrases]);
 
   return {
-    importFromJSONContent: isImportFromJSONOpen ? (
+    importFromJSONContent: isImportPhrasesFromJSONOpen ? (
       <Modal contentClassName="import-from-json" onCloseThisModal={onCancel} isOpen isHuge>
         <div className="import-from-json__header">
           <div className="import-from-json__header-content  title">

@@ -9,8 +9,14 @@ import { useNotificationContext } from './useNotificationContext';
 const MAIN_USER_ID = 1;
 
 export const useCheckForPhraseMatchesInGist = () => {
-  const { allPhrases, allSettings, importPhrasesDTOFromGist, setPhrasesToResolveConflicts } =
-    useMainContext();
+  const {
+    allPhrases,
+    allSettings,
+    importPhrasesDTOFromGist,
+    setPhrasesToResolveConflicts,
+    isNeedToCheckForPhraseMatchesInGist,
+    setIsNeedToCheckForPhraseMatchesInGist,
+  } = useMainContext();
   const { addNotification } = useNotificationContext();
 
   const [thisUserSettings, setThisUserSettings] = useState<UserSettings | undefined>(undefined);
@@ -27,6 +33,7 @@ export const useCheckForPhraseMatchesInGist = () => {
   // Check the difference with gist
   useEffect(() => {
     if (
+      !isNeedToCheckForPhraseMatchesInGist ||
       !allPhrases.length ||
       !thisUserSettings?.token ||
       !thisUserSettings?.gistId ||
@@ -36,7 +43,7 @@ export const useCheckForPhraseMatchesInGist = () => {
     }
 
     const now = Date.now();
-    if (now - lastRequestTime >= 30000) {
+    if (now - lastRequestTime >= 10000) {
       setLastRequestTime(now);
 
       importPhrasesDTOFromGist(MAIN_USER_ID)
@@ -50,6 +57,9 @@ export const useCheckForPhraseMatchesInGist = () => {
         })
         .catch((result: ImportPhrasesDTOFromGist) => {
           addNotification(result.notification);
+        })
+        .finally(() => {
+          setIsNeedToCheckForPhraseMatchesInGist(false);
         });
     }
   }, [
@@ -59,5 +69,7 @@ export const useCheckForPhraseMatchesInGist = () => {
     importPhrasesDTOFromGist,
     addNotification,
     setPhrasesToResolveConflicts,
+    isNeedToCheckForPhraseMatchesInGist,
+    setIsNeedToCheckForPhraseMatchesInGist,
   ]);
 };
