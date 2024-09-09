@@ -6,7 +6,6 @@ ad14d17a04eec0d1217309e54f7c312e
 
 ## TODO
 
-1. fix phrases resolver: messagr "no new phrases" after resolving (get phrases from gist)
 4. learn: learning direction (firct to second, second to first)
 5. groups of phrases, switch groups
 6. public mocks (english)

@@ -5,6 +5,7 @@ import { HashRouter as BrowserRouter } from 'react-router-dom';
 import './assets/custom-properties.css';
 import './assets/main.css';
 
+import packageJson from '../package.json';
 import { MainContextProvider } from './contexts/MainContext';
 import { NotificationContextProvider } from './contexts/NotificationContext/NotificationsContext';
 
@@ -16,6 +17,7 @@ createRoot(document.getElementById('root')!).render(
       <MainContextProvider>
         <BrowserRouter future={{ v7_startTransition: true }}>
           <App />
+          <p className="version">{packageJson.version}</p>
         </BrowserRouter>
       </MainContextProvider>
     </NotificationContextProvider>
