@@ -26,8 +26,13 @@ const SEARCH_MIN_LENGTH = 3;
 const MAIN_USER_ID = 1;
 
 export default function Admin() {
-  const { allPhrases, exportPhrasesDTOToFile, deleteAllPhrases, allSettings, setIsImportFromJSONOpen } =
-    useMainContext();
+  const {
+    allPhrases,
+    exportPhrasesDTOToFile,
+    deleteAllPhrases,
+    allSettings,
+    setIsImportPhrasesFromJSONOpen,
+  } = useMainContext();
   const { addNotification } = useNotificationContext();
   const { editPhraseContent, startEditingPhrase } = useEditPhrase();
   const { phraseConflictsResolverContent } = usePhraseConflictsResolver();
@@ -141,7 +146,7 @@ export default function Admin() {
                   to add a few
                 </button>{' '}
                 or <ImportFromFileButton className="link">import from file</ImportFromFileButton> or{' '}
-                <button onClick={() => setIsImportFromJSONOpen(true)} className="link">
+                <button onClick={() => setIsImportPhrasesFromJSONOpen(true)} className="link">
                   import from JSON
                 </button>
                 .
@@ -204,7 +209,10 @@ export default function Admin() {
         >
           <ul className="menu">
             <li>
-              <button onClick={() => setIsImportFromJSONOpen(true)} className="btn  btn--secondary  btn--sm">
+              <button
+                onClick={() => setIsImportPhrasesFromJSONOpen(true)}
+                className="btn  btn--secondary  btn--sm"
+              >
                 Import phrases from JSON
               </button>
             </li>

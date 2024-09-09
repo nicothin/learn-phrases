@@ -32,14 +32,16 @@ interface MainContextType {
   importPhrasesDTOFromFile: (event: ChangeEvent<HTMLInputElement>) => Promise<Notification>;
   exportPhrasesDTOToFile: () => Promise<Notification>;
 
-  isImportFromJSONOpen: boolean;
-  setIsImportFromJSONOpen: (payload: boolean) => void;
+  isImportPhrasesFromJSONOpen: boolean;
+  setIsImportPhrasesFromJSONOpen: (payload: boolean) => void;
 
   importPhrasesDTOFromGist: (userId: number) => Promise<ImportPhrasesDTOFromGist>;
   exportPhrasesDTOToGist: (userId: number) => Promise<Notification>;
   isDataExchangeWithGist: boolean;
   isExportingDataToGist: boolean;
   isImportingDataFromGist: boolean;
+  isNeedToCheckForPhraseMatchesInGist: boolean;
+  setIsNeedToCheckForPhraseMatchesInGist: (payload: boolean) => void;
 
   phrasesToResolveConflicts: Partial<Phrase>[];
   setPhrasesToResolveConflicts: (phrases: Partial<Phrase>[]) => void;
@@ -51,10 +53,11 @@ export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) =
   const [allPhrases, setAllPhrases] = useState<Phrase[]>([]);
   const [allSettings, setAllSettings] = useState<UserSettings[]>([]);
   const [phrasesToResolveConflicts, setPhrasesToResolveConflicts] = useState<Partial<Phrase>[]>([]);
-  const [isImportFromJSONOpen, setIsImportFromJSONOpen] = useState(false);
+  const [isImportPhrasesFromJSONOpen, setIsImportPhrasesFromJSONOpen] = useState(false);
   const [isExportingDataToGist, setIsExportingDataToGist] = useState(false);
   const [isImportingDataFromGist, setIsImportingDataFromGist] = useState(false);
   const [isDataExchangeWithGist, setIsDataExchangeWithGist] = useState(false);
+  const [isNeedToCheckForPhraseMatchesInGist, setIsNeedToCheckForPhraseMatchesInGist] = useState(false);
 
   const checkIDBExist = (): Promise<Notification> => {
     return new Promise((resolve, reject) => {
@@ -555,8 +558,8 @@ export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) =
       setSettings,
       allPhrases,
       phrasesToResolveConflicts,
-      isImportFromJSONOpen,
-      setIsImportFromJSONOpen,
+      isImportPhrasesFromJSONOpen,
+      setIsImportPhrasesFromJSONOpen,
       checkIDBExist,
       addPhrases,
       deletePhrases,
@@ -571,14 +574,16 @@ export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) =
       isImportingDataFromGist,
       importSettingsFromFile,
       exportSettingsToFile,
+      isNeedToCheckForPhraseMatchesInGist,
+      setIsNeedToCheckForPhraseMatchesInGist,
     };
   }, [
     allSettings,
     setSettings,
     allPhrases,
     phrasesToResolveConflicts,
-    isImportFromJSONOpen,
-    setIsImportFromJSONOpen,
+    isImportPhrasesFromJSONOpen,
+    setIsImportPhrasesFromJSONOpen,
     addPhrases,
     deletePhrases,
     deleteAllPhrases,
@@ -592,6 +597,8 @@ export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) =
     isImportingDataFromGist,
     importSettingsFromFile,
     exportSettingsToFile,
+    isNeedToCheckForPhraseMatchesInGist,
+    setIsNeedToCheckForPhraseMatchesInGist,
   ]);
 
   return <MainContext.Provider value={value}>{children}</MainContext.Provider>;
