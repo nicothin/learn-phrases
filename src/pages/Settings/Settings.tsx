@@ -63,6 +63,7 @@ export default function Settings() {
       gistId: thisMainUserData.gistId ?? '',
       syncOn100percent: thisMainUserData.syncOn100percent,
       checkGistWhenSwitchingToLearn: thisMainUserData.checkGistWhenSwitchingToLearn,
+      tags: thisMainUserData.tags,
     });
   }, [allSettings]);
 
