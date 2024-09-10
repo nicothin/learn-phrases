@@ -19,6 +19,7 @@ export default function Settings() {
     gistId: '',
     syncOn100percent: false,
     checkGistWhenSwitchingToLearn: false,
+    tags: '',
   });
 
   const onSaveSyncSettings = (event: FormEvent<HTMLFormElement>) => {
@@ -135,6 +136,18 @@ export default function Settings() {
             Check the difference with gist when switching to Learn.
           </InputCheckbox>
         </div>
+
+        <h2>Tags</h2>
+
+        <InputText
+          className="settings__form-item"
+          name="gistId"
+          label="Tags"
+          value={syncFormData.tags}
+          onChange={(value) => onInputChange({ name: 'tags', value })}
+          // description="This can be copied from the gist's URL."
+          placeholder=""
+        />
 
         <div className="settings__form-item  settings__form-item--buttons">
           <div className="settings__left-buttons">
