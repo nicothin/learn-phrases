@@ -21,6 +21,8 @@ export default function Settings() {
     checkGistWhenSwitchingToLearn: false,
     tags: '',
   });
+  const [isError, setIsError] = useState(false);
+  const [tagsMessageText, setTagsMessageText] = useState<string>('');
 
   const onSaveSyncSettings = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -48,6 +50,26 @@ export default function Settings() {
     importSettingsFromFile(event)
       .then((result) => addNotification(result))
       .catch((result) => addNotification(result));
+  };
+
+  const onTagsChange = (value) => {
+    try {
+      const parsedText = JSON.parse(value);
+      setIsError(false);
+
+      console.info('parsedText', parsedText);
+
+      setTagsMessageText(`Correct tags`);
+      onInputChange({ name: 'tags', value });
+    } catch (error) {
+      setIsError(true);
+      if (error instanceof SyntaxError) {
+        setTagsMessageText(error.message);
+      } else {
+        setTagsMessageText(`Unknown error: ${error}`);
+      }
+      console.error(error);
+    }
   };
 
   useEffect(() => {
@@ -145,14 +167,15 @@ export default function Settings() {
           name="gistId"
           label="Tags"
           value={syncFormData.tags}
-          onChange={(value) => onInputChange({ name: 'tags', value })}
-          // description="This can be copied from the gist's URL."
-          placeholder=""
+          onChange={onTagsChange}
+          description={tagsMessageText}
+          placeholder="qwer
+          qwer"
         />
 
         <div className="settings__form-item  settings__form-item--buttons">
           <div className="settings__left-buttons">
-            <button className="btn  settings__submit-btn" type="submit">
+            <button className="btn  settings__submit-btn" type="submit" disabled={isError}>
               Save settings
             </button>
           </div>
