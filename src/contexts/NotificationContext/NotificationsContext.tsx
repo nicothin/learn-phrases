@@ -73,11 +73,7 @@ export const NotificationContextProvider: FC<{ children: ReactNode }> = ({ child
         {allNotifications.map((item) => (
           <div
             key={item.id}
-            className={`
-              notification
-              ${item.type === STATUS.SUCCESS ? 'notification--success' : ''}
-              ${item.type === STATUS.ERROR ? 'notification--error' : ''}
-            `.trim()}
+            className={`notification ${item.type === STATUS.SUCCESS ? 'notification--success' : ''} ${item.type === STATUS.ERROR ? 'notification--error' : ''}`}
             role="alert"
             onMouseEnter={() => {
               if (item.timeoutId) {

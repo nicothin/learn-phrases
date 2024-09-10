@@ -58,12 +58,7 @@ export function Rating(data: RatingProps) {
 
   return (
     <div
-      className={`
-      rating
-      ${isInteractive ? 'rating--interactive' : ''}
-      ${isSmall ? 'rating--small' : ''}
-      ${className ?? ''}
-    `}
+      className={`rating ${isInteractive ? 'rating--interactive' : ''} ${isSmall ? 'rating--small' : ''} ${className ?? ''}`}
     >
       {icons}
     </div>

@@ -5,6 +5,7 @@ import './Settings.css';
 import { UserSettings } from '../../types';
 import { useMainContext, useNotificationContext } from '../../hooks';
 import { InputText } from '../../components/InputText/InputText';
+import { InputCheckbox } from '../../components/InputCheckbox/InputCheckbox';
 
 const MAIN_USER_ID = 1;
 
@@ -115,30 +116,24 @@ export default function Settings() {
           placeholder="bobrKurwa1234567d571b2e609678321c"
         />
 
-        <div className="settings__form-item  settings__form-item--checkbox">
-          <label>
-            <input
-              name="syncOn100percent"
-              type="checkbox"
-              checked={syncFormData.syncOn100percent}
-              onChange={(event) => onInputChange({ name: 'syncOn100percent', value: event.target.checked })}
-            />{' '}
+        <div className="settings__form-item">
+          <InputCheckbox
+            name="syncOn100percent"
+            initialChecked={syncFormData.syncOn100percent}
+            onChange={(checked) => onInputChange({ name: 'syncOn100percent', value: checked })}
+          >
             Synchronization with gist when 100% viewing of unlearned phrases is reached.
-          </label>
+          </InputCheckbox>
         </div>
 
-        <div className="settings__form-item  settings__form-item--checkbox">
-          <label>
-            <input
-              name="checkGistWhenSwitchingToLearn"
-              type="checkbox"
-              checked={syncFormData.checkGistWhenSwitchingToLearn}
-              onChange={(event) =>
-                onInputChange({ name: 'checkGistWhenSwitchingToLearn', value: event.target.checked })
-              }
-            />{' '}
+        <div className="settings__form-item">
+          <InputCheckbox
+            name="checkGistWhenSwitchingToLearn"
+            initialChecked={syncFormData.checkGistWhenSwitchingToLearn}
+            onChange={(checked) => onInputChange({ name: 'checkGistWhenSwitchingToLearn', value: checked })}
+          >
             Check the difference with gist when switching to Learn.
-          </label>
+          </InputCheckbox>
         </div>
 
         <div className="settings__form-item  settings__form-item--buttons">

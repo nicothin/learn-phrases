@@ -80,11 +80,7 @@ export const InputText = forwardRef<InputTextHandle, TextFormProps>(
 
     return (
       <div
-        className={`
-        input-text
-        ${className ?? ''} ${!isValid ? 'input-text--error' : ''}
-        ${size ? `input-text--size-${size}` : ''}
-      `}
+        className={`input-text ${className ?? ''} ${!isValid ? 'input-text--error' : ''} ${size ? `input-text--size-${size}` : ''}`}
       >
         <label className="input-text__label">
           {label && <span className="input-text__label-text">{label}</span>}
