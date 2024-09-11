@@ -2,10 +2,11 @@ import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 
 import './Settings.css';
 
-import { UserSettings } from '../../types';
+import { SelectOption, UserSettings } from '../../types';
 import { useMainContext, useNotificationContext } from '../../hooks';
 import { InputText } from '../../components/InputText/InputText';
 import { InputCheckbox } from '../../components/InputCheckbox/InputCheckbox';
+import { Select } from '../../components/Select/Select';
 
 const MAIN_USER_ID = 1;
 
@@ -19,10 +20,13 @@ export default function Settings() {
     gistId: '',
     syncOn100percent: false,
     checkGistWhenSwitchingToLearn: false,
-    tags: '',
+    // tags: '',
+    speechSynthesisVoiceLang1: '',
+    speechSynthesisVoiceLang2: '',
   });
-  const [isError, setIsError] = useState(false);
-  const [tagsMessageText, setTagsMessageText] = useState<string>('');
+  // const [isError, setIsError] = useState(false);
+  // const [tagsMessageText, setTagsMessageText] = useState<string>('');
+  const [speechOptions, setSpeechOptions] = useState<SelectOption[]>([]);
 
   const onSaveSyncSettings = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -52,25 +56,25 @@ export default function Settings() {
       .catch((result) => addNotification(result));
   };
 
-  const onTagsChange = (value) => {
-    try {
-      const parsedText = JSON.parse(value);
-      setIsError(false);
+  // const onTagsChange = (value) => {
+  //   try {
+  //     const parsedText = JSON.parse(value);
+  //     setIsError(false);
 
-      console.info('parsedText', parsedText);
+  //     console.info('parsedText', parsedText);
 
-      setTagsMessageText(`Correct tags`);
-      onInputChange({ name: 'tags', value });
-    } catch (error) {
-      setIsError(true);
-      if (error instanceof SyntaxError) {
-        setTagsMessageText(error.message);
-      } else {
-        setTagsMessageText(`Unknown error: ${error}`);
-      }
-      console.error(error);
-    }
-  };
+  //     setTagsMessageText(`Correct tags`);
+  //     onInputChange({ name: 'tags', value });
+  //   } catch (error) {
+  //     setIsError(true);
+  //     if (error instanceof SyntaxError) {
+  //       setTagsMessageText(error.message);
+  //     } else {
+  //       setTagsMessageText(`Unknown error: ${error}`);
+  //     }
+  //     console.error(error);
+  //   }
+  // };
 
   useEffect(() => {
     const thisMainUserData: UserSettings | undefined = allSettings.find(
@@ -85,9 +89,35 @@ export default function Settings() {
       gistId: thisMainUserData.gistId ?? '',
       syncOn100percent: thisMainUserData.syncOn100percent,
       checkGistWhenSwitchingToLearn: thisMainUserData.checkGistWhenSwitchingToLearn,
-      tags: thisMainUserData.tags,
+      // tags: thisMainUserData.tags,
+      speechSynthesisVoiceLang1: thisMainUserData.speechSynthesisVoiceLang1 ?? '',
+      speechSynthesisVoiceLang2: thisMainUserData.speechSynthesisVoiceLang2 ?? '',
     });
   }, [allSettings]);
+
+  useEffect(() => {
+    const synth = window.speechSynthesis;
+
+    const updateVoices = () => {
+      const voices = synth.getVoices();
+      setSpeechOptions(
+        voices.map((item) => ({
+          value: item.voiceURI,
+          label: `${item.name} (${item.localService ? 'Local' : 'Remote'}, ${item.lang})`,
+        })),
+      );
+    };
+
+    synth.addEventListener('voiceschanged', updateVoices);
+
+    if (synth.getVoices().length > 0) {
+      updateVoices();
+    }
+
+    return () => {
+      synth.removeEventListener('voiceschanged', updateVoices);
+    };
+  }, []);
 
   return (
     <div className="layout-text  settings">
@@ -160,7 +190,7 @@ export default function Settings() {
           </InputCheckbox>
         </div>
 
-        <h2>Tags</h2>
+        {/* <h2>Tags</h2>
 
         <InputText
           className="settings__form-item"
@@ -171,11 +201,33 @@ export default function Settings() {
           description={tagsMessageText}
           placeholder="qwer
           qwer"
-        />
+        /> */}
+
+        <h2>Speech</h2>
+
+        <Select
+          className="settings__form-item"
+          name="speechSynthesisVoiceLang1"
+          options={speechOptions}
+          initialValue={syncFormData.speechSynthesisVoiceLang1}
+          onChange={(value) => onInputChange({ name: 'speechSynthesisVoiceLang1', value })}
+        >
+          Primary Phrase Voice
+        </Select>
+
+        <Select
+          className="settings__form-item"
+          name="speechSynthesisVoiceLang2"
+          options={speechOptions}
+          initialValue={syncFormData.speechSynthesisVoiceLang2}
+          onChange={(value) => onInputChange({ name: 'speechSynthesisVoiceLang2', value })}
+        >
+          Secondary Phrase Voice
+        </Select>
 
         <div className="settings__form-item  settings__form-item--buttons">
           <div className="settings__left-buttons">
-            <button className="btn  settings__submit-btn" type="submit" disabled={isError}>
+            <button className="btn  settings__submit-btn" type="submit">
               Save settings
             </button>
           </div>
