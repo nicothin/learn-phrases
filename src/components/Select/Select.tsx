@@ -45,7 +45,7 @@ export const Select = ({
     <div className={`select ${className ?? ''}`}>
       <label className="select__label">
         {children && <span className="select__content">{children}</span>}
-        <select name={name} className="select__select" onChange={onChangeCheched} defaultValue={value}>
+        <select name={name} className="select__select" onChange={onChangeCheched} value={value}>
           {options.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}

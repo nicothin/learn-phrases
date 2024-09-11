@@ -211,6 +211,7 @@ export default function Settings() {
           options={speechOptions}
           initialValue={syncFormData.speechSynthesisVoiceLang1}
           onChange={(value) => onInputChange({ name: 'speechSynthesisVoiceLang1', value })}
+          description="The list of speech engines depends on those installed in your browser."
         >
           Primary Phrase Voice
         </Select>
@@ -221,6 +222,7 @@ export default function Settings() {
           options={speechOptions}
           initialValue={syncFormData.speechSynthesisVoiceLang2}
           onChange={(value) => onInputChange({ name: 'speechSynthesisVoiceLang2', value })}
+          description="The list of speech engines depends on those installed in your browser."
         >
           Secondary Phrase Voice
         </Select>
