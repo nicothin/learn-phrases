@@ -50,8 +50,7 @@ export interface UserSettings {
   syncOn100percent: boolean;
   checkGistWhenSwitchingToLearn: boolean;
   // tags: string;
-  speechSynthesisVoiceLang1: string;
-  speechSynthesisVoiceLang2: string;
+  voiceOfForeignLang: string;
 }
 
 export interface Conflict {
@@ -69,4 +68,9 @@ export interface ImportPhrasesDTOFromGist {
 export interface SelectOption {
   value: string;
   label: string | ReactNode;
+}
+
+export interface SayThisPhraseProps {
+  text: string;
+  userId: UserSettings['userId'];
 }

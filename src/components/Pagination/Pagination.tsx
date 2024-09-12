@@ -32,7 +32,9 @@ export const Pagination: FC<PaginationProps> = ({ totalItems, itemsPerPage, chan
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
       >
-        🠈
+        <svg width="18" height="18">
+          <use xlinkHref="#arrow-l" />
+        </svg>
       </button>
 
       <span className="pagination__center-wrapp">
@@ -53,7 +55,9 @@ export const Pagination: FC<PaginationProps> = ({ totalItems, itemsPerPage, chan
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
       >
-        🠊
+        <svg width="18" height="18">
+          <use xlinkHref="#arrow-r" />
+        </svg>
       </button>
     </div>
   );

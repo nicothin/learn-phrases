@@ -49,10 +49,18 @@ export function DropButton(data: DropButtonProps) {
       }
     };
 
+    const onTouchMoveOutside = (event: TouchEvent) => {
+      if (parentRef.current && !parentRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
     document.addEventListener('mousedown', onClickOutside);
+    document.addEventListener('touchmove', onTouchMoveOutside);
 
     return () => {
       document.removeEventListener('mousedown', onClickOutside);
+      document.removeEventListener('touchmove', onTouchMoveOutside);
     };
   }, [closeOnClickOutside]);
 

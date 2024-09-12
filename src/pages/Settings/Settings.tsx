@@ -11,7 +11,8 @@ import { Select } from '../../components/Select/Select';
 const MAIN_USER_ID = 1;
 
 export default function Settings() {
-  const { allSettings, setSettings, exportSettingsToFile, importSettingsFromFile } = useMainContext();
+  const { allSettings, setSettings, exportSettingsToFile, importSettingsFromFile, allSpeechSynthesisVoices } =
+    useMainContext();
   const { addNotification } = useNotificationContext();
 
   const [syncFormData, setSyncFormData] = useState<UserSettings>({
@@ -21,8 +22,7 @@ export default function Settings() {
     syncOn100percent: false,
     checkGistWhenSwitchingToLearn: false,
     // tags: '',
-    speechSynthesisVoiceLang1: '',
-    speechSynthesisVoiceLang2: '',
+    voiceOfForeignLang: '',
   });
   // const [isError, setIsError] = useState(false);
   // const [tagsMessageText, setTagsMessageText] = useState<string>('');
@@ -90,34 +90,22 @@ export default function Settings() {
       syncOn100percent: thisMainUserData.syncOn100percent,
       checkGistWhenSwitchingToLearn: thisMainUserData.checkGistWhenSwitchingToLearn,
       // tags: thisMainUserData.tags,
-      speechSynthesisVoiceLang1: thisMainUserData.speechSynthesisVoiceLang1 ?? '',
-      speechSynthesisVoiceLang2: thisMainUserData.speechSynthesisVoiceLang2 ?? '',
+      voiceOfForeignLang: thisMainUserData.voiceOfForeignLang ?? '',
     });
   }, [allSettings]);
 
   useEffect(() => {
-    const synth = window.speechSynthesis;
-
-    const updateVoices = () => {
-      const voices = synth.getVoices();
-      setSpeechOptions(
-        voices.map((item) => ({
-          value: item.voiceURI,
-          label: `${item.name} (${item.localService ? 'Local' : 'Remote'}, ${item.lang})`,
-        })),
-      );
-    };
-
-    synth.addEventListener('voiceschanged', updateVoices);
-
-    if (synth.getVoices().length > 0) {
-      updateVoices();
-    }
-
-    return () => {
-      synth.removeEventListener('voiceschanged', updateVoices);
-    };
-  }, []);
+    setSpeechOptions([
+      {
+        value: 'none',
+        label: 'Not selected',
+      },
+      ...allSpeechSynthesisVoices.map((item) => ({
+        value: item.voiceURI,
+        label: `${item.name} (${item.localService ? 'Local' : 'Remote'}, ${item.lang})`,
+      })),
+    ]);
+  }, [allSpeechSynthesisVoices]);
 
   return (
     <div className="layout-text  settings">
@@ -199,32 +187,20 @@ export default function Settings() {
           value={syncFormData.tags}
           onChange={onTagsChange}
           description={tagsMessageText}
-          placeholder="qwer
-          qwer"
+          placeholder="qwerty"
         /> */}
 
         <h2>Speech</h2>
 
         <Select
           className="settings__form-item"
-          name="speechSynthesisVoiceLang1"
+          name="voiceOfForeignLang"
           options={speechOptions}
-          initialValue={syncFormData.speechSynthesisVoiceLang1}
-          onChange={(value) => onInputChange({ name: 'speechSynthesisVoiceLang1', value })}
-          description="The list of speech engines depends on those installed in your browser."
+          initialValue={syncFormData.voiceOfForeignLang}
+          onChange={(value) => onInputChange({ name: 'voiceOfForeignLang', value })}
+          description="List of speech engines available in your browser."
         >
-          Primary Phrase Voice
-        </Select>
-
-        <Select
-          className="settings__form-item"
-          name="speechSynthesisVoiceLang2"
-          options={speechOptions}
-          initialValue={syncFormData.speechSynthesisVoiceLang2}
-          onChange={(value) => onInputChange({ name: 'speechSynthesisVoiceLang2', value })}
-          description="The list of speech engines depends on those installed in your browser."
-        >
-          Secondary Phrase Voice
+          Voice of phrase in foreign language
         </Select>
 
         <div className="settings__form-item  settings__form-item--buttons">
