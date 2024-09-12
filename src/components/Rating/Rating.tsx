@@ -24,11 +24,7 @@ export function Rating(data: RatingProps) {
   };
 
   const icons = Array.from({ length: maxLevel - 1 }, (_, index) => {
-    const classes = `
-      rating__item
-      ${index + 1 <= selectedLevel ? 'rating__item--active' : ''}
-      ${index + 1 <= hoverLevel ? 'rating__item--hover' : ''}
-    `;
+    const classes = `rating__item ${index + 1 <= selectedLevel ? 'rating__item--active' : ''} ${index + 1 <= hoverLevel ? 'rating__item--hover' : ''}`;
 
     return isInteractive ? (
       <button
@@ -58,12 +54,7 @@ export function Rating(data: RatingProps) {
 
   return (
     <div
-      className={`
-      rating
-      ${isInteractive ? 'rating--interactive' : ''}
-      ${isSmall ? 'rating--small' : ''}
-      ${className ?? ''}
-    `}
+      className={`rating ${isInteractive ? 'rating--interactive' : ''} ${isSmall ? 'rating--small' : ''} ${className ?? ''}`}
     >
       {icons}
     </div>

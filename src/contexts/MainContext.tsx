@@ -1,6 +1,6 @@
 import { ChangeEvent, createContext, FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { ImportPhrasesDTOFromGist, Notification, Phrase, UserSettings } from '../types';
+import { ImportPhrasesDTOFromGist, Notification, Phrase, SayThisPhraseProps, UserSettings } from '../types';
 import { IDB_NAME, IDB_TABLES, IDB_VERSION, PHRASES_TABLE_NAME, SETTINGS_TABLE_NAME } from '../constants';
 import {
   checkIDBExistence,
@@ -45,6 +45,9 @@ interface MainContextType {
 
   phrasesToResolveConflicts: Partial<Phrase>[];
   setPhrasesToResolveConflicts: (phrases: Partial<Phrase>[]) => void;
+
+  allSpeechSynthesisVoices: SpeechSynthesisVoice[];
+  sayThisPhrase: (data: SayThisPhraseProps) => Promise<Notification>;
 }
 
 const MainContext = createContext<MainContextType | undefined>(undefined);
@@ -58,6 +61,7 @@ export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) =
   const [isImportingDataFromGist, setIsImportingDataFromGist] = useState(false);
   const [isDataExchangeWithGist, setIsDataExchangeWithGist] = useState(false);
   const [isNeedToCheckForPhraseMatchesInGist, setIsNeedToCheckForPhraseMatchesInGist] = useState(false);
+  const [allSpeechSynthesisVoices, setAllSpeechSynthesisVoices] = useState<SpeechSynthesisVoice[]>([]);
 
   const checkIDBExist = (): Promise<Notification> => {
     return new Promise((resolve, reject) => {
@@ -314,7 +318,7 @@ export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) =
   const exportPhrasesDTOToFile = useCallback((): Promise<Notification> => {
     if (!Array.isArray(allPhrases)) {
       return Promise.reject({
-        text: `The exported data is not an array.`,
+        text: 'The exported data is not an array.',
         description: 'See the console logs for more information.',
         consoleDescription: allPhrases,
         type: STATUS.ERROR,
@@ -324,7 +328,7 @@ export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) =
     const exportedPhrases = getAllPhrasesDTOFromAllPhrases(allPhrases);
     if (!exportedPhrases.length) {
       return Promise.reject({
-        text: `No data to export.`,
+        text: 'No data to export.',
         type: STATUS.ERROR,
         description: 'See the console logs for more information.',
         consoleDescription: exportedPhrases,
@@ -336,7 +340,7 @@ export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) =
     startDownloadFile(fileName, text);
 
     return Promise.resolve({
-      text: `All Phrases were successfully exported to file.`,
+      text: 'All Phrases were successfully exported to file.',
       type: STATUS.SUCCESS,
       duration: 3000,
     });
@@ -546,10 +550,108 @@ export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) =
     [allPhrases, allSettings],
   );
 
+  const sayThisPhrase = useCallback(
+    (data: SayThisPhraseProps): Promise<Notification> => {
+      const { text, userId } = data;
+      if (!text || !userId) {
+        return Promise.reject({
+          text: 'Nothing to say.',
+          description: 'No text and/or user ID specified.',
+          type: STATUS.ERROR,
+          // duration: 3000,
+        });
+      }
+
+      const thisMainUserData: UserSettings | undefined = allSettings.find((item) => item.userId === userId);
+      if (!thisMainUserData) {
+        return Promise.reject({
+          text: 'Nothing to say.',
+          description: 'Failed to get user settings.',
+          type: STATUS.ERROR,
+          // duration: 3000,
+        });
+      }
+
+      if (!thisMainUserData?.voiceOfForeignLang || thisMainUserData?.voiceOfForeignLang === 'none') {
+        return Promise.reject({
+          text: 'Nothing to say.',
+          description: 'No speech engine selected.',
+          type: STATUS.ERROR,
+          // duration: 3000,
+        });
+      }
+
+      const engine = allSpeechSynthesisVoices.find(
+        (voice) => voice.name === thisMainUserData?.voiceOfForeignLang,
+      );
+
+      if (!engine) {
+        return Promise.reject({
+          text: 'Nothing to say.',
+          description: `Selected ${thisMainUserData?.voiceOfForeignLang} voice is not available.`,
+          type: STATUS.ERROR,
+          // duration: 3000,
+        });
+      }
+
+      if (!navigator.onLine && !engine.localService) {
+        return Promise.reject({
+          text: 'Nothing to say.',
+          description: `Selected ${thisMainUserData?.voiceOfForeignLang} voice is not a local and you're offline.`,
+          type: STATUS.ERROR,
+          // duration: 3000,
+        });
+      }
+
+      return new Promise((resolve, reject) => {
+        const synth = window.speechSynthesis;
+        const utterThis = new SpeechSynthesisUtterance(text);
+
+        utterThis.onend = () => {
+          resolve({
+            text: 'The phrase is spoken.',
+            type: STATUS.SUCCESS,
+            duration: 3000,
+          });
+        };
+
+        utterThis.onerror = (event) => {
+          reject({
+            text: 'Problem of saying.',
+            consoleDescription: event,
+            type: STATUS.ERROR,
+          });
+        };
+
+        utterThis.rate = 0.8;
+        utterThis.voice = engine;
+        synth.speak(utterThis);
+      });
+    },
+    [allSettings, allSpeechSynthesisVoices],
+  );
+
   // Initial one-time filling
   useEffect(() => {
     updateAllPhrases();
     updateAllSettings();
+
+    const synth = window.speechSynthesis;
+
+    const updateVoices = () => {
+      const voices = synth.getVoices();
+      setAllSpeechSynthesisVoices(voices);
+    };
+
+    synth.addEventListener('voiceschanged', updateVoices);
+
+    if (synth.getVoices().length > 0) {
+      updateVoices();
+    }
+
+    return () => {
+      synth.removeEventListener('voiceschanged', updateVoices);
+    };
   }, []);
 
   const value = useMemo(() => {
@@ -576,6 +678,8 @@ export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) =
       exportSettingsToFile,
       isNeedToCheckForPhraseMatchesInGist,
       setIsNeedToCheckForPhraseMatchesInGist,
+      allSpeechSynthesisVoices,
+      sayThisPhrase,
     };
   }, [
     allSettings,
@@ -599,6 +703,8 @@ export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) =
     exportSettingsToFile,
     isNeedToCheckForPhraseMatchesInGist,
     setIsNeedToCheckForPhraseMatchesInGist,
+    allSpeechSynthesisVoices,
+    sayThisPhrase,
   ]);
 
   return <MainContext.Provider value={value}>{children}</MainContext.Provider>;

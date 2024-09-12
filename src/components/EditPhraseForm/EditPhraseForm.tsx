@@ -98,7 +98,7 @@ export function EditPhraseForm(data: EditPhraseFormProps) {
           ref={inputRef}
           key={`${phrase?.id}-first`}
           className="edit-phrase-form__item-main"
-          placeholder="First phrase (required)"
+          placeholder="Phrase in native language (required)"
           name="first"
           initialValue={phrase?.first}
           errorMessage="This is a required field."
@@ -118,7 +118,7 @@ export function EditPhraseForm(data: EditPhraseFormProps) {
         <InputText
           key={`${phrase?.id}-second`}
           className="edit-phrase-form__item-main"
-          placeholder="Second phrase (required)"
+          placeholder="Phrase in a foreign language (required)"
           name="second"
           initialValue={phrase?.second}
           errorMessage="This is a required field."

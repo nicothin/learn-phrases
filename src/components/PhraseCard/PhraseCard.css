@@ -8,11 +8,12 @@
 }
 
 .phrase-card__main {
-  padding: 1.4286rem 2rem;
+  padding: clamp(1rem, 2.1vw, 1.4286rem) clamp(1rem, 2.5vw, 2rem);
   cursor: pointer;
 }
 
 .phrase-card__main-text-wrap {
+  position: relative;
   font-size: var(--phrase-main-text-size);
   line-height: 1.2;
 
@@ -23,6 +24,27 @@
   p + p {
     margin-top: 0.2em;
   }
+}
+
+.phrase-card__second-phrase-voice {
+  position: absolute;
+  top: 0;
+  right: clamp(-2rem, -2.5vw, -1rem);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 1.2em;
+  height: 1.2em;
+  min-width: 2rem;
+  min-height: 2rem;
+  border: 1px solid var(--border-color);
+  border-right: 0;
+  border-top-left-radius: var(--border-radius);
+  border-bottom-left-radius: var(--border-radius);
+  padding: 0;
+  font-size: inherit;
+  background: none;
+  cursor: pointer;
 }
 
 .phrase-card__description-text-wrap {
@@ -44,7 +66,7 @@
 }
 
 .phrase-card__collapsable {
-  padding: 1.4286rem 2rem;
+  padding: clamp(1rem, 2.1vw, 1.4286rem) clamp(1rem, 2.5vw, 2rem);
 }
 
 .phrase-card__bottom-info {
@@ -55,5 +77,6 @@
 }
 
 .phrase-card__memo-rating {
-  padding: 2.5rem 0 0.5rem;
+  padding: 1rem 0 0;
+  margin-left: -0.3rem;
 }

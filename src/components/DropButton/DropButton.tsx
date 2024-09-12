@@ -4,7 +4,7 @@ import './DropButton.css';
 
 interface DropButtonProps {
   buttonContent: ReactNode;
-  direction?: 'right-top' | 'left-top';
+  direction?: 'right-top' | 'left-top' | 'bottom-left';
   className?: string;
   buttonClassName?: string;
   closeOnMouseLeaveDrop?: boolean;
@@ -49,10 +49,18 @@ export function DropButton(data: DropButtonProps) {
       }
     };
 
+    const onTouchMoveOutside = (event: TouchEvent) => {
+      if (parentRef.current && !parentRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
     document.addEventListener('mousedown', onClickOutside);
+    document.addEventListener('touchmove', onTouchMoveOutside);
 
     return () => {
       document.removeEventListener('mousedown', onClickOutside);
+      document.removeEventListener('touchmove', onTouchMoveOutside);
     };
   }, [closeOnClickOutside]);
 
@@ -70,12 +78,7 @@ export function DropButton(data: DropButtonProps) {
 
   return (
     <div
-      className={`
-        drop-button
-        drop-button--to-${direction}
-        ${className ?? ''}
-        ${isOpen ? 'drop-button--open' : ''}
-      `}
+      className={`drop-button rop-button--to-${direction} ${className ?? ''} ${isOpen ? 'drop-button--open' : ''}`}
       ref={parentRef}
     >
       <button

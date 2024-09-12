@@ -2,14 +2,17 @@ import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 
 import './Settings.css';
 
-import { UserSettings } from '../../types';
+import { SelectOption, UserSettings } from '../../types';
 import { useMainContext, useNotificationContext } from '../../hooks';
 import { InputText } from '../../components/InputText/InputText';
+import { InputCheckbox } from '../../components/InputCheckbox/InputCheckbox';
+import { Select } from '../../components/Select/Select';
 
 const MAIN_USER_ID = 1;
 
 export default function Settings() {
-  const { allSettings, setSettings, exportSettingsToFile, importSettingsFromFile } = useMainContext();
+  const { allSettings, setSettings, exportSettingsToFile, importSettingsFromFile, allSpeechSynthesisVoices } =
+    useMainContext();
   const { addNotification } = useNotificationContext();
 
   const [syncFormData, setSyncFormData] = useState<UserSettings>({
@@ -18,7 +21,12 @@ export default function Settings() {
     gistId: '',
     syncOn100percent: false,
     checkGistWhenSwitchingToLearn: false,
+    // tags: '',
+    voiceOfForeignLang: '',
   });
+  // const [isError, setIsError] = useState(false);
+  // const [tagsMessageText, setTagsMessageText] = useState<string>('');
+  const [speechOptions, setSpeechOptions] = useState<SelectOption[]>([]);
 
   const onSaveSyncSettings = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -48,6 +56,26 @@ export default function Settings() {
       .catch((result) => addNotification(result));
   };
 
+  // const onTagsChange = (value) => {
+  //   try {
+  //     const parsedText = JSON.parse(value);
+  //     setIsError(false);
+
+  //     console.info('parsedText', parsedText);
+
+  //     setTagsMessageText(`Correct tags`);
+  //     onInputChange({ name: 'tags', value });
+  //   } catch (error) {
+  //     setIsError(true);
+  //     if (error instanceof SyntaxError) {
+  //       setTagsMessageText(error.message);
+  //     } else {
+  //       setTagsMessageText(`Unknown error: ${error}`);
+  //     }
+  //     console.error(error);
+  //   }
+  // };
+
   useEffect(() => {
     const thisMainUserData: UserSettings | undefined = allSettings.find(
       (item) => item.userId === MAIN_USER_ID,
@@ -61,8 +89,23 @@ export default function Settings() {
       gistId: thisMainUserData.gistId ?? '',
       syncOn100percent: thisMainUserData.syncOn100percent,
       checkGistWhenSwitchingToLearn: thisMainUserData.checkGistWhenSwitchingToLearn,
+      // tags: thisMainUserData.tags,
+      voiceOfForeignLang: thisMainUserData.voiceOfForeignLang ?? '',
     });
   }, [allSettings]);
+
+  useEffect(() => {
+    setSpeechOptions([
+      {
+        value: 'none',
+        label: 'Not selected',
+      },
+      ...allSpeechSynthesisVoices.map((item) => ({
+        value: item.voiceURI,
+        label: `${item.name} (${item.localService ? 'Local' : 'Remote'}, ${item.lang})`,
+      })),
+    ]);
+  }, [allSpeechSynthesisVoices]);
 
   return (
     <div className="layout-text  settings">
@@ -115,31 +158,50 @@ export default function Settings() {
           placeholder="bobrKurwa1234567d571b2e609678321c"
         />
 
-        <div className="settings__form-item  settings__form-item--checkbox">
-          <label>
-            <input
-              name="syncOn100percent"
-              type="checkbox"
-              checked={syncFormData.syncOn100percent}
-              onChange={(event) => onInputChange({ name: 'syncOn100percent', value: event.target.checked })}
-            />{' '}
+        <div className="settings__form-item">
+          <InputCheckbox
+            name="syncOn100percent"
+            initialChecked={syncFormData.syncOn100percent}
+            onChange={(checked) => onInputChange({ name: 'syncOn100percent', value: checked })}
+          >
             Synchronization with gist when 100% viewing of unlearned phrases is reached.
-          </label>
+          </InputCheckbox>
         </div>
 
-        <div className="settings__form-item  settings__form-item--checkbox">
-          <label>
-            <input
-              name="checkGistWhenSwitchingToLearn"
-              type="checkbox"
-              checked={syncFormData.checkGistWhenSwitchingToLearn}
-              onChange={(event) =>
-                onInputChange({ name: 'checkGistWhenSwitchingToLearn', value: event.target.checked })
-              }
-            />{' '}
+        <div className="settings__form-item">
+          <InputCheckbox
+            name="checkGistWhenSwitchingToLearn"
+            initialChecked={syncFormData.checkGistWhenSwitchingToLearn}
+            onChange={(checked) => onInputChange({ name: 'checkGistWhenSwitchingToLearn', value: checked })}
+          >
             Check the difference with gist when switching to Learn.
-          </label>
+          </InputCheckbox>
         </div>
+
+        {/* <h2>Tags</h2>
+
+        <InputText
+          className="settings__form-item"
+          name="gistId"
+          label="Tags"
+          value={syncFormData.tags}
+          onChange={onTagsChange}
+          description={tagsMessageText}
+          placeholder="qwerty"
+        /> */}
+
+        <h2>Speech</h2>
+
+        <Select
+          className="settings__form-item"
+          name="voiceOfForeignLang"
+          options={speechOptions}
+          initialValue={syncFormData.voiceOfForeignLang}
+          onChange={(value) => onInputChange({ name: 'voiceOfForeignLang', value })}
+          description="List of speech engines available in your browser."
+        >
+          Voice of phrase in foreign language
+        </Select>
 
         <div className="settings__form-item  settings__form-item--buttons">
           <div className="settings__left-buttons">

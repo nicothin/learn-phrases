@@ -1,0 +1,17 @@
+.input-checkbox {}
+
+.input-checkbox__label {
+  position: relative;
+  display: block;
+  padding-left: 2.3rem;
+}
+
+.input-checkbox__input {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.input-checkbox__description {
+  padding: 0.5rem 0 0.5rem 2.3rem;
+}

@@ -3,14 +3,6 @@
   margin-bottom: 1em;
 }
 
-.settings__form-item--checkbox {
-  input {
-    display: inline-block;
-    vertical-align: baseline;
-    margin: 0 0.6rem 0;
-  }
-}
-
 .settings__form-item--buttons {
   display: flex;
   flex-wrap: wrap;

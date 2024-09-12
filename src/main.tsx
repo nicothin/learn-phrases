@@ -17,7 +17,7 @@ createRoot(document.getElementById('root')!).render(
       <MainContextProvider>
         <BrowserRouter future={{ v7_startTransition: true }}>
           <App />
-          <p className="version">{packageJson.version}</p>
+          <small className="version">{packageJson.version}</small>
         </BrowserRouter>
       </MainContextProvider>
     </NotificationContextProvider>

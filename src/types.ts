@@ -49,6 +49,8 @@ export interface UserSettings {
   gistId: string;
   syncOn100percent: boolean;
   checkGistWhenSwitchingToLearn: boolean;
+  // tags: string;
+  voiceOfForeignLang: string;
 }
 
 export interface Conflict {
@@ -61,4 +63,14 @@ export interface Conflict {
 export interface ImportPhrasesDTOFromGist {
   notification: Notification;
   payload: PhraseDTO[];
+}
+
+export interface SelectOption {
+  value: string;
+  label: string | ReactNode;
+}
+
+export interface SayThisPhraseProps {
+  text: string;
+  userId: UserSettings['userId'];
 }

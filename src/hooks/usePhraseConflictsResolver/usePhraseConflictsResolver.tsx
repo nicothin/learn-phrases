@@ -189,11 +189,7 @@ export const usePhraseConflictsResolver = (): PhraseConflictsResolverResult => {
               <button
                 type="button"
                 onClick={() => onSelectOption(conflict.incomingPhrase.id, true)}
-                className={`
-                    resolver__item-data
-                    resolver__item-data--incoming
-                    ${conflict.isIncomingSelected ? 'resolver__item-data--selected' : ''}
-                  `}
+                className={`resolver__item-data resolver__item-data--incoming ${conflict.isIncomingSelected ? 'resolver__item-data--selected' : ''}`}
               >
                 <span className="resolver__item-id">
                   <span className="text-secondary">ID: {conflict.incomingPhrase.id}</span>
@@ -217,12 +213,7 @@ export const usePhraseConflictsResolver = (): PhraseConflictsResolverResult => {
               <button
                 type="button"
                 onClick={() => onSelectOption(conflict.incomingPhrase.id, false)}
-                className={`
-                    resolver__item-data
-                    resolver__item-data--existing
-                    ${!conflict.isIncomingSelected ? 'resolver__item-data--selected' : ''}
-                    ${!conflict.existingPhrase ? 'resolver__item-data--empty' : ''}
-                  `}
+                className={`resolver__item-data resolver__item-data--existing ${!conflict.isIncomingSelected ? 'resolver__item-data--selected' : ''} ${!conflict.existingPhrase ? 'resolver__item-data--empty' : ''}`}
               >
                 {conflict.existingPhrase ? (
                   <>
