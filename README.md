@@ -6,8 +6,6 @@ ad14d17a04eec0d1217309e54f7c312e
 
 ## TODO
 
-1. fix color speech icon
-2. mobile speech debugging
 3. max length phrases
 4. learn: learning direction (firct to second, second to first)
 5. groups of phrases, switch groups
