@@ -607,6 +607,8 @@ export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) =
         const synth = window.speechSynthesis;
         const utterThis = new SpeechSynthesisUtterance(text);
 
+        const voices = synth.getVoices();
+
         utterThis.onend = () => {
           resolve({
             text: 'The phrase is spoken.',
@@ -625,7 +627,8 @@ export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) =
         };
 
         utterThis.rate = 0.8;
-        utterThis.voice = engine;
+        // utterThis.voice = engine;
+        utterThis.voice = voices[0];
         synth.speak(utterThis);
       });
     },
