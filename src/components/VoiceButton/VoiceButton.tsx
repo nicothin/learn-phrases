@@ -15,7 +15,9 @@ export function VoiceButton(data: VoiceButtonProps) {
   const { addNotification } = useNotificationContext();
 
   const onVoicePhrase = () => {
-    sayThisPhrase({ text, userId: MAIN_USER_ID }).catch((result) => addNotification(result));
+    sayThisPhrase({ text, userId: MAIN_USER_ID })
+      .then((result) => addNotification(result))
+      .catch((result) => addNotification(result));
   };
 
   return (
