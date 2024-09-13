@@ -29,9 +29,9 @@ export const getValidatedPhrase = (
 
   const result: Partial<Phrase> = {
     first: phrase.first.trim(),
-    firstD: String(phrase.firstD).trim() ?? '',
+    firstD: String(phrase?.firstD?.trim() ?? ''),
     second: phrase.second.trim(),
-    secondD: String(phrase.secondD).trim() ?? '',
+    secondD: String(phrase?.secondD?.trim() ?? ''),
     knowledgeLvl: convertToKnowledgeLvl(phrase.knowledgeLvl),
     createDate,
     tags,

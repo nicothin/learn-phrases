@@ -2,17 +2,15 @@ import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 
 import './Settings.css';
 
-import { SelectOption, UserSettings } from '../../types';
+import { UserSettings } from '../../types';
 import { useMainContext, useNotificationContext } from '../../hooks';
 import { InputText } from '../../components/InputText/InputText';
 import { InputCheckbox } from '../../components/InputCheckbox/InputCheckbox';
-import { Select } from '../../components/Select/Select';
 
 const MAIN_USER_ID = 1;
 
 export default function Settings() {
-  const { allSettings, setSettings, exportSettingsToFile, importSettingsFromFile, allSpeechSynthesisVoices } =
-    useMainContext();
+  const { allSettings, setSettings, exportSettingsToFile, importSettingsFromFile } = useMainContext();
   const { addNotification } = useNotificationContext();
 
   const [syncFormData, setSyncFormData] = useState<UserSettings>({
@@ -22,11 +20,9 @@ export default function Settings() {
     syncOn100percent: false,
     checkGistWhenSwitchingToLearn: false,
     // tags: '',
-    voiceOfForeignLang: '',
   });
   // const [isError, setIsError] = useState(false);
   // const [tagsMessageText, setTagsMessageText] = useState<string>('');
-  const [speechOptions, setSpeechOptions] = useState<SelectOption[]>([]);
 
   const onSaveSyncSettings = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -90,22 +86,8 @@ export default function Settings() {
       syncOn100percent: thisMainUserData.syncOn100percent,
       checkGistWhenSwitchingToLearn: thisMainUserData.checkGistWhenSwitchingToLearn,
       // tags: thisMainUserData.tags,
-      voiceOfForeignLang: thisMainUserData.voiceOfForeignLang ?? '',
     });
   }, [allSettings]);
-
-  useEffect(() => {
-    setSpeechOptions([
-      {
-        value: 'none',
-        label: 'Not selected',
-      },
-      ...allSpeechSynthesisVoices.map((item) => ({
-        value: item.voiceURI,
-        label: `${item.name} (${item.localService ? 'Local' : 'Remote'}, ${item.lang})`,
-      })),
-    ]);
-  }, [allSpeechSynthesisVoices]);
 
   return (
     <div className="layout-text  settings">
@@ -189,19 +171,6 @@ export default function Settings() {
           description={tagsMessageText}
           placeholder="qwerty"
         /> */}
-
-        <h2>Speech</h2>
-
-        <Select
-          className="settings__form-item"
-          name="voiceOfForeignLang"
-          options={speechOptions}
-          initialValue={syncFormData.voiceOfForeignLang}
-          onChange={(value) => onInputChange({ name: 'voiceOfForeignLang', value })}
-          description="List of speech engines available in your browser."
-        >
-          Voice of phrase in foreign language
-        </Select>
 
         <div className="settings__form-item  settings__form-item--buttons">
           <div className="settings__left-buttons">

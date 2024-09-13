@@ -3,10 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import './PhraseCard.css';
 
 import { Phrase } from '../../types';
-import { REPLACEMENTS } from '../../constants';
 import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
 import { Rating } from '../Rating/Rating';
-import { VoiceButton } from '../VoiceButton/VoiceButton';
 
 interface PhraseCardProps {
   phrase: Phrase;
@@ -18,7 +16,6 @@ export function PhraseCard(data: PhraseCardProps) {
   const { phrase, onEditPhrase, openedCardId } = data;
 
   const [isOpenNow, setIsOpenNow] = useState(false);
-  const [secondPhraseAsText, setSecondPhraseAsText] = useState('');
   const [collapsableWrapMaxHeight, setCollapsableWrapMaxHeight] = useState('0px');
 
   const collapsableWrapRef = useRef<HTMLDivElement>(null);
@@ -39,13 +36,6 @@ export function PhraseCard(data: PhraseCardProps) {
       setCollapsableWrapMaxHeight('0px');
     }
   }, [phrase, isOpenNow]);
-
-  useEffect(() => {
-    const newSecondPhrsae = REPLACEMENTS.reduce((acc, { search }) => {
-      return acc.replace(search, '$1');
-    }, phrase.second);
-    setSecondPhraseAsText(newSecondPhrsae);
-  }, [phrase]);
 
   return (
     <div className={`phrase-card ${isOpenNow ? 'phrase-card--open' : ''}`}>
@@ -68,8 +58,6 @@ export function PhraseCard(data: PhraseCardProps) {
         <div className="phrase-card__collapsable" ref={collapsableRef}>
           <div className="phrase-card__main-text-wrap">
             <MarkdownRenderer>{phrase.second}</MarkdownRenderer>
-
-            <VoiceButton text={secondPhraseAsText} className="phrase-card__second-phrase-voice" />
           </div>
 
           {phrase.secondD && (
