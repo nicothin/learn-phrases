@@ -1,10 +1,14 @@
 .rating {
   display: inline-flex;
+  align-items: center;
   flex-wrap: wrap;
   font-size: 2em;
 }
 
 .rating__item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 1em;
   height: 1em;
   border: 0;
@@ -45,12 +49,13 @@
 
 .rating--small {
   .rating__item {
-    width: 0.6em;
-    height: 0.6em;
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.3rem;
 
     svg {
-      width: 0.5em;
-      height: 0.5em;
+      width: 1rem;
+      height: 1rem;
     }
   }
 }
