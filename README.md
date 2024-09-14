@@ -6,13 +6,11 @@ ad14d17a04eec0d1217309e54f7c312e
 
 ## TODO
 
-3. max length phrases
-4. learn: learning direction (firct to second, second to first)
-5. groups of phrases, switch groups
-6. public mocks (english)
-7. tap and move to region
-8.  tags
-9.  tests
+1. learn: learning direction (first to second, second to first)
+2. groups of phrases, switch groups (tags?)
+3. public mocks (english)
+4. tap and move to region
+5. tests
 
 ```
 Сгенерируй JSON, в котором для каждого из указанных мной иностранных слов будет по два кортежа. Каждый кортеж должен содержать: идентификатор (начиная с 9000), фразу на английском языке (от 3 до 10 слов, содержит изучаемое слово, обрамленное двойными звездочками), транскрипция изучамого слова, перевод фразы на русский язык (перевод изучаемого слова тоже обрамлен двумя звездочками).

@@ -105,6 +105,7 @@ export function EditPhraseForm(data: EditPhraseFormProps) {
           size="lg"
           onChange={(value) => onPhraseFieldChange('first', value)}
           checkValidity={isEdit}
+          maxLength={365}
           required
         />
         <InputText
@@ -114,6 +115,7 @@ export function EditPhraseForm(data: EditPhraseFormProps) {
           name="firstD"
           initialValue={phrase?.firstD}
           onChange={(value) => onPhraseFieldChange('firstD', value)}
+          maxLength={800}
         />
         <InputText
           key={`${phrase?.id}-second`}
@@ -125,6 +127,7 @@ export function EditPhraseForm(data: EditPhraseFormProps) {
           size="lg"
           onChange={(value) => onPhraseFieldChange('second', value)}
           checkValidity={isEdit}
+          maxLength={365}
           required
         />
         <InputText
@@ -134,6 +137,7 @@ export function EditPhraseForm(data: EditPhraseFormProps) {
           name="secondD"
           initialValue={phrase?.secondD}
           onChange={(value) => onPhraseFieldChange('secondD', value)}
+          maxLength={800}
         />
 
         <div className="edit-phrase-form__memo">

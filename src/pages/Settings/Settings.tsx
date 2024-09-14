@@ -119,7 +119,7 @@ export default function Settings() {
           className="settings__form-item"
           name="token"
           label="Token"
-          value={syncFormData.token}
+          initialValue={syncFormData.token}
           onChange={(value) => onInputChange({ name: 'token', value })}
           description={
             <>
@@ -134,7 +134,7 @@ export default function Settings() {
           className="settings__form-item"
           name="gistId"
           label="Gist ID"
-          value={syncFormData.gistId}
+          initialValue={syncFormData.gistId}
           onChange={(value) => onInputChange({ name: 'gistId', value })}
           description="This can be copied from the gist's URL."
           placeholder="bobrKurwa1234567d571b2e609678321c"
@@ -166,7 +166,7 @@ export default function Settings() {
           className="settings__form-item"
           name="gistId"
           label="Tags"
-          value={syncFormData.tags}
+          initialValue={syncFormData.tags}
           onChange={onTagsChange}
           description={tagsMessageText}
           placeholder="qwerty"
