@@ -215,7 +215,7 @@ export default function Learn() {
       const newIDs: Set<Phrase['id']> = new Set();
 
       prev.forEach((prevId) => {
-        if (calculatedUnlearnedIDs.has(prevId)) {
+        if (calculatedLearnedIDs.has(prevId)) {
           newIDs.add(prevId);
         }
       });
