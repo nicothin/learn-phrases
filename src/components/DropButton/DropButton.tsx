@@ -4,7 +4,7 @@ import './DropButton.css';
 
 interface DropButtonProps {
   buttonContent: ReactNode;
-  direction?: 'right-top' | 'left-top' | 'bottom-left';
+  direction?: 'right-top' | 'left-top';
   className?: string;
   buttonClassName?: string;
   closeOnMouseLeaveDrop?: boolean;
@@ -78,7 +78,7 @@ export function DropButton(data: DropButtonProps) {
 
   return (
     <div
-      className={`drop-button rop-button--to-${direction} ${className ?? ''} ${isOpen ? 'drop-button--open' : ''}`}
+      className={`drop-button drop-button--to-${direction} ${className ?? ''} ${isOpen ? 'drop-button--open' : ''}`}
       ref={parentRef}
     >
       <button

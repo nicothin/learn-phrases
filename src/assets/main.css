@@ -44,6 +44,10 @@ h2 {
   line-height: 1.26;
 }
 
+small {
+  font-size: var(--text-size-sm);
+}
+
 a,
 .link {
   margin: 0;
