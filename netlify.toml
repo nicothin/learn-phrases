@@ -1,2 +1,3 @@
 [build]
   publish = "dist/"
+  command = "NODE_OPTIONS=--openssl-legacy-provider npm run build"
