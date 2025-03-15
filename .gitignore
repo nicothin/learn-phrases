@@ -13,6 +13,7 @@ dist
 dist-ssr
 stats.html
 *.local
+*.tsbuildinfo
 
 # Editor directories and files
 .vscode/*
