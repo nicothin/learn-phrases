@@ -17,7 +17,16 @@ export interface IDBTable {
 }
 
 export type KnowledgeLvl = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
-export type PhraseDTO = [number, string, string, string, string, KnowledgeLvl, string, string];
+export type PhraseDTO = [
+  Phrase['id'],
+  Phrase['first'],
+  Phrase['firstD'],
+  Phrase['second'],
+  Phrase['secondD'],
+  KnowledgeLvl,
+  Phrase['createDate'],
+  string, // Phrase['tags'],
+];
 export interface Phrase {
   id: number;
   first: string;
