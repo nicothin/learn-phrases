@@ -8,11 +8,11 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-OLD/
+temp
 dist
 dist-ssr
-*.local
 stats.html
+*.local
 
 # Editor directories and files
 .vscode/*
