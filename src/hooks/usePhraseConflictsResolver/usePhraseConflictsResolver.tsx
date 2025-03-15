@@ -37,7 +37,7 @@ export const usePhraseConflictsResolver = (): PhraseConflictsResolverResult => {
     setConflicts([]);
   }, [setPhrasesToResolveConflicts]);
 
-  const importAllPhrasesAndResetStates = useCallback(
+  const importAllPhrasesAndResetStatesAndExportToGist = useCallback(
     (phrases: Partial<Phrase>[]) => {
       addPhrases(phrases)
         .then((result) => {
@@ -90,7 +90,7 @@ export const usePhraseConflictsResolver = (): PhraseConflictsResolverResult => {
       }
     });
 
-    importAllPhrasesAndResetStates(resolvedPhrases);
+    importAllPhrasesAndResetStatesAndExportToGist(resolvedPhrases);
   };
 
   // Search for conflicts between incoming and existing phrases
@@ -101,7 +101,7 @@ export const usePhraseConflictsResolver = (): PhraseConflictsResolverResult => {
     }
 
     if (phrasesToResolveConflicts.length && !allPhrases.length) {
-      importAllPhrasesAndResetStates(phrasesToResolveConflicts);
+      importAllPhrasesAndResetStatesAndExportToGist(phrasesToResolveConflicts);
       return;
     }
 
@@ -151,7 +151,7 @@ export const usePhraseConflictsResolver = (): PhraseConflictsResolverResult => {
     phrasesToResolveConflicts,
     setPhrasesToResolveConflicts,
     addNotification,
-    importAllPhrasesAndResetStates,
+    importAllPhrasesAndResetStatesAndExportToGist,
     onCancel,
   ]);
 

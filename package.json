@@ -8,9 +8,9 @@
     "build": "tsc -b && vite build",
     "lint": "eslint --fix .",
     "lint-and-add": "eslint --fix . && git add -A",
+    "prepare": "git config core.hooksPath .git-hooks",
     "preview": "vite preview"
   },
-  "prepare": "git config core.hooksPath .git-hooks",
   "dependencies": {
     "@octokit/core": "^6.1.2",
     "react": "^18.3.1",
