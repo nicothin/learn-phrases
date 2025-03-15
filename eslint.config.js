@@ -25,7 +25,7 @@ export default tseslint.config(
       'max-len': ['error', { code: 110, ignoreComments: true }],
       'no-console': ['error', { allow: ['error', 'info', 'warn'] }],
       'no-debugger': 'error',
-      '@typescript-eslint/no-unused-expressions': 'off',
+      // '@typescript-eslint/no-unused-expressions': 'off',
     },
   },
   eslintConfigPrettier,
