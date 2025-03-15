@@ -115,11 +115,12 @@ export default function Learn() {
       const newKnowledgeLvl = convertToKnowledgeLvl(newPhrase.knowledgeLvl + (isPlus ? 1 : -1));
       newPhrase.knowledgeLvl = newKnowledgeLvl;
 
+      if (newPhrase.knowledgeLvl !== 9) {
+        carouselRef.current?.next();
+      }
+
       addPhrases([newPhrase])
         .then(() => {
-          if (newKnowledgeLvl < 9) {
-            carouselRef.current?.next();
-          }
           setOpenedCardId(undefined);
         })
         .catch((result) => addNotification(result));
@@ -153,27 +154,17 @@ export default function Learn() {
   useEffect(() => {
     if (isEditPhraseModalOpen || isPhraseConflictsResolverOpen) return;
 
-    const touchStart = { x: 0, y: 0 };
+    const touchStart = { x: 0 };
 
     const onTouchStart = (event: TouchEvent) => {
-      // event.preventDefault();
       touchStart.x = event.touches[0].clientX;
-      touchStart.y = event.touches[0].clientY;
     };
 
     const onTouchEnd = (event: TouchEvent) => {
-      const touchEnd = { x: event.changedTouches[0].clientX, y: event.changedTouches[0].clientY };
+      const touchEnd = { x: event.changedTouches[0].clientX };
       const deltaX = touchEnd.x - touchStart.x;
-      const deltaY = touchEnd.y - touchStart.y;
-
-      if (Math.abs(deltaX) > 40 || Math.abs(deltaY) > 40) {
-        if (Math.abs(deltaX) > Math.abs(deltaY)) {
-          if (deltaX > 0) {
-            carouselRef.current?.prev();
-          } else {
-            carouselRef.current?.next();
-          }
-        } else if (deltaY > 0) {
+      if (Math.abs(deltaX) > 40) {
+        if (deltaX > 0) {
           carouselRef.current?.prev();
         } else {
           carouselRef.current?.next();
