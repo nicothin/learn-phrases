@@ -31,22 +31,42 @@ export const usePhraseConflictsResolver = (): PhraseConflictsResolverResult => {
   const { addNotification } = useNotificationContext();
 
   const [conflicts, setConflicts] = useState<Conflict[]>([]);
-  const [incomingPhraseWithoutConflicts, setIncomingPhraseWithoutConflicts] = useState<Partial<Phrase>[]>([]);
 
   const onCancel = useCallback(() => {
     setPhrasesToResolveConflicts([]);
     setConflicts([]);
-    setIncomingPhraseWithoutConflicts([]);
   }, [setPhrasesToResolveConflicts]);
 
-  const importAllPhrasesAndResetStates = useCallback(
+  const importAllPhrasesAndResetStatesAndExportToGist = useCallback(
     (phrases: Partial<Phrase>[]) => {
       addPhrases(phrases)
-        .then((result) => addNotification(result))
+        .then((result) => {
+          addNotification(result);
+
+          setPhrasesToResolveConflicts([]);
+          setConflicts([]);
+
+          const thisMainUserData: UserSettings | undefined = allSettings?.find(
+            (item) => item.userId === MAIN_USER_ID,
+          );
+
+          if (thisMainUserData?.token && thisMainUserData?.gistId) {
+            exportPhrasesDTOToGist(MAIN_USER_ID)
+              .then((result) => addNotification(result))
+              .catch((result) => addNotification(result));
+          }
+        })
         .catch((result) => addNotification(result))
         .finally(() => onCancel());
     },
-    [addNotification, addPhrases, onCancel],
+    [
+      addNotification,
+      addPhrases,
+      allSettings,
+      exportPhrasesDTOToGist,
+      onCancel,
+      setPhrasesToResolveConflicts,
+    ],
   );
 
   const onSelectOption = (id: Conflict['incomingPhrase']['id'], isIncomingSelected: boolean) => {
@@ -60,31 +80,28 @@ export const usePhraseConflictsResolver = (): PhraseConflictsResolverResult => {
   };
 
   const onSaveSelected = () => {
-    const phrases: Partial<Phrase>[] = [];
+    const resolvedPhrases: Partial<Phrase>[] = [];
 
     conflicts.forEach((conflict) => {
       if (conflict.isIncomingSelected) {
-        phrases.push(conflict.incomingPhrase);
+        resolvedPhrases.push(conflict.incomingPhrase);
       } else if (conflict.existingPhrase) {
-        phrases.push(conflict.existingPhrase);
+        resolvedPhrases.push(conflict.existingPhrase);
       }
     });
 
-    setPhrasesToResolveConflicts([]);
-    setIncomingPhraseWithoutConflicts((prev) => [...prev, ...phrases]);
-    setConflicts([]);
+    importAllPhrasesAndResetStatesAndExportToGist(resolvedPhrases);
   };
 
   // Search for conflicts between incoming and existing phrases
   useEffect(() => {
     if (!phrasesToResolveConflicts.length) {
       setConflicts([]);
-      setIncomingPhraseWithoutConflicts([]);
       return;
     }
 
     if (phrasesToResolveConflicts.length && !allPhrases.length) {
-      importAllPhrasesAndResetStates(phrasesToResolveConflicts);
+      importAllPhrasesAndResetStatesAndExportToGist(phrasesToResolveConflicts);
       return;
     }
 
@@ -94,7 +111,6 @@ export const usePhraseConflictsResolver = (): PhraseConflictsResolverResult => {
 
     phrasesToResolveConflicts.forEach((incomingPhrase) => {
       if (!incomingPhrase.id || incomingPhrase.id > lastExistingId) {
-        setIncomingPhraseWithoutConflicts((prev) => [...prev, { ...incomingPhrase, id: undefined }]);
         counter++;
         return;
       }
@@ -135,32 +151,8 @@ export const usePhraseConflictsResolver = (): PhraseConflictsResolverResult => {
     phrasesToResolveConflicts,
     setPhrasesToResolveConflicts,
     addNotification,
-    importAllPhrasesAndResetStates,
+    importAllPhrasesAndResetStatesAndExportToGist,
     onCancel,
-  ]);
-
-  // Save the resolved phrases
-  useEffect(() => {
-    if (!conflicts.length && incomingPhraseWithoutConflicts.length) {
-      importAllPhrasesAndResetStates(incomingPhraseWithoutConflicts);
-
-      const thisMainUserData: UserSettings | undefined = allSettings?.find(
-        (item) => item.userId === MAIN_USER_ID,
-      );
-
-      if (thisMainUserData?.token && thisMainUserData?.gistId) {
-        exportPhrasesDTOToGist(MAIN_USER_ID)
-          .then((result) => addNotification(result))
-          .catch((result) => addNotification(result));
-      }
-    }
-  }, [
-    importAllPhrasesAndResetStates,
-    conflicts,
-    incomingPhraseWithoutConflicts,
-    allSettings,
-    exportPhrasesDTOToGist,
-    addNotification,
   ]);
 
   return {
@@ -179,13 +171,13 @@ export const usePhraseConflictsResolver = (): PhraseConflictsResolverResult => {
 
           <p className="resolver__item resolver__item--header">
             <span className="resolver__item-data resolver__item-data--incoming">Incoming</span>
-            <span className="resolver__item-data resolver__item-data--existing">Existing</span>
+            <span className="resolver__item-data resolver__item-data--existing">Local</span>
           </p>
         </div>
 
         <div className="resolver__wrapper">
           {conflicts.map((conflict) => (
-            <div className="resolver__item" key={conflict.incomingPhrase.id}>
+            <div className="resolver__item" key={crypto.randomUUID()}>
               <button
                 type="button"
                 onClick={() => onSelectOption(conflict.incomingPhrase.id, true)}
