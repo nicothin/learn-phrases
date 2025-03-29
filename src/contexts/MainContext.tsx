@@ -1,6 +1,6 @@
 import { ChangeEvent, createContext, FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { ImportPhrasesDTOFromGist, Notification, Phrase, UserSettings } from '../types';
+import { ImportPhrasesDTOFromGist, Notification, Phrase, PhraseDTO, UserSettings } from '../types';
 import { IDB_NAME, IDB_TABLES, IDB_VERSION, PHRASES_TABLE_NAME, SETTINGS_TABLE_NAME } from '../constants';
 import {
   checkIDBExistence,
@@ -86,14 +86,14 @@ export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) =
 
   const updateAllPhrases = () => {
     return new Promise((resolve, reject) => {
-      getAllRecords({
+      getAllRecords<Phrase>({
         dbName: IDB_NAME,
         version: IDB_VERSION,
         tableName: PHRASES_TABLE_NAME,
         sortedBy: IDB_TABLES.find((table) => table.name === PHRASES_TABLE_NAME)?.keyPath ?? 'id',
       })
         .then((phrases) => {
-          setAllPhrases(phrases as Phrase[]);
+          setAllPhrases(phrases);
           resolve(phrases);
         })
         .catch((error) => {
@@ -105,13 +105,13 @@ export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) =
 
   const updateAllSettings = () => {
     return new Promise((resolve, reject) => {
-      getAllRecords({
+      getAllRecords<UserSettings>({
         dbName: IDB_NAME,
         version: IDB_VERSION,
         tableName: SETTINGS_TABLE_NAME,
       })
         .then((settings) => {
-          setAllSettings(settings as UserSettings[]);
+          setAllSettings(settings);
           resolve(settings);
         })
         .catch((error) => {
@@ -477,45 +477,60 @@ export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) =
 
   const exportPhrasesDTOToGist = useCallback(
     (userId: number): Promise<Notification> => {
-      const data: UserSettings | undefined = allSettings.find((item) => item.userId === userId);
-
-      const gist = Gist.getInstance(data ?? {});
-
-      if (!gist) {
-        return Promise.reject({
-          text: 'Missing data needed to export phrases from gist (token and gist id).',
-          description: 'See the console logs for more information.',
-          consoleDescription: data,
-          type: STATUS.ERROR,
-        });
-      }
-
-      if (!Array.isArray(allPhrases)) {
-        return Promise.reject({
-          text: 'The exported data is not an array.',
-          description: 'See the console logs for more information.',
-          consoleDescription: allPhrases,
-          type: STATUS.ERROR,
-        });
-      }
-
-      const exportedPhrases = getAllPhrasesDTOFromAllPhrases(allPhrases);
-      if (!exportedPhrases.length) {
-        return Promise.reject({
-          text: `No data to export.`,
-          description: 'See the console logs for more information.',
-          consoleDescription: exportedPhrases,
-          type: STATUS.ERROR,
-        });
-      }
-
-      setIsDataExchangeWithGist(true);
-      setIsExportingDataToGist(true);
-
       return new Promise((resolve, reject) => {
-        gist
-          .setAllPhrases(exportedPhrases)
+        const data: UserSettings | undefined = allSettings.find((item) => item.userId === userId);
+        const gist = Gist.getInstance(data ?? {});
+
+        if (!gist) {
+          reject({
+            text: 'Missing data needed to export phrases from gist (token and gist id).',
+            description: 'See the console logs for more information.',
+            consoleDescription: data,
+            type: STATUS.ERROR,
+          });
+          return;
+        }
+
+        setIsDataExchangeWithGist(true);
+        setIsExportingDataToGist(true);
+
+        getAllRecords<Phrase>({
+          dbName: IDB_NAME,
+          version: IDB_VERSION,
+          tableName: PHRASES_TABLE_NAME,
+          sortedBy: IDB_TABLES.find((table) => table.name === PHRASES_TABLE_NAME)?.keyPath ?? 'id',
+        })
+          .then((phrases) => {
+            const exportedPhrases: PhraseDTO[] = getAllPhrasesDTOFromAllPhrases(phrases);
+
+            if (!Array.isArray(exportedPhrases)) {
+              return Promise.reject<never>({
+                text: 'The exported data is not an array.',
+                description: 'See the console logs for more information.',
+                consoleDescription: exportedPhrases,
+                type: STATUS.ERROR,
+              });
+            }
+
+            if (exportedPhrases.length === 0) {
+              return Promise.reject<never>({
+                text: 'No data to export.',
+                description: 'See the console logs for more information.',
+                consoleDescription: exportedPhrases,
+                type: STATUS.ERROR,
+              });
+            }
+
+            return gist.setAllPhrases(exportedPhrases);
+          })
           .then((res) => {
+            if (!res || !res.data || !res.data.html_url) {
+              return reject({
+                text: 'Unexpected response from Gist API.',
+                type: STATUS.ERROR,
+              });
+            }
+
             resolve({
               text: `Phrases exported successfully.`,
               description: (
@@ -533,7 +548,7 @@ export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) =
           })
           .catch((error) => {
             reject({
-              text: error.message,
+              text: error.message || 'An unknown error occurred.',
               type: STATUS.ERROR,
             });
           })
@@ -543,7 +558,7 @@ export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) =
           });
       });
     },
-    [allPhrases, allSettings],
+    [allSettings],
   );
 
   // Initial one-time filling
