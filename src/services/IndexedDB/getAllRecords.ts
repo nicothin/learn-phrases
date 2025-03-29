@@ -5,11 +5,11 @@ interface GetAllRecordsParams {
   sortedBy?: string;
 }
 
-export function getAllRecords(params: GetAllRecordsParams): Promise<unknown> {
+export function getAllRecords<T extends Record<string, unknown>>(params: GetAllRecordsParams): Promise<T[]> {
   const { dbName, version, tableName, sortedBy } = params;
   let db: IDBDatabase | null = null;
 
-  return new Promise<unknown>((resolve, reject) => {
+  return new Promise<T[]>((resolve, reject) => {
     const request = indexedDB.open(dbName, version);
 
     request.onsuccess = (event) => {
@@ -22,20 +22,25 @@ export function getAllRecords(params: GetAllRecordsParams): Promise<unknown> {
       const getAllRequest = objectStore.getAll();
 
       getAllRequest.onsuccess = () => {
-        const allRecords = getAllRequest.result;
+        const allRecords = getAllRequest.result as T[];
+
         if (sortedBy) {
           allRecords.sort((a, b) => {
             const valueA = a[sortedBy];
             const valueB = b[sortedBy];
+
             if (typeof valueA === 'number' && typeof valueB === 'number') {
               return valueB - valueA;
             } else if (!valueA && !valueB) {
               return 0; // equal
-            } else {
+            } else if (typeof valueA === 'string' && typeof valueB === 'string') {
               return valueA.localeCompare(valueB);
+            } else {
+              return 0;
             }
           });
         }
+
         resolve(allRecords);
       };
 
