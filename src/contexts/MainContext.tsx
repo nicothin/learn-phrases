@@ -86,14 +86,14 @@ export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) =
 
   const updateAllPhrases = () => {
     return new Promise((resolve, reject) => {
-      getAllRecords({
+      getAllRecords<Phrase>({
         dbName: IDB_NAME,
         version: IDB_VERSION,
         tableName: PHRASES_TABLE_NAME,
         sortedBy: IDB_TABLES.find((table) => table.name === PHRASES_TABLE_NAME)?.keyPath ?? 'id',
       })
         .then((phrases) => {
-          setAllPhrases(phrases as Phrase[]);
+          setAllPhrases(phrases);
           resolve(phrases);
         })
         .catch((error) => {
@@ -105,13 +105,13 @@ export const MainContextProvider: FC<{ children: ReactNode }> = ({ children }) =
 
   const updateAllSettings = () => {
     return new Promise((resolve, reject) => {
-      getAllRecords({
+      getAllRecords<UserSettings>({
         dbName: IDB_NAME,
         version: IDB_VERSION,
         tableName: SETTINGS_TABLE_NAME,
       })
         .then((settings) => {
-          setAllSettings(settings as UserSettings[]);
+          setAllSettings(settings);
           resolve(settings);
         })
         .catch((error) => {

@@ -5,7 +5,7 @@ interface GetAllRecordsParams {
   sortedBy?: string;
 }
 
-export function getAllRecords<T extends Record<string, unknown>>(params: GetAllRecordsParams): Promise<T[]> {
+export function getAllRecords<T>(params: GetAllRecordsParams): Promise<T[]> {
   const { dbName, version, tableName, sortedBy } = params;
   let db: IDBDatabase | null = null;
 
@@ -26,13 +26,16 @@ export function getAllRecords<T extends Record<string, unknown>>(params: GetAllR
 
         if (sortedBy) {
           allRecords.sort((a, b) => {
-            const valueA = a[sortedBy];
-            const valueB = b[sortedBy];
+            const recordA = a as Record<string, unknown>;
+            const recordB = b as Record<string, unknown>;
+
+            const valueA = recordA[sortedBy];
+            const valueB = recordB[sortedBy];
 
             if (typeof valueA === 'number' && typeof valueB === 'number') {
               return valueB - valueA;
             } else if (!valueA && !valueB) {
-              return 0; // equal
+              return 0;
             } else if (typeof valueA === 'string' && typeof valueB === 'string') {
               return valueA.localeCompare(valueB);
             } else {
