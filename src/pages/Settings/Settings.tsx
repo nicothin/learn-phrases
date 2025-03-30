@@ -2,10 +2,11 @@ import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 
 import './Settings.css';
 
-import { UserSettings } from '../../types';
+import { SelectOption, UserSettings } from '../../types';
 import { useMainContext, useNotificationContext } from '../../hooks';
 import { InputText } from '../../components/InputText/InputText';
 import { InputCheckbox } from '../../components/InputCheckbox/InputCheckbox';
+import { Select } from '../../components/Select/Select';
 
 const MAIN_USER_ID = 1;
 
@@ -20,9 +21,11 @@ export default function Settings() {
     syncOn100percent: false,
     checkGistWhenSwitchingToLearn: false,
     // tags: '',
+    speechSynthesisVoiceForSecondPhrase: '',
   });
   // const [isError, setIsError] = useState(false);
   // const [tagsMessageText, setTagsMessageText] = useState<string>('');
+  const [voiceOptionsForSecondPhrase, setVoiceOptionsForSecondPhrase] = useState<SelectOption[]>([]);
 
   const onSaveSyncSettings = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -72,6 +75,30 @@ export default function Settings() {
   //   }
   // };
 
+  // Fill in the list of available voices
+  useEffect(() => {
+    const checkVoice = () => {
+      const voices = window.speechSynthesis.getVoices();
+
+      if (!voices) {
+        return;
+      }
+
+      setVoiceOptionsForSecondPhrase(voices.map((item) => ({ value: item.name, label: item.name })));
+    };
+
+    if (window.speechSynthesis.getVoices().length === 0) {
+      window.speechSynthesis.onvoiceschanged = checkVoice;
+    } else {
+      checkVoice();
+    }
+
+    return () => {
+      window.speechSynthesis.onvoiceschanged = null;
+    };
+  }, []);
+
+  // Fill in the saved settings
   useEffect(() => {
     const thisMainUserData: UserSettings | undefined = allSettings.find(
       (item) => item.userId === MAIN_USER_ID,
@@ -86,6 +113,7 @@ export default function Settings() {
       syncOn100percent: thisMainUserData.syncOn100percent,
       checkGistWhenSwitchingToLearn: thisMainUserData.checkGistWhenSwitchingToLearn,
       // tags: thisMainUserData.tags,
+      speechSynthesisVoiceForSecondPhrase: thisMainUserData.speechSynthesisVoiceForSecondPhrase,
     });
   }, [allSettings]);
 
@@ -138,6 +166,16 @@ export default function Settings() {
           onChange={(value) => onInputChange({ name: 'gistId', value })}
           description="This can be copied from the gist's URL."
           placeholder="bobrKurwa1234567d571b2e609678321c"
+        />
+
+        <Select
+          name="speechSynthesisVoiceForSecondPhrase"
+          label="Speech synthesis voice for the second phrase"
+          description="The list of voices is local and depends on your device and software."
+          className="settings__form-item"
+          initialValue={syncFormData.speechSynthesisVoiceForSecondPhrase}
+          onChange={(value) => onInputChange({ name: 'speechSynthesisVoiceForSecondPhrase', value })}
+          options={voiceOptionsForSecondPhrase}
         />
 
         <div className="settings__form-item">

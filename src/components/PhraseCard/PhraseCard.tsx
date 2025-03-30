@@ -2,9 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 
 import './PhraseCard.css';
 
-import { Phrase } from '../../types';
+import { Phrase, UserSettings } from '../../types';
 import { MarkdownRenderer } from '../MarkdownRenderer/MarkdownRenderer';
 import { Rating } from '../Rating/Rating';
+import { TextToSpeechButton } from '../TextToSpeechButton/TextToSpeechButton';
+import { useMainContext } from '../../hooks';
 
 interface PhraseCardProps {
   phrase: Phrase;
@@ -12,11 +14,14 @@ interface PhraseCardProps {
   openedCardId?: Phrase['id'];
 }
 
-export function PhraseCard(data: PhraseCardProps) {
-  const { phrase, onEditPhrase, openedCardId } = data;
+const MAIN_USER_ID = 1;
+
+export function PhraseCard({ phrase, onEditPhrase, openedCardId }: PhraseCardProps) {
+  const { allSettings } = useMainContext();
 
   const [isOpenNow, setIsOpenNow] = useState(false);
   const [collapsableWrapMaxHeight, setCollapsableWrapMaxHeight] = useState('0px');
+  const [speechSynthesisVoiceForSecondPhrase, setSpeechSynthesisVoiceForSecondPhrase] = useState('');
 
   const collapsableWrapRef = useRef<HTMLDivElement>(null);
   const collapsableRef = useRef<HTMLDivElement>(null);
@@ -36,6 +41,13 @@ export function PhraseCard(data: PhraseCardProps) {
       setCollapsableWrapMaxHeight('0px');
     }
   }, [phrase, isOpenNow]);
+
+  useEffect(() => {
+    const thisMainUserData: UserSettings | undefined = allSettings?.find(
+      (item) => item.userId === MAIN_USER_ID,
+    );
+    setSpeechSynthesisVoiceForSecondPhrase(thisMainUserData?.speechSynthesisVoiceForSecondPhrase || '');
+  }, [allSettings]);
 
   return (
     <div className={`phrase-card ${isOpenNow ? 'phrase-card--open' : ''}`}>
@@ -58,6 +70,11 @@ export function PhraseCard(data: PhraseCardProps) {
         <div className="phrase-card__collapsable" ref={collapsableRef}>
           <div className="phrase-card__main-text-wrap">
             <MarkdownRenderer>{phrase.second}</MarkdownRenderer>
+            <TextToSpeechButton
+              className="phrase-card__second-phrase-speech"
+              text={phrase.second}
+              voiceURI={speechSynthesisVoiceForSecondPhrase}
+            />
           </div>
 
           {phrase.secondD && (

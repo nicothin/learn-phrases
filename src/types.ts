@@ -59,6 +59,7 @@ export interface UserSettings {
   syncOn100percent: boolean;
   checkGistWhenSwitchingToLearn: boolean;
   // tags: string;
+  speechSynthesisVoiceForSecondPhrase: string;
 }
 
 export interface Conflict {
