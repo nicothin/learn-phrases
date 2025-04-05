@@ -6,6 +6,7 @@ import { SelectOption } from '../../types';
 
 interface SelectFormProps {
   name: string;
+  label?: string;
   description?: string | ReactNode;
   options: SelectOption[];
   initialValue?: SelectOption['value'];
@@ -16,12 +17,12 @@ interface SelectFormProps {
 
 export const Select = ({
   name,
+  label,
   description,
   options = [],
   initialValue = '',
   className,
   onChange,
-  children,
 }: SelectFormProps) => {
   const [value, setValue] = useState<SelectOption['value']>(initialValue);
 
@@ -44,7 +45,7 @@ export const Select = ({
   return (
     <div className={`select ${className ?? ''}`}>
       <label className="select__label">
-        {children && <span className="select__content">{children}</span>}
+        {label && <span className="select__label-text">{label}</span>}
         <select name={name} className="select__select" onChange={onChangeCheched} value={value}>
           {options.map((option) => (
             <option key={option.value} value={option.value}>
