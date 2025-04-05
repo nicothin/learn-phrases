@@ -69,12 +69,17 @@ export function PhraseCard({ phrase, onEditPhrase, openedCardId }: PhraseCardPro
       >
         <div className="phrase-card__collapsable" ref={collapsableRef}>
           <div className="phrase-card__main-text-wrap">
-            <MarkdownRenderer>{phrase.second}</MarkdownRenderer>
-            <TextToSpeechButton
-              className="phrase-card__second-phrase-speech"
-              text={phrase.second}
-              voiceURI={speechSynthesisVoiceForSecondPhrase}
-            />
+            <MarkdownRenderer
+              inlineSuffix={
+                <TextToSpeechButton
+                  className="phrase-card__second-phrase-speech"
+                  text={phrase.second}
+                  voiceURI={speechSynthesisVoiceForSecondPhrase}
+                />
+              }
+            >
+              {phrase.second}
+            </MarkdownRenderer>
           </div>
 
           {phrase.secondD && (

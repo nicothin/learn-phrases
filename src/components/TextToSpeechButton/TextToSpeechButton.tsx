@@ -15,56 +15,81 @@ interface TextToSpeechButtonProps {
 export const TextToSpeechButton = ({ text, voiceURI, className = '' }: TextToSpeechButtonProps) => {
   const { addNotification } = useNotificationContext();
 
-  const [isValidVoice, setIsValidVoice] = useState<boolean>(false);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [validVoice, setValidVoice] = useState<SpeechSynthesisVoice | null>(null);
 
   const cleanText = (rawText: string) => {
     let result = rawText;
     REPLACEMENTS.forEach(({ search }) => {
-      result = result.replace(search, '');
+      result = result.replace(search, '$1');
     });
     return result;
   };
 
-  const onClick = () => {
-    const utterance = new SpeechSynthesisUtterance(cleanText(text));
-    // TODO[@nicothin]: continue here: move selected voice to the component state
-    // utterance.voice = voice;
+  useEffect(() => {
+    const loadVoices = () => {
+      const availableVoices = window.speechSynthesis.getVoices();
+      if (availableVoices.length > 0) {
+        setVoices(availableVoices);
+      }
+    };
 
-    utterance.onerror = (event) => {
+    loadVoices();
+
+    // Chrome
+    const interval = setInterval(() => {
+      const voices = window.speechSynthesis.getVoices();
+      if (voices.length > 0) {
+        setVoices(voices);
+        clearInterval(interval);
+      }
+    }, 200);
+
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+
+    return () => {
+      window.speechSynthesis.onvoiceschanged = null;
+      clearInterval(interval);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!voiceURI) {
+      setValidVoice(null);
+      return;
+    }
+    const matched = voices.find((voice) => voice.voiceURI === voiceURI);
+    setValidVoice(matched || null);
+  }, [voiceURI, voices]);
+
+  const onClick = () => {
+    if (!validVoice) {
       addNotification({
-        text: `Speech error: ${event.error}`,
+        text: 'No usable voice',
+        type: STATUS.ERROR,
+        duration: 3000,
+      });
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(cleanText(text));
+    utterance.voice = validVoice;
+
+    utterance.onerror = (e) => {
+      if (e.error === 'interrupted') return;
+
+      addNotification({
+        text: `Speech error: ${e.error}`,
         type: STATUS.ERROR,
         duration: 3000,
       });
     };
 
-    // window.speechSynthesis.speak(utterance);
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utterance);
   };
 
-  useEffect(() => {
-    if (!('speechSynthesis' in window) || !voiceURI) {
-      setIsValidVoice(false);
-      return;
-    }
-
-    const checkVoice = () => {
-      const voices = window.speechSynthesis.getVoices();
-      const voiceExists = voices.find((voice) => voice.voiceURI === voiceURI);
-      setIsValidVoice(!!voiceExists);
-    };
-
-    if (window.speechSynthesis.getVoices().length === 0) {
-      window.speechSynthesis.onvoiceschanged = checkVoice;
-    } else {
-      checkVoice();
-    }
-
-    return () => {
-      window.speechSynthesis.onvoiceschanged = null;
-    };
-  }, [voiceURI]);
-
-  return text.trim() && isValidVoice ? (
+  return text.trim() && validVoice ? (
     <button className={`text-to-speech-button ${className}`} onClick={onClick} aria-label="Speak text">
       <svg width="18" height="18">
         <use xlinkHref="#sound" />
