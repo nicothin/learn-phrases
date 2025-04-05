@@ -3,21 +3,10 @@
 ## TODO
 
 1. learn: learning direction (first to second, second to first)
-2. groups of phrases, switch groups (tags?)
+2. groups of phrases, switch groups (tags?) or user Profiles
 3. public mocks (english)
-4. tap and move to region
-5. tests
+4. tests
 
-
-
-## How it works
-
-```
-NotificationContextProvider # notification stack render
-  MainContextProvider       # application data and state
-    BrowserRouter
-      App
-```
 
 
 ## Gist IDs
