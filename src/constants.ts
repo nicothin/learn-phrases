@@ -8,24 +8,6 @@ export const IDB_TABLES = [
   { name: PHRASES_TABLE_NAME, keyPath: 'id' },
   { name: SETTINGS_TABLE_NAME, keyPath: 'userId' },
 ];
-// export const PHRASES_OBJECT_FIELDS: IDBObjectFields = {
-//   id: { unique: true, autoIncrement: true },
-//   first: {},
-//   firstD: {},
-//   second: {},
-//   secondD: {},
-//   knowledgeLvl: {},
-//   createDate: { type: 'timestamp' },
-//   tags: { multiEntry: true },
-// };
-// export const SETTINGS_OBJECT_FIELDS: IDBObjectFields = {
-//   userId: { unique: true, autoIncrement: true },
-//   githubToken: {},
-//   gistId: {},
-//   syncWith100percent: { type: 'boolean' },
-//   tags: {},
-//   preferredTheme: {},
-// };
 
 export const REPLACEMENTS: Replacement[] = [
   { search: /<[^>]+>/g, replace: '' },
@@ -34,8 +16,6 @@ export const REPLACEMENTS: Replacement[] = [
   { search: /~~(.*?)~~/g, replace: '<del>$1</del>' },
   { search: /__(.*?)__/g, replace: '<span style="text-decoration:underline">$1</span>' },
 ];
-
-// export const DATE_FORMAT = 'YYYY.MM.DD';
 
 // export const TAGS_JSON_STRING: string = `[
 //   { "value": "Positive", "color": "green" },
@@ -56,8 +36,3 @@ export const REPLACEMENTS: Replacement[] = [
 //   { "value": "Passive voice", "color": "magenta" },
 //   { "value": "Irregular verbs", "color": "magenta" }
 // ]`;
-
-// export const THEME = {
-//   LIGHT: 'LIGHT',
-//   DARK: 'DARK',
-// };

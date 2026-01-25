@@ -26,26 +26,8 @@
   }
 }
 
-.phrase-card__second-phrase-voice {
-  position: absolute;
-  top: 0;
-  right: clamp(-2rem, -2.5vw, -1rem);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 1.2em;
-  height: 1.2em;
-  min-width: 2rem;
-  min-height: 2rem;
-  border: 1px solid var(--border-color);
-  border-right: 0;
-  border-top-left-radius: var(--border-radius);
-  border-bottom-left-radius: var(--border-radius);
-  padding: 0;
-  font-size: inherit;
-  color: inherit;
-  background: none;
-  cursor: pointer;
+.phrase-card__second-phrase-speech {
+  vertical-align: bottom;
 }
 
 .phrase-card__description-text-wrap {
