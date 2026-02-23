@@ -24,6 +24,7 @@ export const getPhraseDTOFromPhrase = (data: Phrase): PhraseDTO | null => {
     data.knowledgeLvl ?? 0,
     data.createDate,
     data.tags.join(',') ?? '',
+    data.isHidden ?? false,
   ];
 
   return newPhraseDTO;

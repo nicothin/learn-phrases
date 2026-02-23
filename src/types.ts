@@ -26,6 +26,7 @@ export type PhraseDTO = [
   KnowledgeLvl,
   Phrase['createDate'],
   string, // Phrase['tags'],
+  boolean, // Phrase['isHidden'],
 ];
 export interface Phrase {
   id: number;
@@ -36,6 +37,7 @@ export interface Phrase {
   knowledgeLvl: KnowledgeLvl;
   createDate: string;
   tags: string[];
+  isHidden?: boolean;
 }
 export interface Replacement {
   search: RegExp;

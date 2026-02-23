@@ -33,3 +33,8 @@
   gap: 0.8em;
   margin-left: auto;
 }
+
+.edit-phrase-form__hide {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}

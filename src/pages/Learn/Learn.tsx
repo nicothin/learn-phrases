@@ -195,6 +195,7 @@ export default function Learn() {
     const calculatedUnlearnedIDs: Set<Phrase['id']> = new Set();
 
     allPhrases?.forEach((phrase) => {
+      if (phrase.isHidden) return;
       if (phrase.knowledgeLvl >= 9) {
         calculatedLearnedIDs.add(phrase.id);
         return;

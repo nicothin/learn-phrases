@@ -35,6 +35,7 @@ export const getValidatedPhrase = (
     knowledgeLvl: convertToKnowledgeLvl(phrase.knowledgeLvl),
     createDate,
     tags,
+    isHidden: phrase.isHidden === true,
   };
 
   if (idIsRequired) {

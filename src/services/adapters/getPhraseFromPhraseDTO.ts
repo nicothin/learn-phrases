@@ -36,6 +36,7 @@ export const getPhraseFromPhraseDTO = (data: unknown): Partial<Phrase> | null =>
     knowledgeLvl,
     createDate,
     tags: data?.[7],
+    isHidden: data?.[8] === true,
   };
 
   return getValidatedPhrase(newPhrase, true);
