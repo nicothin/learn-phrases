@@ -11,6 +11,7 @@ import { useMainContext, useNotificationContext } from '../../hooks';
 import { InputText, InputTextHandle } from '../InputText/InputText';
 import { Rating } from '../Rating/Rating';
 import { Confirm } from '../Confirm/Confirm';
+import { InputCheckbox } from '../InputCheckbox/InputCheckbox';
 
 interface EditPhraseFormProps {
   phrase?: Partial<Phrase>;
@@ -30,7 +31,7 @@ export function EditPhraseForm(data: EditPhraseFormProps) {
 
   const isEdit = !!phrase?.id;
 
-  const onPhraseFieldChange = (name: string, value: string | number) => {
+  const onPhraseFieldChange = (name: string, value: string | number | boolean) => {
     setNowPhrase((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -148,6 +149,17 @@ export function EditPhraseForm(data: EditPhraseFormProps) {
             level={phrase?.knowledgeLvl}
             onChange={(value) => onPhraseFieldChange('knowledgeLvl', value)}
           />
+        </div>
+
+        <div className="edit-phrase-form__hide">
+          <InputCheckbox
+            name="isHidden"
+            key={`${phrase?.id}-isHidden`}
+            initialChecked={phrase?.isHidden}
+            onChange={(checked) => onPhraseFieldChange('isHidden', checked)}
+          >
+            Hide this phrase in learning mode.
+          </InputCheckbox>
         </div>
 
         <div className="edit-phrase-form__footer">

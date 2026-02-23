@@ -11,6 +11,7 @@ export const arePhrasesDifferent = (phrase1: Partial<Phrase>, phrase2: Partial<P
     'second',
     'secondD',
     'knowledgeLvl',
+    'isHidden',
     // 'createDate',
   ];
 

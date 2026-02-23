@@ -28,6 +28,7 @@ export function PhrasesTable(data: PhrasesTableProps) {
               <col />
               <col style={{ width: '40px' }} />
               <col style={{ width: '100px' }} />
+              <col style={{ width: '36px' }} />
               {/* <col style={{ width: "300px" }} /> */}
             </colgroup>
 
@@ -47,6 +48,13 @@ export function PhrasesTable(data: PhrasesTableProps) {
                 </th>
                 <th className="phrases-table__cell" scope="col">
                   Created
+                </th>
+                <th
+                  className="phrases-table__cell  phrases-table__cell--hidden"
+                  scope="col"
+                  title="Hidden in learning mode"
+                >
+                  H
                 </th>
                 {/* <th className="phrases-table__cell" scope="col">Tags</th> */}
               </tr>
@@ -75,6 +83,12 @@ export function PhrasesTable(data: PhrasesTableProps) {
                   </td>
                   <td className="phrases-table__cell">{phrase.knowledgeLvl}</td>
                   <td className="phrases-table__cell">{formatDate(phrase.createDate)}</td>
+                  <td
+                    className="phrases-table__cell  phrases-table__cell--hidden"
+                    title={phrase.isHidden ? 'Hidden in learning mode' : undefined}
+                  >
+                    {phrase.isHidden ? '●' : ''}
+                  </td>
                   {/* <td className="phrases-table__cell">{phrase.tags?.join(', ')}</td> */}
                 </tr>
               ))}
