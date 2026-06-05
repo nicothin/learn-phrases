@@ -1,0 +1,29 @@
+.meaning-form-modal__fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-m);
+}
+
+.meaning-form-modal__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-m);
+  align-items: start;
+  container-type: inline-size;
+}
+
+.meaning-form-modal__row > :first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.meaning-form-modal__row > :last-child {
+  width: 100%;
+}
+
+@container (min-width: 400px) {
+  .meaning-form-modal__row > :last-child {
+    flex: 0 0 40%;
+    width: auto;
+  }
+}

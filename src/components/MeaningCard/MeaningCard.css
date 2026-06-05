@@ -1,0 +1,55 @@
+.meaning-card {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  padding: var(--gap-m) var(--gap-m) var(--gap);
+  cursor: pointer;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  transition: box-shadow 0.2s ease;
+}
+
+.meaning-card:hover {
+  box-shadow: var(--box-shadow-sm);
+}
+
+.meaning-card:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.meaning-card__lemma {
+  margin: 0 0 var(--gap);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: var(--text-size-lg);
+  line-height: 1.2;
+  color: var(--text-color);
+  white-space: nowrap;
+}
+
+.meaning-card__translation {
+  margin-bottom: var(--gap);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: var(--text-size);
+  line-height: 1.3;
+  color: var(--text-color);
+  white-space: nowrap;
+}
+
+.meaning-card__meta {
+  margin: 0;
+  font-size: var(--text-size-sm);
+  line-height: 1.4;
+  color: var(--text-color-secondary);
+}
+
+.meaning-card__meta:last-child {
+  margin-bottom: 0;
+}
+
+.meaning-card__dot {
+  margin: 0 0.4em;
+}

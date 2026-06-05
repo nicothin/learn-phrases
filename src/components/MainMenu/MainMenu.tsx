@@ -1,10 +1,15 @@
 import { NavLink } from 'react-router-dom';
 
 import './MainMenu.css';
-import '../../assets/btn-circle.css';
-import '../../assets/menu.css';
 
-import { DropButton } from '../DropButton/DropButton';
+import { DropButton, Icon, Menu } from '@shared/components';
+
+const navItems = [
+  <NavLink to="/">Learn</NavLink>,
+  <NavLink to="/admin">Admin</NavLink>,
+  <NavLink to="/about">About</NavLink>,
+  <NavLink to="/settings">Settings</NavLink>,
+];
 
 export function MainMenu() {
   return (
@@ -13,32 +18,17 @@ export function MainMenu() {
         className="main-menu__dropdown"
         buttonContent={
           <>
-            <p className="main-menu__title" title="Learn phrases">
+            <span className="main-menu__title" title="Learn phrases">
               LP
-            </p>
-            <svg className="main-menu__burger" xmlns="http://www.w3.org/2000/svg" width="18" height="18">
-              <rect width="16" height="2" x="1" y="2" ry="1" />
-              <rect width="16" height="2" x="1" y="14" ry="1" />
-              <rect width="16" height="2" x="1" y="8" ry="1" />
-            </svg>
+            </span>
+            <Icon className="main-menu__burger" name="burger" />
           </>
         }
-        buttonClassName="main-menu__button  btn-circle"
+        buttonClassName="main-menu__button"
+        buttonVariant="secondary"
+        buttonCircle
       >
-        <ul className="main-menu__list  menu">
-          <li>
-            <NavLink to="/">Learn</NavLink>
-          </li>
-          <li>
-            <NavLink to="/admin">Admin</NavLink>
-          </li>
-          <li>
-            <NavLink to="/about">About</NavLink>
-          </li>
-          <li>
-            <NavLink to="/settings">Settings</NavLink>
-          </li>
-        </ul>
+        <Menu className="main-menu__list" items={navItems} />
       </DropButton>
     </nav>
   );

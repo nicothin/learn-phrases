@@ -1,44 +1,54 @@
-import { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 
-import { useMainContext, useNotificationContext } from './hooks';
-import { Icons } from './components/Icons/Icons';
+import './App.css';
+
+import { useHydrate } from './hooks/useHydrate';
 import { MainMenu } from './components/MainMenu/MainMenu';
+import { Learn } from './pages/Learn/Learn';
+import { Admin } from './pages/Admin/Admin';
+import { About } from './pages/About/About';
+import { Settings } from './pages/Settings/Settings';
+import { PageNotFound } from './pages/PageNotFound/PageNotFound';
+import { useUIStore } from './services/store/uiStore';
+import { MeaningFormModal } from './components/MeaningFormModal/MeaningFormModal';
+import { ExamplePhraseFormModal } from './components/ExamplePhraseFormModal/ExamplePhraseFormModal';
+import { ImportModal } from './components/ImportModal/ImportModal';
+import { NotificationList } from '@shared/components';
 
-import Learn from './pages/Learn/Learn';
-import Admin from './pages/Admin/Admin';
-import About from './pages/About/About';
-import Settings from './pages/Settings/Settings';
-import PageNotFound from './pages/PageNotFound/PageNotFound';
-
-export default function App() {
-  const { checkIDBExist } = useMainContext();
-  const { addNotification } = useNotificationContext();
-
-  // Check if IDB exists, and if not, create it
-  useEffect(() => {
-    checkIDBExist().catch((error) => addNotification(error));
-    // NOTE[@nicothin]: This is a conscious decision
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // [addNotification, checkIDBExist]
+function App() {
+  const isHydrated = useHydrate();
+  const editableMeaning = useUIStore((s) => s.editableMeaning);
+  const editablePhrase = useUIStore((s) => s.editablePhrase);
+  const importModalOpen = useUIStore((s) => s.importModalOpen);
 
   return (
     <div className="app">
-      <Icons />
-
-      <div className="app__header">
-        <MainMenu />
-      </div>
+      {isHydrated && (
+        <div className="app__header">
+          <MainMenu />
+        </div>
+      )}
 
       <div className="app__content">
-        <Routes>
-          <Route index element={<Learn />} />
-          <Route path="admin" element={<Admin />} />
-          <Route path="about" element={<About />} />
-          <Route path="settings" element={<Settings />} />
-          <Route path="*" element={<PageNotFound />} />
-        </Routes>
+        {isHydrated ? (
+          <Routes>
+            <Route index element={<Learn />} />
+            <Route path="admin" element={<Admin />} />
+            <Route path="about" element={<About />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="*" element={<PageNotFound />} />
+          </Routes>
+        ) : (
+          <p className="app__loading">Loading...</p>
+        )}
       </div>
+
+      <NotificationList />
+      {editableMeaning && <MeaningFormModal />}
+      {editablePhrase && <ExamplePhraseFormModal />}
+      {importModalOpen && <ImportModal />}
     </div>
   );
 }
+
+export default App;

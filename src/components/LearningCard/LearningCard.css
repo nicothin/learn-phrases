@@ -1,0 +1,132 @@
+.learning-card-wrapper {
+  position: relative;
+}
+
+.learning-card-wrapper--evaluated {
+  opacity: 0.45;
+}
+
+.learning-card-wrapper--evaluated:hover {
+  opacity: 0.75;
+}
+
+.learning-card__evaluation-badge {
+  position: absolute;
+  top: -0.25rem;
+  right: -0.25rem;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  cursor: default;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+}
+
+.learning-card {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow-sm);
+}
+
+.learning-card__header {
+  padding: clamp(1rem, 2.1vw, 1.4286rem) clamp(1rem, 2.5vw, 2rem);
+  cursor: pointer;
+}
+
+.learning-card__text,
+.learning-card__text p {
+  margin: 0 0 var(--gap-sm);
+  font-size: var(--phrase-main-text-size);
+  line-height: 1.2;
+  color: var(--text-color);
+  overflow-wrap: break-word;
+}
+
+.learning-card__description,
+.learning-card__description p {
+  margin: 0;
+  line-height: 1.4;
+  color: var(--text-color-secondary);
+}
+
+.learning-card__text:last-child,
+.learning-card__text p:last-child {
+  margin-bottom: 0;
+}
+
+.learning-card__body {
+  padding: clamp(1rem, 2.1vw, 1.4286rem) clamp(1rem, 2.5vw, 2rem);
+}
+
+.learning-card__collapsable-wrap {
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.learning-card__collapsable {
+  overflow: hidden;
+}
+
+.learning-card__details {
+  display: flex;
+  align-items: center;
+  margin: var(--gap-l) 0 var(--gap);
+}
+
+.learning-card__sense {
+  margin-right: auto;
+}
+
+.learning-card__pos {
+  color: var(--text-color-secondary);
+}
+
+.learning-card__level[data-cefr='A1'],
+.learning-card__level[data-cefr='A2'] {
+  color: #155724;
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+}
+
+.learning-card__level[data-cefr='B1'],
+.learning-card__level[data-cefr='B2'] {
+  color: #004085;
+  background-color: #cce5ff;
+  border-color: #b8daff;
+}
+
+.learning-card__level[data-cefr='C1'],
+.learning-card__level[data-cefr='C2'] {
+  color: #383d41;
+  background-color: #e2e3e5;
+  border-color: #d6d8db;
+}
+
+.learning-card__meta {
+  font-size: var(--text-size-sm);
+  line-height: 1.4;
+  color: var(--text-color-secondary);
+}
+
+.learning-card__edit-btn {
+  position: absolute;
+  right: 0.5em;
+  bottom: -2em;
+}
+
+.learning-card__knowledge-level {
+  margin-left: -0.2em;
+}
+
+.learning-card--blocked {
+  pointer-events: none;
+  opacity: 0.4;
+}

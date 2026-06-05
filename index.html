@@ -3,10 +3,30 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#007bff" />
     <title>Learn Phrases</title>
+    <script>
+      (function() {
+        var d = document.createElement('div');
+        d.style.cssText = 'position:fixed;top:-9999px;width:50px;height:50px;overflow:scroll;opacity:0;pointer-events:none';
+        document.documentElement.appendChild(d);
+        var w = d.offsetWidth - d.clientWidth;
+        document.documentElement.removeChild(d);
+        document.documentElement.style.setProperty('--scrollbar-width', w + 'px');
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      (function() {
+        function onScroll() {
+          document.body.classList.toggle('there-is-scrolling', window.scrollY > 0);
+        }
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

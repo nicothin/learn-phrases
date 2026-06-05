@@ -1,5 +1,5 @@
 :root {
-  --white:         #ffffff;
+  --white:         #fff;
   --gray-lightest: #f3f3f3;
   --gray-lighter:  #dbdbdb;
   --gray-light:    #a3a7aa;
@@ -7,30 +7,22 @@
   --gray-dark:     #525557;
   --gray-darker:   #202020;
   --gray-darkest:  #0f0f0f;
-  --black:         #000000;
-
+  --black:         #000;
   --primary-color: #007bff;
   --secondary-color: var(--gray-dark);
-
   --success-color: #28a72e;
-  /* --info-color:    #FADB14; */
   --danger-color:  #dc3545;
-
-  --font-family-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-
-  --box-shadow:    0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
-  --box-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
-
-  --text-size-xxxl: 2.714285rem;
+  --font-family-sans-serif: system-ui, -apple-system, "Segoe UI", roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-family-monospace: sfmono-regular, menlo, monaco, consolas, "Liberation Mono", "Courier New", monospace;
+  --box-shadow:    0 6px 16px 0 rgb(0 0 0 / 8%), 0 3px 6px -4px rgb(0 0 0 / 12%), 0 9px 28px 8px rgb(0 0 0 / 5%);
+  --box-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 3%), 0 1px 6px -1px rgb(0 0 0 / 2%), 0 2px 4px 0 rgb(0 0 0 / 2%);
+  --text-size-xxxl: 2.7143rem;
   --text-size-xxl:  2rem;
-  --text-size-xl:   1.714285rem;
-  --text-size-lg:   1.285714rem;
+  --text-size-xl:   1.7143rem;
+  --text-size-lg:   1.2857rem;
   --text-size:      1rem;
-  --text-size-sm:   0.785714rem;
+  --text-size-sm:   0.7857rem;
   --phrase-main-text-size:   clamp(var(--text-size-xl), 4vw, var(--text-size-xxxl));
-  --phrase-second-text-size: clamp(var(--text-size), 2vw, var(--text-size-lg));
-
   --text-color:           var(--gray-darkest);
   --text-color-secondary: var(--gray-light);
   --body-bg-color:        var(--gray-lightest);
@@ -38,13 +30,15 @@
   --link-color:           var(--primary-color);
   --border-color:         var(--gray-lighter);
   --border-radius:        0.4rem;
-
+  --gap-sm: 0.25em;
   --gap: 0.5em;
+  --gap-m: 1em;
+  --gap-l: 1.5em;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --white:         #000000;
+    --white:         #000;
     --gray-lightest: #0f0f0f;
     --gray-lighter:  #2b2b2b;
     --gray-light:    #525557;
@@ -52,19 +46,14 @@
     --gray-dark:     #a3a7aa;
     --gray-darker:   #dbdbdb;
     --gray-darkest:  #f3f3f3;
-    --black:         #ffffff;
-
+    --black:         #fff;
     --primary-color: #005ab9;
     --success-color: #2c9b32;
     --danger-color:  #a31927;
-
     --text-color:           var(--gray-darker);
     --text-color-secondary: var(--gray);
     --body-bg-color:        var(--white);
     --bg-color:             var(--gray-lightest);
     --border-color:         var(--gray-light);
-
-    /* --box-shadow: none;
-    --box-shadow-sm: none */
   }
 }

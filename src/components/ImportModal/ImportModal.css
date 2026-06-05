@@ -1,0 +1,51 @@
+.import-modal.modal {
+  width: 100dvw;
+  height: 100dvh;
+}
+
+.import-modal__textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 300px;
+  padding: 0.5em;
+  font-family: inherit;
+  font-size: var(--text-size, 1rem);
+  line-height: 1.5;
+  resize: vertical;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+}
+
+.import-modal__error-list {
+  padding-left: 1.25em;
+  margin-top: 0;
+  margin-bottom: 0.5em;
+  font-size: var(--text-size-sm, 0.875rem);
+  color: var(--danger-color, #d32f2f);
+}
+
+.import-modal__result-text {
+  margin-top: 0.5em;
+  font-size: var(--text-size-sm, 0.875rem);
+  color: var(--text-color-secondary);
+}
+
+.import-modal__error-text {
+  margin-top: 0.5em;
+  font-size: var(--text-size-sm, 0.875rem);
+  color: var(--danger-color, #d32f2f);
+}
+
+@media (width >= 480px) {
+  .import-modal.modal {
+    width: 80vw;
+    max-width: 580px;
+    height: auto;
+    max-height: calc(100dvh - 2em);
+    border-radius: 8px;
+  }
+
+  .import-modal__textarea {
+    min-height: 200px;
+  }
+}

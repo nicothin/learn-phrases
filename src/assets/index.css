@@ -1,0 +1,131 @@
+:root {
+  font-family: var(--font-family-sans-serif, sans-serif);
+  font-size: 14px;
+  font-weight: 400;
+  font-synthesis: none;
+  line-height: 1.4;
+  color: var(--text-color);
+  background-color: var(--body-bg-color);
+  text-rendering: optimizelegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+*:focus-visible {
+  outline: 2px var(--black);
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  font-size: var(--text-size);
+}
+
+h1 {
+  margin-bottom: 0.5em;
+  font-size: var(--text-size-xxxl);
+  font-weight: 600;
+  line-height: 1.21;
+  color: inherit;
+}
+
+h2 {
+  margin: 1.2em 0 0.5em;
+  font-size: var(--text-size-xxl);
+  font-weight: 600;
+  line-height: 1.26;
+  color: inherit;
+}
+
+small {
+  font-size: var(--text-size-sm);
+}
+
+a,
+.link {
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  color: var(--link-color);
+  text-decoration: underline;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+
+a:hover,
+.link:hover {
+  text-decoration: none;
+}
+
+svg {
+  fill: currentcolor;
+}
+
+pre {
+  white-space: pre-wrap;
+}
+
+pre,
+code {
+  font-family: var(--font-family-monospace);
+  font-size: 1em;
+}
+
+del {
+  text-decoration: line-through;
+}
+
+.close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+  font-size: 2em;
+  line-height: 1;
+  color: inherit;
+  cursor: pointer;
+  background: none;
+  border: none;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+
+.close:hover {
+  opacity: 1;
+}
+
+.text-secondary {
+  color: var(--text-color-secondary);
+}
+
+.version {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  padding: 0.5rem;
+  margin: 0;
+  color: var(--text-color-secondary);
+}
+
+
+@media (prefers-color-scheme: dark) {
+  @supports (color: hsl(from var(--primary-color) h s calc(l + 8))) {
+    a,
+    .link {
+      color: hsl(from var(--primary-color) h s calc(l + 30));
+    }
+  }
+
+}

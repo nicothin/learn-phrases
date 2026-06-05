@@ -1,262 +1,270 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useState, useRef } from 'react';
+import { useStore } from '../../services/store';
+import { useUIStore } from '../../services/store/uiStore';
+import { deletePhrase, saveMeaning, savePhrase } from '../../services/store/mutations';
+import { MeaningCard } from '../../components/MeaningCard/MeaningCard';
+import { ExamplePhraseCard } from '../../components/ExamplePhraseCard/ExamplePhraseCard';
+import { AddEntityButton } from './components/AddEntityButton';
+import { Button, InputText, Icon, Pagination, Confirm } from '@shared/components';
+import { exportDB } from '../../services/fileService';
+import { validateJson } from '../../services/jsonValidation';
+import { notification, NOTIFICATION_TYPE } from '../../services/notification';
+import type { ExamplePhrase } from '../../types';
 
 import './Admin.css';
-import '../../assets/btn.css';
 
-import { UserSettings } from '../../types';
-import {
-  useMainContext,
-  useNotificationContext,
-  useEditPhrase,
-  usePhraseConflictsResolver,
-  useImportFromJSON,
-} from '../../hooks';
-import { PhrasesTable } from '../../components/PhrasesTable/PhrasesTable';
-import { ImportFromFileButton } from '../../components/ImportFromFileButton/ImportFromFileButton';
-import { ExportToGistButton } from '../../components/ExportToGistButton/ExportToGistButton';
-import { ImportFromGistButton } from '../../components/ImportFromGistButton/ImportFromGistButton';
-import { Pagination } from '../../components/Pagination/Pagination';
-import { ExportToFileButton } from '../../components/ExportToFileButton/ExportToFileButton';
-import { Confirm } from '../../components/Confirm/Confirm';
-import { InputText } from '../../components/InputText/InputText';
-import { DropButton } from '../../components/DropButton/DropButton';
+const MODE_MEANINGS = 'meanings';
+const MODE_PHRASES = 'phrases';
+const PAGE_SIZE = 49;
 
-const PHRASES_PER_PAGE = 50;
-const SEARCH_MIN_LENGTH = 3;
-const MAIN_USER_ID = 1;
+const GRID_TEMPLATE_MEANINGS = 'repeat(auto-fill, minmax(240px, 1fr))';
+const GRID_TEMPLATE_PHRASES = 'repeat(auto-fill, minmax(360px, 1fr))';
 
-export default function Admin() {
-  const {
-    allPhrases,
-    exportPhrasesDTOToFile,
-    deleteAllPhrases,
-    allSettings,
-    setIsImportPhrasesFromJSONOpen,
-  } = useMainContext();
-  const { addNotification } = useNotificationContext();
-  const { editPhraseContent, startEditingPhrase } = useEditPhrase();
-  const { phraseConflictsResolverContent } = usePhraseConflictsResolver();
-  const { importFromJSONContent } = useImportFromJSON();
+type Mode = typeof MODE_MEANINGS | typeof MODE_PHRASES;
 
-  const [isConfirmDeleteAllPhrasesOpen, setIsConfirmDeleteAllPhrasesOpen] = useState(false);
+export function Admin() {
+  const meanings = useStore((s) => s.meanings);
+  const phrases = useStore((s) => s.phrases);
+  const setEditableMeaning = useUIStore((s) => s.setEditableMeaning);
+  const setEditablePhrase = useUIStore((s) => s.setEditablePhrase);
+  const setImportModalOpen = useUIStore((s) => s.setImportModalOpen);
+
+  const [mode, setMode] = useState<Mode>(MODE_MEANINGS);
+  const [filter, setFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [shownPhrasesCounter, setShownPhrasesCounter] = useState(0);
-  const [searchString, setSearchString] = useState('');
-  const [thisUserSettings, setThisUserSettings] = useState<UserSettings | undefined>(undefined);
+  const [orphanConfirmOpen, setOrphanConfirmOpen] = useState(false);
+  const [orphanPhrases, setOrphanPhrases] = useState<ExamplePhrase[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const thereArePhrases = !!allPhrases?.length;
-  const canTrySyncToGist = !!(thisUserSettings?.token && thisUserSettings?.gistId);
-
-  const onPageChange = (newPage: number) => {
-    setCurrentPage(newPage);
+  const handleAdd = () => {
+    setImportModalOpen(true);
   };
 
-  const onEditPhrase = (phraseId: number) => {
-    const phrase = allPhrases.find(({ id }) => id === phraseId) || {};
-    startEditingPhrase(phrase);
+  const handleImportFile = () => {
+    fileInputRef.current?.click();
   };
 
-  const onDeleteAllPhrases = () => {
-    setIsConfirmDeleteAllPhrasesOpen(true);
-  };
+  const handleFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  const onConfirmDeleteAllPhrases = () => {
-    exportPhrasesDTOToFile()
-      .then((result) => {
-        addNotification(result);
-        deleteAllPhrases()
-          .then((result) => addNotification(result))
-          .catch((result) => addNotification(result));
-      })
-      .catch((result) => addNotification(result));
-    setIsConfirmDeleteAllPhrasesOpen(false);
-  };
+    try {
+      const text = await file.text();
+      const result = validateJson(text);
 
-  const onCancelDeleteAllPhrases = () => {
-    setIsConfirmDeleteAllPhrasesOpen(false);
-  };
+      if (!result.data) {
+        for (const log of result.log) {
+          notification.add({
+            text: log.message,
+            type: NOTIFICATION_TYPE.ERROR,
+            description: log.details,
+          });
+        }
+        return;
+      }
 
-  const shownPhrases = useMemo(() => {
-    if (!allPhrases.length) return [];
+      for (const meaning of result.data.meanings) {
+        await saveMeaning(meaning);
+      }
+      for (const phrase of result.data.phrases) {
+        await savePhrase(phrase);
+      }
 
-    if (searchString.length < SEARCH_MIN_LENGTH) {
-      setShownPhrasesCounter(allPhrases.length);
-      return allPhrases.slice((currentPage - 1) * PHRASES_PER_PAGE, currentPage * PHRASES_PER_PAGE);
+      const { meanings, phrases } = result.data;
+
+      if (result.log.length > 0) {
+        notification.add({
+          text: `Imported ${meanings.length} meaning(s) and ${phrases.length} phrase(s) with ${result.log.length} error(s).`,
+          type: NOTIFICATION_TYPE.SUCCESS,
+        });
+        for (const log of result.log) {
+          notification.add({
+            text: log.message,
+            type: NOTIFICATION_TYPE.ERROR,
+            description: log.details,
+          });
+        }
+      } else {
+        notification.add({
+          text: `Imported ${meanings.length} meaning(s) and ${phrases.length} phrase(s).`,
+          type: NOTIFICATION_TYPE.SUCCESS,
+        });
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      notification.add({
+        text: 'File read error',
+        type: NOTIFICATION_TYPE.ERROR,
+        description: message,
+      });
     }
 
-    const actualPhrases = allPhrases.filter(
-      (phrase) =>
-        String(phrase.id) === searchString ||
-        phrase.first.toLowerCase().includes(searchString) ||
-        phrase.second.toLowerCase().includes(searchString),
+    e.target.value = '';
+  };
+
+  const handleToggle = () => {
+    setMode((prev) => (prev === MODE_MEANINGS ? MODE_PHRASES : MODE_MEANINGS));
+    setFilter('');
+    setCurrentPage(1);
+  };
+
+  const handleFilterChange = (value: string) => {
+    setFilter(value);
+    setCurrentPage(1);
+  };
+
+  const handleOrphanCleanup = () => {
+    const allMeaningPhraseIds = new Set(
+      Object.values(meanings).flatMap((m) => m.exampleIds),
     );
 
-    setShownPhrasesCounter(actualPhrases.length);
-
-    return actualPhrases.slice((currentPage - 1) * PHRASES_PER_PAGE, currentPage * PHRASES_PER_PAGE);
-  }, [allPhrases, currentPage, searchString]);
-
-  // Set shown phrases at the first load
-  useEffect(() => {
-    setShownPhrasesCounter(allPhrases.length);
-  }, [allPhrases.length]);
-
-  // Set actual user settings
-  useEffect(() => {
-    const thisMainUserData: UserSettings | undefined = allSettings?.find(
-      (item) => item.userId === MAIN_USER_ID,
+    const orphaned = Object.values(phrases).filter(
+      (p) => !allMeaningPhraseIds.has(p.id),
     );
-    setThisUserSettings(thisMainUserData);
-  }, [allSettings]);
+
+    setOrphanPhrases(orphaned);
+    setOrphanConfirmOpen(true);
+  };
+
+  const handleOrphanDeleteConfirm = async () => {
+    await Promise.all(orphanPhrases.map((p) => deletePhrase(p.id)));
+    setOrphanConfirmOpen(false);
+    setOrphanPhrases([]);
+  };
+
+  const filteredMeanings = mode === MODE_MEANINGS
+    ? Object.values(meanings).filter((m) =>
+        filter.length >= 3
+          ? m.lemma.toLowerCase().includes(filter.toLowerCase()) ||
+            m.translation.toLowerCase().includes(filter.toLowerCase())
+          : true,
+      )
+    : [];
+
+  const filteredPhrases = mode === MODE_PHRASES
+    ? Object.values(phrases).filter((p) =>
+        filter.length >= 3
+          ? p.text.toLowerCase().includes(filter.toLowerCase()) ||
+            p.translation.toLowerCase().includes(filter.toLowerCase())
+          : true,
+      )
+    : [];
+
+  const paginatedMeanings = filteredMeanings.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
+
+  const paginatedPhrases = filteredPhrases.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
+
+  const totalCount = mode === MODE_PHRASES
+    ? Object.keys(phrases).length
+    : Object.keys(meanings).length;
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(
+      (mode === MODE_PHRASES ? filteredPhrases : filteredMeanings).length / PAGE_SIZE,
+    ),
+  );
 
   return (
     <div className="admin">
-      <div className="admin__sup-table">
+      <div className="admin__header">
+        <Button variant="secondary" onClick={handleToggle}>
+          {mode === MODE_PHRASES ? 'Show meanings' : 'Show phrases'}
+        </Button>
         <InputText
-          key="searchInput"
-          className="admin__search"
-          placeholder="Search (3+ characters)"
-          name="search"
-          onChange={(value) => setSearchString(value.toLowerCase())}
+          className="admin__filter"
+          name="filter"
+          placeholder={mode === MODE_PHRASES ? 'Search phrases…' : 'Search meanings…'}
+          value={filter}
+          onChange={handleFilterChange}
         />
-        <div className="admin__to-right">
-          {thereArePhrases && (
-            <Pagination
-              totalItems={shownPhrasesCounter}
-              itemsPerPage={PHRASES_PER_PAGE}
-              changePage={onPageChange}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      </div>
+
+      <div className="admin__actions">
+        {mode === MODE_PHRASES && (
+          <Button circle variant="secondary" onClick={handleOrphanCleanup} aria-label="Delete orphan phrases" title="Delete orphan phrases">
+            <Icon name="trash" />
+          </Button>
+        )}
+        <Button circle variant="secondary" onClick={exportDB} aria-label="Export DB" title="Export All">
+          <Icon name="export" />
+        </Button>
+        <Button circle variant="secondary" onClick={handleImportFile} aria-label="Import from file" title="Import from file">
+          <Icon name="import" />
+        </Button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".json"
+          style={{ display: 'none' }}
+          onChange={handleFileSelected}
+        />
+        <AddEntityButton
+          onClick={handleAdd}
+          label={mode === MODE_MEANINGS ? 'Add meaning' : 'Add phrase'}
+        />
+      </div>
+
+      {mode === MODE_PHRASES ? (
+        <div className="admin__grid" style={{ gridTemplateColumns: GRID_TEMPLATE_PHRASES }}>
+          {paginatedPhrases.map((phrase) => (
+            <ExamplePhraseCard
+              key={phrase.id}
+              phrase={phrase}
+              onClick={() => setEditablePhrase(phrase)}
             />
-          )}
+          ))}
         </div>
-      </div>
-
-      <div className="admin__phrase-table">
-        <PhrasesTable
-          phrases={shownPhrases}
-          onRowClick={onEditPhrase}
-          noPhrasesMessage={
-            searchString.length ? (
-              'No phrases found'
-            ) : (
-              <>
-                There are no phrases here yet.
-                <br />
-                It's time{' '}
-                <button type="button" className="link" onClick={() => startEditingPhrase({})}>
-                  to add a few
-                </button>{' '}
-                or <ImportFromFileButton className="link">import from file</ImportFromFileButton> or{' '}
-                <button onClick={() => setIsImportPhrasesFromJSONOpen(true)} className="link">
-                  import from JSON
-                </button>
-                .
-              </>
-            )
-          }
-        />
-      </div>
-
-      <div className="admin__sub-table">Phrases counter: {allPhrases.length}</div>
-
-      {canTrySyncToGist && (
-        <ImportFromGistButton
-          className="admin__btn  btn-circle"
-          classNameLoading="btn-circle--loading"
-          style={{ right: '2em', top: '4em' }}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18">
-            <use xlinkHref="#download" />
-          </svg>
-        </ImportFromGistButton>
+      ) : (
+        <div className="admin__grid" style={{ gridTemplateColumns: GRID_TEMPLATE_MEANINGS }}>
+          {paginatedMeanings.map((meaning) => (
+            <MeaningCard
+              key={meaning.id}
+              meaning={meaning}
+              onClick={() => setEditableMeaning(meaning)}
+            />
+          ))}
+        </div>
       )}
 
-      {canTrySyncToGist && (
-        <ExportToGistButton
-          className="admin__btn  btn-circle"
-          classNameLoading="btn-circle--loading"
-          style={{ right: '2em', top: '8em' }}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18">
-            <use xlinkHref="#upload" />
-          </svg>
-        </ExportToGistButton>
-      )}
-
-      {thereArePhrases && (
-        <button
-          className="admin__btn  btn-circle"
-          style={{ right: '2em', bottom: '10em' }}
-          onClick={onDeleteAllPhrases}
-          title="Delete ALL phrases"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18">
-            <use xlinkHref="#trash" />
-          </svg>
-        </button>
-      )}
-
-      <div className="admin__btn" style={{ right: '2em', bottom: '6em' }}>
-        <DropButton
-          className=""
-          buttonContent={
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18">
-              <path d="m4 10-3 3 3 3h1v-2h12v-2H5v-2zM13 2v2H1v2h12v2h1l3-3-3-3Z" />
-            </svg>
-          }
-          buttonClassName="btn-circle"
-          direction="left-top"
-          title="Import / Export phrases"
-        >
-          <ul className="menu">
-            <li>
-              <button
-                onClick={() => setIsImportPhrasesFromJSONOpen(true)}
-                className="btn  btn--secondary  btn--sm"
-              >
-                Import phrases from JSON
-              </button>
-            </li>
-            <li>
-              <ImportFromFileButton className="btn  btn--secondary  btn--sm" />
-            </li>
-            {thereArePhrases && (
-              <li>
-                <ExportToFileButton className="btn  btn--secondary  btn--sm" />
-              </li>
-            )}
-          </ul>
-        </DropButton>
+      <div className="admin__footer">
+        Items: {totalCount}
       </div>
-
-      <button
-        className="admin__btn  btn-circle  btn-circle--accent"
-        style={{ right: '2em', bottom: '2em' }}
-        onClick={() => startEditingPhrase({})}
-        title="Add phrase"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18">
-          <use xlinkHref="#plus" />
-        </svg>
-      </button>
-
-      {editPhraseContent}
 
       <Confirm
-        isOpen={isConfirmDeleteAllPhrasesOpen}
-        title="Are you sure you want to delete all phrases?"
+        isOpen={orphanConfirmOpen}
+        title="Delete orphan phrases?"
         message={
-          <>
-            <p>This action is irreversible.</p>
-            <p>The backup copy will be saved to a file first.</p>
-          </>
+          orphanPhrases.length > 0 ? (
+            <ul>
+              {orphanPhrases.map((p) => (
+                <li key={p.id}>{p.text} — {p.translation}</li>
+              ))}
+            </ul>
+          ) : (
+            'No orphan phrases found.'
+          )
         }
-        confirmButtonText="Yes, delete all local phrases"
-        onConfirm={onConfirmDeleteAllPhrases}
-        onCancel={onCancelDeleteAllPhrases}
+        confirmText={orphanPhrases.length > 0 ? 'Delete' : 'Close'}
+        cancelText="Cancel"
+        variant="danger"
+        onConfirm={handleOrphanDeleteConfirm}
+        onCancel={() => {
+          setOrphanConfirmOpen(false);
+          setOrphanPhrases([]);
+        }}
       />
-
-      {phraseConflictsResolverContent}
-      {importFromJSONContent}
     </div>
   );
 }

@@ -1,0 +1,18 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+}
+
+.app__loading {
+  padding: 1em;
+  margin: 0;
+}
+
+.app__header {
+  flex-shrink: 0;
+}
+
+.app__content {
+  flex-grow: 1;
+}

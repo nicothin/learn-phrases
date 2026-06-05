@@ -1,38 +1,22 @@
-import { Replacement } from './types';
+import type { PartOfSpeech } from './types';
 
-export const IDB_NAME = 'LP';
-export const IDB_VERSION = 1;
-export const PHRASES_TABLE_NAME = 'phrases';
-export const SETTINGS_TABLE_NAME = 'settings';
-export const IDB_TABLES = [
-  { name: PHRASES_TABLE_NAME, keyPath: 'id' },
-  { name: SETTINGS_TABLE_NAME, keyPath: 'userId' },
-];
+// Index corresponds to knowledge level - 1
+// REPEAT_INTERVALS_DAYS[0] = level 1, REPEAT_INTERVALS_DAYS[7] = level 8
+export const REPEAT_INTERVALS_DAYS = [0, 2, 3, 5, 7, 10, 14, 20] as const;
 
-export const REPLACEMENTS: Replacement[] = [
-  { search: /<[^>]+>/g, replace: '' },
-  { search: /\*\*(.*?)\*\*/g, replace: '<strong>$1</strong>' },
-  { search: /\*(.*?)\*/g, replace: '<em>$1</em>' },
-  { search: /~~(.*?)~~/g, replace: '<del>$1</del>' },
-  { search: /__(.*?)__/g, replace: '<span style="text-decoration:underline">$1</span>' },
-];
+export const MS_PER_DAY = 86_400_000;
 
-// export const TAGS_JSON_STRING: string = `[
-//   { "value": "Positive", "color": "green" },
-//   { "value": "Question", "color": "orange" },
-//   { "value": "Negative", "color": "red" },
-//   { "value": "Present Simple", "color": "blue" },
-//   { "value": "Present Continuous", "color": "blue" },
-//   { "value": "Present Perfect", "color": "blue" },
-//   { "value": "Past Simple", "color": "cyan" },
-//   { "value": "Future Simple", "color": "lime" },
-//   { "value": "Past Continuous", "color": "cyan" },
-//   { "value": "Present Perfect Continuous", "color": "blue" },
-//   { "value": "Future Continuous", "color": "lime" },
-//   { "value": "Past Perfect", "color": "cyan" },
-//   { "value": "Future Perfect", "color": "lime" },
-//   { "value": "Past Perfect Continuous", "color": "cyan" },
-//   { "value": "Future Perfect Continuous", "color": "lime" },
-//   { "value": "Passive voice", "color": "magenta" },
-//   { "value": "Irregular verbs", "color": "magenta" }
-// ]`;
+export const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] as const;
+
+export const SESSION_SIZE = 42;
+
+export const POS_LABELS: Record<PartOfSpeech, string> = {
+  noun: 'Noun',
+  verb: 'Verb',
+  adjective: 'Adjective',
+  adverb: 'Adverb',
+  pronoun: 'Pronoun',
+  preposition: 'Preposition',
+  conjunction: 'Conjunction',
+  interjection: 'Interjection',
+};

@@ -1,0 +1,59 @@
+.example-phrase-card {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  padding: var(--gap-m) var(--gap-m) var(--gap-m);
+  cursor: pointer;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  transition: box-shadow 0.2s ease;
+}
+
+.example-phrase-card:hover {
+  box-shadow: var(--box-shadow-sm);
+}
+
+.example-phrase-card:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.example-phrase-card__text {
+  margin: 0 0 var(--gap);
+  font-size: var(--text-size-lg);
+  line-height: 1.2;
+  color: var(--text-color);
+}
+
+.example-phrase-card__text p {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.example-phrase-card__translation,
+.example-phrase-card__translation p {
+  margin: 0;
+  font-size: var(--text-size);
+  line-height: 1.3;
+  color: var(--text-color);
+}
+
+.example-phrase-card__translation p {
+  margin: 0;
+}
+
+.example-phrase-card__description,
+.example-phrase-card__description p {
+  margin: calc(var(--gap) / 3) 0 var(--gap);
+  font-size: var(--text-size-sm);
+  line-height: 1.4;
+  color: var(--text-color-secondary);
+}
+
+.example-phrase-card__description:last-of-type,
+.example-phrase-card__description p:last-child {
+  margin-bottom: 0;
+}

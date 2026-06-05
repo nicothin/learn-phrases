@@ -1,43 +1,50 @@
 .admin {
+  position: relative;
   display: flex;
-  gap: var(--gap);
   flex-direction: column;
   height: 100%;
-  padding: var(--gap);
 }
 
-.admin__sup-table {
+.admin__header {
+  position: sticky;
+  top: 0;
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--gap);
-  flex-shrink: 0;
+  gap: var(--gap-l);
+  align-items: center;
+  padding: var(--gap-l);
+  background-color: var(--body-bg-color);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s;
 }
 
-.admin__phrase-table {
-  flex-grow: 1;
-  flex-shrink: 1;
-  height: 1em;
+.there-is-scrolling .admin__header {
+  border-color: var(--border-color);
 }
 
-.admin__sub-table {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--gap);
-  flex-shrink: 0;
+.admin__filter {
+  width: 200px;
+  margin-right: auto;
 }
 
-.admin__to-right {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--gap);
-  margin-left: auto;
-}
-
-.admin__search {
-  width: 180px;
-}
-
-.admin__btn {
+.admin__actions {
   position: fixed;
-  z-index: 1000;
+  right: 2rem;
+  bottom: 2rem;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-m);
+}
+
+.admin__grid {
+  display: grid;
+  gap: var(--gap-l);
+  padding: var(--gap-l);
+  padding-top: 0;
+}
+
+.admin__footer {
+  padding: 0 var(--gap-l) 0.5rem;
+  padding-top: 0;
+  color: var(--text-color-secondary);
 }
