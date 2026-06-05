@@ -25,7 +25,7 @@ describe('Modal', () => {
 
     await user.click(screen.getByRole('button', { name: 'Close' }));
 
-    expect(onClose).toHaveBeenCalledOnce();
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 
   test('hides close button when closable is false', () => {
@@ -75,7 +75,7 @@ describe('Modal', () => {
     const overlay = document.querySelector('.modal__overlay')!;
     await user.click(overlay);
 
-    expect(onClose).toHaveBeenCalledOnce();
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 
   test('locks body scroll when open', () => {
@@ -98,7 +98,7 @@ describe('Modal', () => {
 
     await user.keyboard('{Escape}');
 
-    expect(onClose).toHaveBeenCalledOnce();
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 
   test('blocks Escape key press when not closable', async () => {
