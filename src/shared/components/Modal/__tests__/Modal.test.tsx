@@ -81,7 +81,7 @@ describe('Modal', () => {
   test('locks body scroll when open', () => {
     setup();
 
-    expect(document.body.classList.contains('modal-open')).toBe(true);
+    expect(document.body.style.overflow).toBe('hidden');
   });
 
   test('removes body scroll lock on unmount', () => {
@@ -89,7 +89,41 @@ describe('Modal', () => {
 
     unmount();
 
-    expect(document.body.classList.contains('modal-open')).toBe(false);
+    expect(document.body.style.overflow).toBe('');
+  });
+
+  test('adds padding compensation only when scrollbar is visible', () => {
+    const originalInnerWidth = window.innerWidth;
+    const originalClientWidth = document.documentElement.clientWidth;
+
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 1100 });
+    Object.defineProperty(document.documentElement, 'clientWidth', { configurable: true, value: 1083 });
+
+    const { unmount } = setup();
+
+    expect(document.body.style.paddingRight).toBe('var(--scrollbar-width)');
+
+    unmount();
+
+    expect(document.body.style.paddingRight).toBe('');
+
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: originalInnerWidth });
+    Object.defineProperty(document.documentElement, 'clientWidth', { configurable: true, value: originalClientWidth });
+  });
+
+  test('does not add padding when no visible scrollbar', () => {
+    const originalInnerWidth = window.innerWidth;
+    const originalClientWidth = document.documentElement.clientWidth;
+
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 1024 });
+    Object.defineProperty(document.documentElement, 'clientWidth', { configurable: true, value: 1024 });
+
+    setup();
+
+    expect(document.body.style.paddingRight).toBe('');
+
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: originalInnerWidth });
+    Object.defineProperty(document.documentElement, 'clientWidth', { configurable: true, value: originalClientWidth });
   });
 
   test('closes on Escape key press when closable', async () => {

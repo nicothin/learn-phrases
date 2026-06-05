@@ -16,7 +16,6 @@ export interface ModalProps {
   title?: ReactNode;
 }
 
-const BODY_LOCK_CLASS = 'modal-open';
 let openCount = 0;
 
 export function Modal({
@@ -49,12 +48,20 @@ export function Modal({
     if (!isOpen) return;
 
     openCount++;
-    document.body.classList.add(BODY_LOCK_CLASS);
+
+    if (openCount === 1) {
+      const hasVisibleScrollbar = window.innerWidth > document.documentElement.clientWidth;
+      if (hasVisibleScrollbar) {
+        document.body.style.paddingRight = 'var(--scrollbar-width)';
+      }
+      document.body.style.overflow = 'hidden';
+    }
 
     return () => {
       openCount--;
       if (openCount === 0) {
-        document.body.classList.remove(BODY_LOCK_CLASS);
+        document.body.style.paddingRight = '';
+        document.body.style.overflow = '';
       }
     };
   }, [isOpen]);

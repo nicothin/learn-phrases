@@ -1,7 +1,3 @@
-body.modal-open {
-  padding-right: var(--scrollbar-width, 0);
-  overflow: hidden;
-}
 
 .modal__overlay {
   position: fixed;
