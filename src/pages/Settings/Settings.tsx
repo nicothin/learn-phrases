@@ -1,3 +1,4 @@
+import { LayoutText } from '@shared/layouts/LayoutText/LayoutText';
 import { useStore } from '../../services/store';
 
 export function Settings() {
@@ -6,8 +7,11 @@ export function Settings() {
   // const updateSettings = useStore((s) => s.updateSettings);
 
   return (
-    <div>
-      settings
-    </div>
+    <LayoutText>
+      <div>
+        <h1>Settings</h1>
+        <p>Under construction.</p>
+      </div>
+    </LayoutText>
   );
 }
