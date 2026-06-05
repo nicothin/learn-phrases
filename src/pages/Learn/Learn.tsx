@@ -26,7 +26,7 @@ export function Learn() {
   }
 
   const progressPercentage = items.length > 0
-    ? ((activeIndex + 1) / items.length) * 100
+    ? (activeIndex / items.length) * 100
     : 0;
 
   const handleNext = useCallback(() => {
@@ -167,7 +167,7 @@ export function Learn() {
           className="learn__progress"
           percentage={progressPercentage}
         >
-          {activeIndex + 1} / {items.length}
+          {activeIndex} / {items.length}
         </ProgressBar>
       )}
       <Button className="learn__refresh-btn" variant="secondary" circle onClick={refresh} aria-label="Обновить сессию">
