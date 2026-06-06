@@ -26,6 +26,7 @@ export interface MultiSelectProps {
   fallbackOptions?: MultiSelectOption[];
   searchHint?: string;
   onTagClick?: (value: string) => void;
+  autoComplete?: string;
 }
 
 export function MultiSelect({
@@ -46,6 +47,7 @@ export function MultiSelect({
   fallbackOptions,
   searchHint,
   onTagClick,
+  autoComplete,
 }: MultiSelectProps) {
   const {
     inputValue,
@@ -172,6 +174,7 @@ export function MultiSelect({
           onKeyDown={handleInputKeyDown}
           placeholder={value.length === 0 ? placeholder : undefined}
           disabled={disabled}
+          autoComplete={autoComplete}
           role="combobox"
           aria-expanded={isOpen}
           aria-haspopup="listbox"

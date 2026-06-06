@@ -188,6 +188,7 @@ export function MeaningFormModal() {
             searchThreshold={3}
             debounceMs={200}
             searchHint="min 3 characters"
+            autoComplete="off"
           />
 
         </div>
