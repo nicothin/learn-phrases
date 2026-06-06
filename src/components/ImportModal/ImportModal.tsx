@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
-import { Modal, Button } from '@shared/components';
+import { Modal, Button, InputText } from '@shared/components';
+import type { InputTextHandle } from '@shared/components';
 import { useUIStore } from '../../services/store/uiStore';
 import { parseImportText } from './importParser';
 import { saveMeaning, savePhrase } from '../../services/store/mutations';
@@ -18,7 +19,7 @@ export function ImportModal() {
   const setImportModalOpen = useUIStore((s) => s.setImportModalOpen);
   const [text, setText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const inputRef = useRef<InputTextHandle>(null);
 
   const handleClose = useCallback(() => {
     setImportModalOpen(false);
@@ -78,9 +79,7 @@ export function ImportModal() {
         type: NOTIFICATION_TYPE.SUCCESS,
       });
 
-      if (textareaRef.current) {
-        textareaRef.current.focus();
-      }
+      inputRef.current?.focus();
 
       return;
     }
@@ -145,13 +144,14 @@ export function ImportModal() {
 
   return (
     <Modal isOpen onClose={handleClose} className="import-modal" actions={actions} title="Add Meanings">
-      <textarea
-        ref={textareaRef}
+      <InputText
+        ref={inputRef}
+        name="import"
         className="import-modal__textarea"
         value={text}
-        onChange={(e) => setText(e.target.value)}
+        onChange={setText}
         placeholder={`lemma\ntranslation\npos|cefrLevel\nexample phrase --- translation\n\nlemma\ntranslation\npos|cefrLevel\nexample phrase --- translation`}
-        rows={15}
+        standard
       />
     </Modal>
   );

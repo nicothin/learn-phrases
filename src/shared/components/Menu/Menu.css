@@ -49,18 +49,16 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  .menu {
-    a.active,
-    a:hover,
-    button.active,
-    button:hover,
-    .btn.active,
-    .btn:hover,
-    [role="button"].active,
-    [role="button"]:hover {
-      outline: none;
-      background-color: var(--gray-lighter);
-    }
+[data-theme="dark"] .menu {
+  a.active,
+  a:hover,
+  button.active,
+  button:hover,
+  .btn.active,
+  .btn:hover,
+  [role="button"].active,
+  [role="button"]:hover {
+    outline: none;
+    background-color: var(--gray-lighter);
   }
 }

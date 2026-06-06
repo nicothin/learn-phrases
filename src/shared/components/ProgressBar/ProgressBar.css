@@ -31,3 +31,7 @@
 .progress-bar--done .progress-bar__line {
   background-color: var(--success-color);
 }
+
+[data-theme="dark"] .progress-bar__line {
+  background-color: color-mix(in srgb, var(--primary-color), white 25%);
+}

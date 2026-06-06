@@ -3,17 +3,9 @@
   height: 100dvh;
 }
 
-.import-modal__textarea {
-  box-sizing: border-box;
-  width: 100%;
+.import-modal__textarea .input-text__input {
   min-height: 300px;
-  padding: 0.5em;
-  font-family: inherit;
-  font-size: var(--text-size, 1rem);
-  line-height: 1.5;
   resize: vertical;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
 }
 
 .import-modal__error-list {
@@ -45,7 +37,7 @@
     border-radius: 8px;
   }
 
-  .import-modal__textarea {
-    min-height: 200px;
+  .import-modal__textarea .input-text__input {
+    min-height: 300px;
   }
 }

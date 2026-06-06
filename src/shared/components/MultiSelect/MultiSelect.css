@@ -110,12 +110,10 @@
   color: var(--danger-color);
 }
 
-@media (prefers-color-scheme: dark) {
-  .multiselect__option:hover {
-    background-color: color-mix(in srgb, var(--border-color) 30%, transparent);
-  }
+[data-theme="dark"] .multiselect__option:hover {
+  background-color: color-mix(in srgb, var(--border-color) 30%, transparent);
+}
 
-  .multiselect__option--highlighted {
-    background-color: color-mix(in srgb, var(--border-color) 50%, transparent);
-  }
+[data-theme="dark"] .multiselect__option--highlighted {
+  background-color: color-mix(in srgb, var(--border-color) 50%, transparent);
 }

@@ -3,7 +3,9 @@ import { Routes, Route } from 'react-router-dom';
 import './App.css';
 
 import { useHydrate } from './hooks/useHydrate';
+import { useTheme } from './hooks/useTheme';
 import { MainMenu } from './components/MainMenu/MainMenu';
+import { ThemeToggle } from './components/ThemeToggle/ThemeToggle';
 import { Learn } from './pages/Learn/Learn';
 import { Admin } from './pages/Admin/Admin';
 import { About } from './pages/About/About';
@@ -17,6 +19,8 @@ import { NotificationList } from '@shared/components';
 
 function App() {
   const isHydrated = useHydrate();
+
+  useTheme();
   const editableMeaning = useUIStore((s) => s.editableMeaning);
   const editablePhrase = useUIStore((s) => s.editablePhrase);
   const importModalOpen = useUIStore((s) => s.importModalOpen);
@@ -25,7 +29,10 @@ function App() {
     <div className="app">
       {isHydrated && (
         <div className="app__header">
-          <MainMenu />
+          <div className="app__nav-actions">
+            <ThemeToggle />
+            <MainMenu />
+          </div>
         </div>
       )}
 

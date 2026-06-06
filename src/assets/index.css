@@ -120,12 +120,9 @@ del {
 }
 
 
-@media (prefers-color-scheme: dark) {
-  @supports (color: hsl(from var(--primary-color) h s calc(l + 8))) {
-    a,
-    .link {
-      color: hsl(from var(--primary-color) h s calc(l + 30));
-    }
+@supports (color: hsl(from var(--primary-color) h s calc(l + 8))) {
+  [data-theme="dark"] a,
+  [data-theme="dark"] .link {
+    color: hsl(from var(--primary-color) h s calc(l + 30));
   }
-
 }

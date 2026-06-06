@@ -16,6 +16,8 @@ import { Close } from './icons/Close';
 import { Refresh } from './icons/Refresh';
 import { Export } from './icons/Export';
 import { Import } from './icons/Import';
+import { Sun } from './icons/Sun';
+import { Moon } from './icons/Moon';
 
 const icons = {
   done: Done,
@@ -35,6 +37,8 @@ const icons = {
   refresh: Refresh,
   export: Export,
   import: Import,
+  sun: Sun,
+  moon: Moon,
 } as const;
 
 export type IconName = keyof typeof icons;

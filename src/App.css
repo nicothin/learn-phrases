@@ -13,6 +13,17 @@
   flex-shrink: 0;
 }
 
+.app__nav-actions {
+  position: fixed;
+  bottom: 2em;
+  left: 2em;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-m);
+  align-items: center;
+}
+
 .app__content {
   flex-grow: 1;
 }
