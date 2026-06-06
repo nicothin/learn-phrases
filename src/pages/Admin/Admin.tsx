@@ -37,7 +37,11 @@ export function Admin() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleAdd = () => {
-    setImportModalOpen(true);
+    if (mode === MODE_PHRASES) {
+      setEditablePhrase({});
+    } else {
+      setImportModalOpen(true);
+    }
   };
 
   const handleImportFile = () => {
