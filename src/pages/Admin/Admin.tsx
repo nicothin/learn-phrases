@@ -10,6 +10,8 @@ import { exportDB } from '../../services/fileService';
 import { validateJson } from '../../services/jsonValidation';
 import { notification, NOTIFICATION_TYPE } from '../../services/notification';
 import type { ExamplePhrase } from '../../types';
+import { findExistingMeaning } from '../../components/ImportModal/importParser';
+import type { ImportConflict } from '../../components/ImportModal/importParser';
 
 import './Admin.css';
 
@@ -67,9 +69,37 @@ export function Admin() {
         return;
       }
 
-      for (const meaning of result.data.meanings) {
-        await saveMeaning(meaning);
+      const storeMeanings = useStore.getState().meanings;
+      const conflicts: ImportConflict[] = [];
+
+      for (const incoming of result.data.meanings) {
+        const existing = findExistingMeaning({ meanings: storeMeanings, lemma: incoming.lemma, pos: incoming.pos });
+
+        if (existing) {
+          conflicts.push({
+            existing,
+            incoming: {
+              lemma: incoming.lemma,
+              translation: incoming.translation,
+              pos: incoming.pos,
+              cefrLevel: incoming.cefrLevel,
+              examples: [],
+            },
+          });
+
+          await saveMeaning({
+            ...existing,
+            lemma: incoming.lemma,
+            translation: incoming.translation,
+            pos: incoming.pos,
+            cefrLevel: incoming.cefrLevel,
+            exampleIds: incoming.exampleIds,
+          });
+        } else {
+          await saveMeaning(incoming);
+        }
       }
+
       for (const phrase of result.data.phrases) {
         await savePhrase(phrase);
       }
@@ -93,6 +123,10 @@ export function Admin() {
           text: `Imported ${meanings.length} meaning(s) and ${phrases.length} phrase(s).`,
           type: NOTIFICATION_TYPE.SUCCESS,
         });
+      }
+
+      if (conflicts.length > 0) {
+        console.warn('Import conflicts:', conflicts);
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';

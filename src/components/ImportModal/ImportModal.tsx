@@ -2,7 +2,9 @@ import { useState, useCallback, useRef } from 'react';
 import { Modal, Button, InputText } from '@shared/components';
 import type { InputTextHandle } from '@shared/components';
 import { useUIStore } from '../../services/store/uiStore';
-import { parseImportText } from './importParser';
+import { useStore } from '../../services/store';
+import { parseImportText, findExistingMeaning, mergeMeaning } from './importParser';
+import type { ImportConflict } from './importParser';
 import { saveMeaning, savePhrase } from '../../services/store/mutations';
 import { notification, NOTIFICATION_TYPE } from '../../services/notification';
 import type { Meaning, ExamplePhrase } from '../../types';
@@ -26,39 +28,52 @@ export function ImportModal() {
   }, [setImportModalOpen]);
 
   const handleImport = useCallback(async () => {
-    const { meanings, errors } = parseImportText(text);
+    const { meanings: parsedMeanings, errors } = parseImportText(text);
+    const storeMeanings = useStore.getState().meanings;
+    const conflicts: ImportConflict[] = [];
+
+    const processMeanings = async () => {
+      for (const m of parsedMeanings) {
+        const phraseIds: string[] = [];
+
+        for (const ex of m.examples) {
+          const phrase: ExamplePhrase = {
+            id: crypto.randomUUID(),
+            text: ex.text,
+            translation: ex.translation,
+          };
+          await savePhrase(phrase);
+          phraseIds.push(phrase.id);
+        }
+
+        const existing = findExistingMeaning({ meanings: storeMeanings, lemma: m.lemma, pos: m.pos });
+
+        if (existing) {
+          conflicts.push({ existing, incoming: m });
+          await saveMeaning(mergeMeaning({ existing, incoming: m, newExampleIds: phraseIds }));
+        } else {
+          const meaning: Meaning = {
+            id: crypto.randomUUID(),
+            lemma: m.lemma,
+            translation: m.translation,
+            pos: m.pos,
+            cefrLevel: m.cefrLevel,
+            exampleIds: phraseIds,
+            knowledgeLvl: 1,
+            showAfterTimestamp: Date.now(),
+          };
+          await saveMeaning(meaning);
+        }
+      }
+    };
 
     if (errors.length > 0) {
-      const importedCount = meanings.length;
+      const importedCount = parsedMeanings.length;
 
       if (importedCount > 0) {
         setIsSubmitting(true);
         try {
-          for (const m of meanings) {
-            const phraseIds: string[] = [];
-
-            for (const ex of m.examples) {
-              const phrase: ExamplePhrase = {
-                id: crypto.randomUUID(),
-                text: ex.text,
-                translation: ex.translation,
-              };
-              await savePhrase(phrase);
-              phraseIds.push(phrase.id);
-            }
-
-            const meaning: Meaning = {
-              id: crypto.randomUUID(),
-              lemma: m.lemma,
-              translation: m.translation,
-              pos: m.pos,
-              cefrLevel: m.cefrLevel,
-              exampleIds: phraseIds,
-              knowledgeLvl: 1,
-              showAfterTimestamp: Date.now(),
-            };
-            await saveMeaning(meaning);
-          }
+          await processMeanings();
         } catch (error) {
           const message = error instanceof Error ? error.message : 'Unknown error';
           notification.add({
@@ -81,40 +96,20 @@ export function ImportModal() {
 
       inputRef.current?.focus();
 
+      if (conflicts.length > 0) {
+        console.warn('Import conflicts:', conflicts);
+      }
+
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      for (const m of meanings) {
-        const phraseIds: string[] = [];
-
-        for (const ex of m.examples) {
-          const phrase: ExamplePhrase = {
-            id: crypto.randomUUID(),
-            text: ex.text,
-            translation: ex.translation,
-          };
-          await savePhrase(phrase);
-          phraseIds.push(phrase.id);
-        }
-
-        const meaning: Meaning = {
-          id: crypto.randomUUID(),
-          lemma: m.lemma,
-          translation: m.translation,
-          pos: m.pos,
-          cefrLevel: m.cefrLevel,
-          exampleIds: phraseIds,
-          knowledgeLvl: 1,
-          showAfterTimestamp: Date.now(),
-        };
-        await saveMeaning(meaning);
-      }
+      await processMeanings();
 
       notification.add({
-        text: `${meanings.length} meaning(s) imported successfully.`,
+        text: `${parsedMeanings.length} meaning(s) imported successfully.`,
         type: NOTIFICATION_TYPE.SUCCESS,
       });
 
@@ -128,6 +123,10 @@ export function ImportModal() {
       });
     } finally {
       setIsSubmitting(false);
+    }
+
+    if (conflicts.length > 0) {
+      console.warn('Import conflicts:', conflicts);
     }
   }, [text, setImportModalOpen]);
 

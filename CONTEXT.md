@@ -5,8 +5,11 @@ Application for learning English words using spaced repetition. Users add words 
 ## Language
 
 **Meaning**:
-An individual sense/translation of a word. One word can have multiple meanings.
+An individual sense/translation of a word. One word can have multiple meanings (e.g. "run" → "бежать" and "run" → "управлять").
 _Avoid_: Definition, Sense
+
+**Meaning identity**:
+Two Meanings are the same when both `lemma` and `pos` match. `translation` is not part of identity — it may contain multiple comma-separated variants and varies across imports.
 
 **Example**:
 A phrase illustrating the usage of a specific meaning in context.

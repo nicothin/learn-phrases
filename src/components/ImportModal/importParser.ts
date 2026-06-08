@@ -1,4 +1,4 @@
-import type { PartOfSpeech } from '../../types';
+import type { Meaning, PartOfSpeech } from '../../types';
 
 export interface ParsedExample {
   text: string;
@@ -22,6 +22,11 @@ export interface BlockError {
 export interface ImportParseResult {
   meanings: ParsedMeaning[];
   errors: BlockError[];
+}
+
+export interface ImportConflict {
+  existing: Meaning;
+  incoming: ParsedMeaning;
 }
 
 const POS_VALUES: PartOfSpeech[] = [
@@ -142,3 +147,32 @@ export function parseImportText(text: string): ImportParseResult {
 
   return { meanings, errors };
 }
+
+export const findExistingMeaning = ({
+  meanings,
+  lemma,
+  pos,
+}: {
+  meanings: Record<string, Meaning>;
+  lemma: string;
+  pos: PartOfSpeech;
+}): Meaning | undefined => (
+  Object.values(meanings).find((m) => m.lemma === lemma && m.pos === pos)
+);
+
+export const mergeMeaning = ({
+  existing,
+  incoming,
+  newExampleIds,
+}: {
+  existing: Meaning;
+  incoming: ParsedMeaning;
+  newExampleIds: string[];
+}): Meaning => ({
+  ...existing,
+  lemma: incoming.lemma,
+  translation: incoming.translation,
+  pos: incoming.pos,
+  cefrLevel: incoming.cefrLevel,
+  exampleIds: newExampleIds,
+});
