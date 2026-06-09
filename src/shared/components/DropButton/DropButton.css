@@ -1,0 +1,48 @@
+.drop-button {
+  position: relative;
+}
+
+.drop-button__button {
+  display: block;
+}
+
+.drop-button__drop {
+  position: absolute;
+  bottom: 0;
+  left: calc(100% + 1em);
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  background-color: var(--bg-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  opacity: 0;
+  transform: translateX(-1em);
+  transition: all 0.3s;
+}
+
+.drop-button--open {
+  .drop-button__drop {
+    width: auto;
+    height: auto;
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.drop-button--to-left-top {
+  .drop-button__drop {
+    right: calc(100% + 1em);
+    left: auto;
+    transform: translateX(1em);
+  }
+}
+
+.drop-button--to-left-top.drop-button--open {
+  .drop-button__drop {
+    width: auto;
+    height: auto;
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

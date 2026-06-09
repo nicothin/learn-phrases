@@ -1,0 +1,23 @@
+{
+  "extends": [
+    "stylelint-config-standard",
+    "stylelint-config-recess-order"
+  ],
+  "ignoreFiles": [
+    "dist/**"
+  ],
+  "rules": {
+    "property-no-unknown": [
+      true,
+      {
+        "ignoreProperties": ["composes"]
+      }
+    ],
+    "selector-class-pattern": [
+      "^[a-z]([-]?[a-z0-9]+)*(__[a-z0-9]([-]?[a-z0-9]+)*)?(--[a-z0-9]([-]?[a-z0-9]+)*)?$",
+      {
+        "message": "Expected class selector to follow BEM notation (block__element--modifier)"
+      }
+    ]
+  }
+}

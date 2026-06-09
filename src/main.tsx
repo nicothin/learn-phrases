@@ -1,25 +1,18 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import { HashRouter as BrowserRouter } from 'react-router-dom';
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
 
-import './assets/custom-properties.css';
-import './assets/main.css';
+import './assets/custom-properties.css'
+import './assets/index.css'
 
+import App from './App.tsx'
 import packageJson from '../package.json';
-import { MainContextProvider } from './contexts/MainContext';
-import { NotificationContextProvider } from './contexts/NotificationContext/NotificationsContext';
-
-import App from './App';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <NotificationContextProvider>
-      <MainContextProvider>
-        <BrowserRouter future={{ v7_startTransition: true }}>
-          <App />
-          <small className="version">{packageJson.version}</small>
-        </BrowserRouter>
-      </MainContextProvider>
-    </NotificationContextProvider>
+    <BrowserRouter>
+      <App />
+      <small className="version">{packageJson.version}</small>
+    </BrowserRouter>
   </StrictMode>,
-);
+)

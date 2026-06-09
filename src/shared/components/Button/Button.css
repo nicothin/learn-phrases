@@ -1,0 +1,134 @@
+.btn {
+  display: inline-block;
+  min-height: calc(1em + 1.4em + 2px);
+  padding: 0.5em 1.2em;
+  font-family: inherit;
+  font-size: 1em;
+  font-weight: 400;
+  line-height: 1.4em;
+  vertical-align: baseline;
+  color: var(--white);
+  text-align: center;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  background-color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  border-radius: var(--border-radius);
+  transition: all .2s ease-in-out;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.btn:not(:disabled):focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--black);
+}
+
+.btn--secondary {
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  border-color: var(--border-color);
+}
+
+.btn--danger {
+  background-color: var(--danger-color);
+  border-color: var(--danger-color);
+}
+
+.btn--text {
+  color: inherit;
+  background-color: transparent;
+  border-color: transparent;
+}
+
+.btn--link,
+.btn--text-link {
+  min-height: 0;
+  padding: 0;
+  user-select: text;
+  background-color: transparent;
+  border-color: transparent;
+}
+
+.btn--link {
+  color: var(--primary-color);
+  text-decoration: underline;
+}
+
+.btn--text-link {
+  color: inherit;
+}
+
+.btn--sm {
+  min-height: calc(0.6em + 1.4em + 2px);
+  padding: 0.3em 0.7rem;
+}
+
+.btn--xs {
+  min-height: calc(0.2em + 1.4em + 2px);
+  padding: 0.1em 0.5rem;
+}
+
+@supports (color: hsl(from var(--primary-color) h s calc(l + 8))) {
+  .btn:not(:disabled):hover {
+    background-color: hsl(from var(--primary-color) h s calc(l + 8));
+    border-color: hsl(from var(--primary-color) h s calc(l + 8));
+  }
+
+  .btn--secondary:not(:disabled):hover,
+  .btn--secondary:not(:disabled):focus-visible {
+    background-color: var(--gray-lightest);
+  }
+
+  .btn--danger:not(:disabled):hover,
+  .btn--danger:not(:disabled):focus-visible {
+    background-color: hsl(from var(--danger-color) h s calc(l + 10));
+    border-color: hsl(from var(--danger-color) h s calc(l + 10));
+  }
+
+  .btn--text:not(:disabled):hover,
+  .btn--text:not(:disabled):focus-visible {
+    color: inherit;
+    background-color: var(--gray-lighter);
+    border-color: transparent;
+  }
+
+  .btn--link:not(:disabled):hover,
+  .btn--link:not(:disabled):focus-visible {
+    color: hsl(from var(--primary-color) h s calc(l - 10));
+    background-color: transparent;
+    border-color: transparent;
+  }
+
+  .btn--text-link:not(:disabled):hover,
+  .btn--text-link:not(:disabled):focus-visible {
+    color: var(--primary-color);
+    background-color: transparent;
+    border-color: transparent;
+  }
+}
+
+.btn--circle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  line-height: 1;
+  border-radius: 50%;
+  box-shadow: var(--box-shadow);
+
+  svg {
+    fill: currentcolor;
+  }
+}
+
+.btn--circle:not(:disabled):focus-visible {
+  border-color: var(--black);
+}

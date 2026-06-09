@@ -1,0 +1,9 @@
+.example-phrase-form-modal__fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-m);
+}
+
+.example-phrase-form-modal__delete-btn {
+  margin-right: auto;
+}

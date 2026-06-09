@@ -1,0 +1,21 @@
+.carousel-slider {
+  position: relative;
+}
+
+.carousel-slider__slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+.carousel-slider__slide--prev,
+.carousel-slider__slide--next {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.carousel-slider__slide--current {
+  position: relative;
+  visibility: visible;
+}
