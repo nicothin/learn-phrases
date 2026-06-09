@@ -1,82 +1,48 @@
-import { ReactNode } from 'react';
-
-import { STATUS } from './enums';
-
-export interface IDBObjectFieldsParameters {
-  type?: string;
-  multiEntry?: boolean;
-  unique?: boolean;
-  autoIncrement?: boolean;
-}
-export interface IDBObjectFields {
-  [key: string]: IDBObjectFieldsParameters;
-}
-export interface IDBTable {
-  name: string;
-  keyPath: string;
-}
-
-export type KnowledgeLvl = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
-export type PhraseDTO = [
-  Phrase['id'],
-  Phrase['first'],
-  Phrase['firstD'],
-  Phrase['second'],
-  Phrase['secondD'],
-  KnowledgeLvl,
-  Phrase['createDate'],
-  string, // Phrase['tags'],
-  boolean, // Phrase['isHidden'],
-];
-export interface Phrase {
-  id: number;
-  first: string;
-  firstD: string;
-  second: string;
-  secondD: string;
-  knowledgeLvl: KnowledgeLvl;
-  createDate: string;
-  tags: string[];
-  isHidden?: boolean;
-}
-export interface Replacement {
-  search: RegExp;
-  replace: string;
-}
-
-export interface Notification {
+export interface ExamplePhrase {
+  id: string;
   text: string;
-  id?: number;
-  description?: string | ReactNode;
-  consoleDescription?: unknown;
-  type?: STATUS;
-  duration?: number;
-  timeoutId?: NodeJS.Timeout;
+  textDescription?: string;
+  translation: string;
+  translationDescription?: string;
+  lastShownTimestamp?: number;
+}
+
+export type PartOfSpeech = 'noun' | 'verb' | 'adjective' | 'adverb' | 'pronoun' | 'preposition' | 'conjunction' | 'interjection';
+
+export interface Meaning {
+  id: string;
+  lemma: string;
+  translation: string;
+  description?: string;
+  pos: PartOfSpeech;
+  cefrLevel: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
+  exampleIds: string[];
+  knowledgeLvl: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+  showAfterTimestamp?: number;
+  lastShowTimestamp?: number;
 }
 
 export interface UserSettings {
-  userId: number;
-  token: string;
+  githubToken: string;
   gistId: string;
-  syncOn100percent: boolean;
-  checkGistWhenSwitchingToLearn: boolean;
-  // tags: string;
-  speechSynthesisVoiceForSecondPhrase: string;
+  preferredTheme: 'light' | 'dark' | 'system';
 }
 
-export interface Conflict {
-  incomingPhrase: Partial<Phrase>;
-  existingPhrase: Phrase | undefined;
-  differentFields: (keyof Phrase)[];
-  isIncomingSelected: boolean;
+export interface LearningItem {
+  meaning: Meaning;
+  phrase: ExamplePhrase;
 }
 
-export interface ImportPhrasesDTOFromGist {
-  notification: Notification;
-  payload: PhraseDTO[];
+export interface ExportData {
+  meta: {
+    version: string;
+  };
+  meanings: Meaning[];
+  phrases: ExamplePhrase[];
 }
 
-export interface SelectOption {
-  value: string;
-  label: string | ReactNode;
+export interface Log {
+  type: 'ERROR';
+  message: string;
+  details?: string;
 }

@@ -1,0 +1,49 @@
+.date-picker {
+  position: relative;
+  display: block;
+}
+
+.date-picker__label {
+  display: block;
+  padding: 0 0 0.5rem;
+}
+
+.date-picker__field {
+  position: relative;
+  display: block;
+  padding: 0.5rem 0.7rem;
+  font-family: inherit;
+  font-size: 1em;
+  line-height: 1.4;
+  color: var(--text-color);
+  cursor: pointer;
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  transition: box-shadow 0.3s;
+}
+
+.date-picker__field:focus-within {
+  outline: none;
+  border-color: var(--black);
+  box-shadow: inset 0 0 0 1px var(--black);
+}
+
+.date-picker__text {
+  display: block;
+  pointer-events: none;
+}
+
+.date-picker__text--placeholder {
+  color: var(--text-color-secondary);
+}
+
+.date-picker__native {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  font-size: 1em;
+  cursor: pointer;
+  border: none;
+  opacity: 0;
+}

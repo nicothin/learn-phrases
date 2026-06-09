@@ -1,0 +1,54 @@
+.notification {
+  position: relative;
+  display: block;
+  width: 380px;
+  max-width: 80dvw;
+  padding: 1em;
+  margin-bottom: 1em;
+  color: var(--text-color);
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  animation: notification-appears 0.3s;
+}
+
+.notification__icon {
+  position: absolute;
+  top: 1em;
+  left: 1.5em;
+}
+
+.notification__text {
+  margin: 0 2em 0 0;
+}
+
+.notification__description {
+  margin: 0.5em 0 0;
+}
+
+.notification__close {
+  position: absolute;
+  top: 0.25em;
+  right: 0.25em;
+}
+
+.notification--error {
+  padding-left: 4em;
+}
+
+.notification:has(.notification__icon) {
+  padding-left: 4em;
+}
+
+@keyframes notification-appears {
+  from {
+    opacity: 0;
+    transform: translateY(-1em);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

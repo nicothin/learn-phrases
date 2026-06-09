@@ -1,26 +1,9 @@
-export default function About() {
-  return (
-    <div className="layout-text">
-      <h1>About</h1>
+import { LayoutText } from '../../shared/layouts/LayoutText/LayoutText';
 
-      <p>This is a tool for learning phrases in a foreign language using the spaced repetition method.</p>
-      <ol>
-        <li>Add words or phrases you are learning.</li>
-        <li>Cycle through the added cards, marking correct and incorrect answers.</li>
-        <li>
-          After 10 correct marks, the word/phrase is marked as learned and is not shown in the list of learned
-          phrases by default.
-        </li>
-      </ol>
-      <p>
-        This is a serverless project. By default, all added words/phrases are saved in the browser storage.
-        <br />
-        But in the settings you can specify data for accessing{' '}
-        <a href="https://gist.github.com/" rel="noreferrer">
-          gist
-        </a>{' '}
-        and then the data will be periodically saved to it.
-      </p>
+export function About() {
+  return <LayoutText><h1>About</h1>
+
+      <p>TODO</p>
 
       <h2>Links</h2>
 
@@ -43,7 +26,5 @@ export default function About() {
           English by playlists
         </a>
         .
-      </p>
-    </div>
-  );
+      </p></LayoutText>;
 }

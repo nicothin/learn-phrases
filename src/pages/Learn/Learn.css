@@ -1,56 +1,44 @@
 .learn {
-  height: 100%;
-}
-
-.learn__empty {
+  position: relative;
   display: flex;
-  justify-content: center;
   align-items: center;
-  height: 100%;
-  margin: 0;
-  font-size: var(--text-size-xl);
-  text-align: center;
-  padding: 1em;
+  justify-content: center;
+  height: 100dvh;
 }
 
 .learn__carousel {
-  height: 100%;
+  width: clamp(360px, 83vw, 860px);
 }
 
-.learn__slide {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  padding: 0.5em;
-}
-
-.learn__btn {
+.learn__refresh-btn {
   position: fixed;
-  z-index: 1000;
+  top: 2rem;
+  left: 2rem;
+  z-index: 10;
 }
 
-.learn__common-progress {
-  position: fixed !important;
+.learn__actions {
+  position: fixed;
+  right: 2rem;
+  bottom: 5.5rem;
+  z-index: 10;
+  display: flex;
+  gap: var(--gap-m);
+}
+
+.learn__nav {
+  position: fixed;
+  right: 2rem;
+  bottom: 2rem;
+  z-index: 10;
+  display: flex;
+  gap: var(--gap-m);
+}
+
+.learn .progress-bar {
+  position: fixed;
   top: 0;
-  left: 0;
   right: 0;
-
-  .progress__text {
-    top: 0.6rem;
-    left: auto;
-    right: 0.5rem;
-    text-align: right;
-  }
-}
-
-.learn__unlearned-progress {
-  position: fixed !important;
-  top: 0.3rem;
   left: 0;
-  right: 0;
-}
-
-.learn__common-progress-info {
-  margin: 0;
+  z-index: 100;
 }

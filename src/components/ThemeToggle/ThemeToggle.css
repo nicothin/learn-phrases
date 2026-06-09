@@ -1,0 +1,30 @@
+.theme-toggle {
+  position: relative;
+}
+
+.theme-toggle__icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  font-size: 16px;
+  line-height: 1;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s;
+}
+
+.theme-toggle__icon--sun {
+  opacity: 1;
+}
+
+.theme-toggle__icon--moon {
+  opacity: 0;
+}
+
+[data-theme="dark"] .theme-toggle__icon--sun {
+  opacity: 0;
+}
+
+[data-theme="dark"] .theme-toggle__icon--moon {
+  opacity: 1;
+}

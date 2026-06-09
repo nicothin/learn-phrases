@@ -1,13 +1,17 @@
 import { Link } from 'react-router-dom';
 
-export default function PageNotFound() {
+import { LayoutText } from '../../shared/layouts/LayoutText/LayoutText';
+
+export function PageNotFound() {
   return (
-    <div className="layout-text">
+    <LayoutText>
       <h1>404 - Bobr kurwa!</h1>
-      <p>Page not found.</p>
+      <p>Page not found. <a href="https://www.youtube.com/watch?v=6vNezXKkq9g" target="_blank" rel="noopener noreferrer">
+          Sorry
+        </a>.</p>
       <p className="text-secondary">
         <Link to="/">Go home</Link> to pet your beaver.
       </p>
-    </div>
+    </LayoutText>
   );
 }
