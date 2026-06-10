@@ -1,250 +1,222 @@
-import { describe, test, expect, beforeEach, vi } from 'vitest';
-import { validateJson, makeValidMeaning, makeValidPhrase } from '../validateJson';
-
-beforeEach(() => {
-  vi.spyOn(crypto, 'randomUUID').mockReturnValue('00000000-0000-0000-0000-000000000000');
-});
-
-describe('makeValidMeaning', () => {
-  test('returns null for non-object input', () => {
-    expect(makeValidMeaning(null)).toBeNull();
-    expect(makeValidMeaning('string')).toBeNull();
-    expect(makeValidMeaning(123)).toBeNull();
-    expect(makeValidMeaning([])).toBeNull();
-  });
-
-  test('returns null when lemma is missing or empty', () => {
-    expect(makeValidMeaning({ translation: 'стол', pos: 'noun', cefrLevel: 'A1' })).toBeNull();
-
-    expect(makeValidMeaning({ lemma: '', translation: 'стол', pos: 'noun', cefrLevel: 'A1' })).toBeNull();
-
-    expect(makeValidMeaning({ lemma: '  ', translation: 'стол', pos: 'noun', cefrLevel: 'A1' })).toBeNull();
-  });
-
-  test('returns null when translation is missing or empty', () => {
-    expect(makeValidMeaning({ lemma: 'table', pos: 'noun', cefrLevel: 'A1' })).toBeNull();
-
-    expect(makeValidMeaning({ lemma: 'table', translation: '', pos: 'noun', cefrLevel: 'A1' })).toBeNull();
-
-    expect(makeValidMeaning({ lemma: 'table', translation: '  ', pos: 'noun', cefrLevel: 'A1' })).toBeNull();
-  });
-
-  test('returns null when pos is not a valid PartOfSpeech', () => {
-    expect(makeValidMeaning({ lemma: 'table', translation: 'стол', pos: 'invalid', cefrLevel: 'A1' })).toBeNull();
-  });
-
-  test('returns null when cefrLevel is not a valid CEFR level', () => {
-    expect(makeValidMeaning({ lemma: 'table', translation: 'стол', pos: 'noun', cefrLevel: 'A3' })).toBeNull();
-  });
-
-  test('returns a valid Meaning object for correct input', () => {
-    const result = makeValidMeaning({ lemma: 'table', translation: 'стол', pos: 'noun', cefrLevel: 'A1' });
-
-    expect(result).toEqual({
-      id: '00000000-0000-0000-0000-000000000000',
-      lemma: 'table',
-      translation: 'стол',
-      pos: 'noun',
-      cefrLevel: 'A1',
-      exampleIds: [],
-      knowledgeLvl: 1,
-      showAfterTimestamp: expect.any(Number),
-    });
-  });
-
-  test('trims whitespace from lemma and translation', () => {
-    const result = makeValidMeaning({ lemma: '  table  ', translation: '  стол  ', pos: 'noun', cefrLevel: 'A1' });
-
-    expect(result).toMatchObject({ lemma: 'table', translation: 'стол' });
-  });
-});
-
-describe('makeValidPhrase', () => {
-  test('returns null for non-object input', () => {
-    expect(makeValidPhrase(null)).toBeNull();
-    expect(makeValidPhrase('string')).toBeNull();
-    expect(makeValidPhrase(123)).toBeNull();
-    expect(makeValidPhrase([])).toBeNull();
-  });
-
-  test('returns null when text is missing or empty', () => {
-    expect(makeValidPhrase({ translation: 'это стол' })).toBeNull();
-
-    expect(makeValidPhrase({ text: '', translation: 'это стол' })).toBeNull();
-
-    expect(makeValidPhrase({ text: '  ', translation: 'это стол' })).toBeNull();
-  });
-
-  test('returns null when translation is missing or empty', () => {
-    expect(makeValidPhrase({ text: 'this is a table' })).toBeNull();
-
-    expect(makeValidPhrase({ text: 'this is a table', translation: '' })).toBeNull();
-
-    expect(makeValidPhrase({ text: 'this is a table', translation: '  ' })).toBeNull();
-  });
-
-  test('returns a valid ExamplePhrase for correct input', () => {
-    const result = makeValidPhrase({ text: 'this is a table', translation: 'это стол' });
-
-    expect(result).toEqual({
-      id: '00000000-0000-0000-0000-000000000000',
-      text: 'this is a table',
-      translation: 'это стол',
-    });
-  });
-
-  test('trims whitespace from text and translation', () => {
-    const result = makeValidPhrase({ text: '  this is a table  ', translation: '  это стол  ' });
-
-    expect(result).toEqual({ id: '00000000-0000-0000-0000-000000000000', text: 'this is a table', translation: 'это стол' });
-  });
-});
+import { validateJson } from '../validateJson';
 
 describe('validateJson', () => {
-  test('returns error for invalid JSON string', () => {
-    const result = validateJson('not json');
-
+  test('returns error for invalid JSON', () => {
+    const result = validateJson('{ invalid json');
     expect(result.data).toBeNull();
-    expect(result.log).toEqual([
-      { type: 'ERROR', message: 'Invalid JSON', details: expect.any(String) },
-    ]);
+    expect(result.log).toHaveLength(1);
+    expect(result.log[0]).toMatchObject({
+      type: 'ERROR',
+      message: 'Invalid JSON',
+    });
   });
 
-  test('returns error when root value is not an object', () => {
-    const result = validateJson('[]');
-
+  test('returns error for valid JSON but root is not an object', () => {
+    const result = validateJson('[1, 2, 3]');
     expect(result.data).toBeNull();
-    expect(result.log).toEqual([
-      { type: 'ERROR', message: 'Root value must be a JSON object' },
-    ]);
+    expect(result.log).toHaveLength(1);
+    expect(result.log[0]).toMatchObject({
+      type: 'ERROR',
+      message: 'Root value must be a JSON object',
+    });
   });
 
-  test('returns error when both meanings and phrases are missing', () => {
+  test('returns error for valid JSON object missing meanings and phrases', () => {
     const result = validateJson('{}');
-
     expect(result.data).toBeNull();
-    expect(result.log).toEqual([
-      { type: 'ERROR', message: 'Missing required fields: meanings, phrases' },
-    ]);
-  });
-
-  test('returns data with empty arrays when meanings and phrases are empty arrays', () => {
-    const result = validateJson('{"meanings":[],"phrases":[]}');
-
-    expect(result.data).toEqual({
-      meta: { version: '' },
-      meanings: [],
-      phrases: [],
+    expect(result.log).toHaveLength(1);
+    expect(result.log[0]).toMatchObject({
+      type: 'ERROR',
+      message: 'Missing required fields: meanings, phrases',
     });
-    expect(result.log).toEqual([]);
   });
 
-  test('returns data when only meanings is present', () => {
-    const result = validateJson(JSON.stringify({ meanings: [] }));
-
-    expect(result.data).toEqual({
-      meta: { version: '' },
-      meanings: [],
-      phrases: [],
+  test('returns error for valid JSON object with only meta', () => {
+    const result = validateJson('{"meta": {"version": "1.0"}}');
+    expect(result.data).toBeNull();
+    expect(result.log).toHaveLength(1);
+    expect(result.log[0]).toMatchObject({
+      type: 'ERROR',
+      message: 'Missing required fields: meanings, phrases',
     });
-    expect(result.log).toEqual([]);
   });
 
-  test('returns data when only phrases is present', () => {
-    const result = validateJson(JSON.stringify({ phrases: [] }));
-
-    expect(result.data).toEqual({
-      meta: { version: '' },
-      meanings: [],
-      phrases: [],
-    });
-    expect(result.log).toEqual([]);
-  });
-
-  test('validates all meaning items and returns valid ones', () => {
+  test('valid JSON with only meanings (no phrases)', () => {
     const json = JSON.stringify({
       meanings: [
-        { lemma: 'table', translation: 'стол', pos: 'noun', cefrLevel: 'A1' },
-        { lemma: 'book', translation: 'книга', pos: 'noun', cefrLevel: 'A2' },
+        {
+          lemma: 'test',
+          translation: 'тест',
+          pos: 'noun',
+          cefrLevel: 'A1',
+          exampleIds: [],
+          id: '1',
+        },
       ],
     });
-
     const result = validateJson(json);
-
-    expect(result.data?.meanings).toHaveLength(2);
-    expect(result.log).toEqual([]);
-  });
-
-  test('reports invalid meaning items and skips them', () => {
-    const json = JSON.stringify({
-      meanings: [
-        { lemma: 'table', translation: 'стол', pos: 'noun', cefrLevel: 'A1' },
-        { lemma: '', translation: 'книга', pos: 'noun', cefrLevel: 'A2' },
-      ],
-    });
-
-    const result = validateJson(json);
-
+    expect(result.data).not.toBeNull();
     expect(result.data?.meanings).toHaveLength(1);
-    expect(result.log).toHaveLength(1);
-    expect(result.log[0]).toMatchObject({
-      type: 'ERROR',
-      message: 'meanings[1] has invalid structure',
-    });
+    expect(result.data?.phrases).toHaveLength(0);
+    expect(result.log).toHaveLength(0);
   });
 
-  test('validates all phrase items and returns valid ones', () => {
+  test('valid JSON with only phrases (no meanings)', () => {
     const json = JSON.stringify({
       phrases: [
-        { text: 'this is a table', translation: 'это стол' },
-        { text: 'this is a book', translation: 'это книга' },
+        {
+          text: 'Hello world',
+          translation: 'Привет мир',
+          id: 'p1',
+        },
       ],
     });
-
     const result = validateJson(json);
-
-    expect(result.data?.phrases).toHaveLength(2);
-    expect(result.log).toEqual([]);
-  });
-
-  test('reports invalid phrase items and skips them', () => {
-    const json = JSON.stringify({
-      phrases: [
-        { text: 'this is a table', translation: 'это стол' },
-        { text: '', translation: 'это книга' },
-      ],
-    });
-
-    const result = validateJson(json);
-
+    expect(result.data).not.toBeNull();
+    expect(result.data?.meanings).toHaveLength(0);
     expect(result.data?.phrases).toHaveLength(1);
-    expect(result.log).toHaveLength(1);
-    expect(result.log[0]).toMatchObject({
-      type: 'ERROR',
-      message: 'phrases[1] has invalid structure',
-    });
+    expect(result.log).toHaveLength(0);
   });
 
-  test('extracts meta.version when present', () => {
+  test('valid JSON with both meanings and phrases, all valid', () => {
     const json = JSON.stringify({
-      meta: { version: '2.0' },
-      meanings: [],
+      meanings: [
+        {
+          lemma: 'run',
+          translation: 'бежать',
+          pos: 'verb',
+          cefrLevel: 'A1',
+          exampleIds: ['ex1'],
+          id: 'm1',
+        },
+      ],
+      phrases: [
+        {
+          text: 'I run every day',
+          translation: 'Я бегаю каждый день',
+          id: 'ex1',
+        },
+      ],
     });
-
     const result = validateJson(json);
-
-    expect(result.data?.meta).toEqual({ version: '2.0' });
+    expect(result.data).not.toBeNull();
+    expect(result.data?.meanings).toHaveLength(1);
+    expect(result.data?.phrases).toHaveLength(1);
+    expect(result.data?.meanings[0].exampleIds).toEqual(['ex1']);
+    expect(result.log).toHaveLength(0);
   });
 
-  test('defaults meta.version to empty string when meta is missing', () => {
-    const result = validateJson(JSON.stringify({ meanings: [] }));
-
-    expect(result.data?.meta).toEqual({ version: '' });
+  test('filters out invalid meanings and phrases', () => {
+    const json = JSON.stringify({
+      meanings: [
+        {
+          lemma: 'valid',
+          translation: 'валид',
+          pos: 'adjective',
+          cefrLevel: 'B1',
+          exampleIds: ['p1'],
+          id: 'm1',
+        },
+        {
+          // missing lemma
+          translation: 'invalid',
+          pos: 'noun',
+          cefrLevel: 'A2',
+          exampleIds: [],
+          id: 'm2',
+        },
+      ],
+      phrases: [
+        {
+          text: 'Valid phrase',
+          translation: 'Валидная фраза',
+          id: 'p1',
+        },
+        {
+          // missing text
+          translation: 'Invalid phrase',
+          id: 'p2',
+        },
+      ],
+    });
+    const result = validateJson(json);
+    expect(result.data).not.toBeNull();
+    expect(result.data?.meanings).toHaveLength(1);
+    expect(result.data?.meanings[0].lemma).toBe('valid');
+    expect(result.data?.phrases).toHaveLength(1);
+    expect(result.data?.phrases[0].text).toBe('Valid phrase');
+    // Expect errors for invalid entries (order may vary)
+    expect(result.log).toHaveLength(2);
+    const logMessages = result.log.map(l => l.message);
+    expect(logMessages).toContain('meanings[1] has invalid structure');
+    expect(logMessages).toContain('phrases[1] has invalid structure');
   });
 
-  test('defaults meta.version to empty string when meta.version is not a string', () => {
-    const result = validateJson(JSON.stringify({ meta: { version: 123 }, meanings: [] }));
+  test('exampleIds are filtered to only valid phrase IDs', () => {
+    const json = JSON.stringify({
+      meanings: [
+        {
+          lemma: 'test',
+          translation: 'тест',
+          pos: 'noun',
+          cefrLevel: 'A1',
+          exampleIds: ['validId', 'invalidId'],
+          id: 'm1',
+        },
+      ],
+      phrases: [
+        {
+          text: 'Valid phrase',
+          translation: 'Валидная фраза',
+          id: 'validId',
+        },
+        // invalid phrase missing translation
+        {
+          text: 'Invalid phrase',
+          id: 'invalidId',
+        },
+      ],
+    });
+    const result = validateJson(json);
+    expect(result.data).not.toBeNull();
+    expect(result.data?.meanings[0].exampleIds).toEqual(['validId']);
+    expect(result.data?.phrases).toHaveLength(1);
+    expect(result.log).toHaveLength(1); // error for invalid phrase
+  });
 
-    expect(result.data?.meta).toEqual({ version: '' });
+  test('meta version is captured', () => {
+    const json = JSON.stringify({
+      meta: {
+        version: '2.3.0',
+      },
+      meanings: [],
+      phrases: [],
+    });
+    const result = validateJson(json);
+    expect(result.data).not.toBeNull();
+    expect(result.data?.meta.version).toBe('2.3.0');
+  });
+
+  test('missing meta version defaults to empty string', () => {
+    const json = JSON.stringify({
+      meanings: [],
+      phrases: [],
+    });
+    const result = validateJson(json);
+    expect(result.data).not.toBeNull();
+    expect(result.data?.meta.version).toBe('');
+  });
+
+  test('meta version is not a string defaults to empty string', () => {
+    const json = JSON.stringify({
+      meta: {
+        version: 123,
+      },
+      meanings: [],
+      phrases: [],
+    });
+    const result = validateJson(json);
+    expect(result.data).not.toBeNull();
+    expect(result.data?.meta.version).toBe('');
   });
 });

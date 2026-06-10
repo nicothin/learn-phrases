@@ -20,3 +20,9 @@ export const POS_LABELS: Record<PartOfSpeech, string> = {
   conjunction: 'Conjunction',
   interjection: 'Interjection',
 };
+
+export const POS_VALUES: (PartOfSpeech)[] = [
+  'noun', 'verb', 'adjective', 'adverb', 'pronoun', 'preposition', 'conjunction', 'interjection',
+];
+
+export const CEFR_VALUES: ReadonlySet<string> = new Set(['A1', 'A2', 'B1', 'B2', 'C1', 'C2']);
