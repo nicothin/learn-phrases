@@ -1,2 +1,2 @@
-export { validateJson, makeValidMeaning, makeValidPhrase } from './validateJson';
+export { validateJson } from './validateJson';
 export type { JsonValidationResult } from './types';
