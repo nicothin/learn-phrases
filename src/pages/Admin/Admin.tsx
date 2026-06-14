@@ -10,8 +10,10 @@ import { exportDB } from '../../services/fileService';
 import { validateJson } from '../../services/jsonValidation';
 import { notification, NOTIFICATION_TYPE } from '../../services/notification';
 import type { ExamplePhrase } from '../../types';
+import type { ExportData } from '../../types';
 import { findExistingMeaning } from '../../components/ImportModal/importParser';
 import type { ImportConflict } from '../../components/ImportModal/importParser';
+import { formatTimestamp } from '../../services/fileService/helpers/formatTimestamp';
 
 import './Admin.css';
 
@@ -23,6 +25,29 @@ const GRID_TEMPLATE_MEANINGS = 'repeat(auto-fill, minmax(240px, 1fr))';
 const GRID_TEMPLATE_PHRASES = 'repeat(auto-fill, minmax(360px, 1fr))';
 
 type Mode = typeof MODE_MEANINGS | typeof MODE_PHRASES;
+
+const downloadBackup = () => {
+  const { meanings, phrases } = useStore.getState();
+
+  const data: ExportData = {
+    meta: { version: 'backup' },
+    meanings: Object.values(meanings),
+    phrases: Object.values(phrases),
+  };
+
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+
+  const filename = `learn-phrases_${formatTimestamp(new Date())}_backup_before_import.json`;
+
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.click();
+
+  URL.revokeObjectURL(url);
+};
 
 export function Admin() {
   const meanings = useStore((s) => s.meanings);
@@ -69,6 +94,8 @@ export function Admin() {
         return;
       }
 
+      await downloadBackup();
+
       const storeMeanings = useStore.getState().meanings;
       const conflicts: ImportConflict[] = [];
 
@@ -86,18 +113,9 @@ export function Admin() {
               examples: [],
             },
           });
-
-          await saveMeaning({
-            ...existing,
-            lemma: incoming.lemma,
-            translation: incoming.translation,
-            pos: incoming.pos,
-            cefrLevel: incoming.cefrLevel,
-            exampleIds: incoming.exampleIds,
-          });
-        } else {
-          await saveMeaning(incoming);
         }
+
+        await saveMeaning(incoming);
       }
 
       for (const phrase of result.data.phrases) {
