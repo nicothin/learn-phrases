@@ -219,4 +219,76 @@ describe('validateJson', () => {
     expect(result.data).not.toBeNull();
     expect(result.data?.meta.version).toBe('');
   });
+
+  test('preserves all Meaning fields in round-trip', () => {
+    const json = JSON.stringify({
+      meanings: [{
+        id: 'm1',
+        lemma: 'run',
+        translation: 'бежать',
+        description: 'move quickly on foot',
+        pos: 'verb',
+        cefrLevel: 'A1',
+        exampleIds: ['p1'],
+        knowledgeLvl: 5,
+        showAfterTimestamp: 1000,
+        lastShowTimestamp: 2000,
+      }],
+      phrases: [{
+        id: 'p1',
+        text: 'I run',
+        translation: 'Я бегу',
+        textDescription: 'present tense',
+        translationDescription: 'настоящее время',
+        lastShownTimestamp: 3000,
+      }],
+    });
+
+    const result = validateJson(json);
+    expect(result.data).not.toBeNull();
+    expect(result.data?.meanings[0]).toEqual({
+      id: 'm1',
+      lemma: 'run',
+      translation: 'бежать',
+      description: 'move quickly on foot',
+      pos: 'verb',
+      cefrLevel: 'A1',
+      exampleIds: ['p1'],
+      knowledgeLvl: 5,
+      showAfterTimestamp: 1000,
+      lastShowTimestamp: 2000,
+    });
+    expect(result.data?.phrases[0]).toEqual({
+      id: 'p1',
+      text: 'I run',
+      translation: 'Я бегу',
+      textDescription: 'present tense',
+      translationDescription: 'настоящее время',
+      lastShownTimestamp: 3000,
+    });
+  });
+
+  test('drops invalid timestamps in round-trip', () => {
+    const json = JSON.stringify({
+      meanings: [{
+        lemma: 'test',
+        translation: 'тест',
+        pos: 'noun',
+        cefrLevel: 'A1',
+        exampleIds: [],
+        id: 'm1',
+        lastShowTimestamp: -1,
+      }],
+      phrases: [{
+        text: 'test',
+        translation: 'тест',
+        id: 'p1',
+        lastShownTimestamp: 0,
+      }],
+    });
+
+    const result = validateJson(json);
+    expect(result.data?.meanings[0].lastShowTimestamp).toBeUndefined();
+    expect(result.data?.phrases[0].lastShownTimestamp).toBeUndefined();
+  });
 });
