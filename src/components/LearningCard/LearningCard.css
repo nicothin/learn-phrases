@@ -130,3 +130,11 @@
   pointer-events: none;
   opacity: 0.4;
 }
+
+.learning-card__meaning-description:not(:empty) {
+  margin-top: 2em;
+
+  p {
+    margin: 0.5em 0;
+  }
+}
