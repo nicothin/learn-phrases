@@ -43,16 +43,3 @@ Rules:
 - Do not add anything except the data blocks.
 - Sometimes I will send not a word/phrase but a question about the previous reply. In such cases respond normally.
 ```
-
-## Development
-
-### Commands
-
-| Command | Description |
-|---|---|
-| `npm run dev` | Start Vite dev server |
-| `npm run build` | Build for production |
-| `npm run preview` | Preview production build |
-| `npm run lint` | Run ESLint |
-| `npm run typecheck` | Run TypeScript check |
-| `npm test` | Run tests |
