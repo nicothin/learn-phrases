@@ -1,37 +1,31 @@
 # Store
 
-In-memory кэш всех сущностей, гидратируется из IDB при старте приложения.
+Three zustand stores providing global state: entity cache, learning session, and UI.
 
-## Чтение
+---
+
+## `useStore` — entity cache
+
+In-memory cache of all meanings, phrases, and settings, hydrated from IndexedDB on app startup.
+
+### Reading
 
 ```tsx
 import { useStore } from '../../services/store';
 
-// Все смыслы
 const meanings = useStore(s => s.meanings);
-
-// Конкретный смысл
 const meaning = useStore(s => s.getMeaningById(id));
-
-// Фразы конкретного смысла
-const meaning = useStore(s => s.getMeaningById(meaningId));
 const phrases = meaning?.exampleIds.map(id => useStore.getState().getPhraseById(id)).filter(Boolean);
-
-// Флаг гидрации
 const isHydrated = useStore(s => s.isHydrated);
 ```
 
-## Мутации
+### Mutations
 
-Мутации пишут в IDB и синхронно обновляют store.
+Write to IDB and synchronously update the store.
 
 ```ts
 import { saveMeaning, deleteMeaning, savePhrase, deletePhrase } from '../../services/store/mutations';
-```
 
-### Создание смысла с фразой-примером
-
-```ts
 const phrase: ExamplePhrase = {
   id: crypto.randomUUID(),
   text: 'I love this',
@@ -52,17 +46,12 @@ const meaning: Meaning = {
 
 await savePhrase(phrase);
 await saveMeaning(meaning);
-```
-
-### Удаление смысла
-
-```ts
 await deleteMeaning(meaningId);
 ```
 
-## Гидрация
+### Hydration
 
-Вызывается в корне приложения через `useHydrate()`. Пока данные не загружены — `isHydrated === false`.
+Called at the app root via `useHydrate()`. While loading — `isHydrated === false`.
 
 ```tsx
 import { useHydrate } from '../../hooks/useHydrate';
@@ -72,4 +61,46 @@ function App() {
   if (!isHydrated) return <Spinner />;
   // ...
 }
+```
+
+---
+
+## `useSessionStore` — learning session
+
+```ts
+import { useSessionStore } from '../../services/store/sessionStore';
+```
+
+| Method | Description |
+|---|---|
+| `generate()` | Build a new shuffled session from current store state |
+| `refresh()` | Rebuild and shuffle the session |
+| `markEvaluated(meaningId, result)` | Mark a meaning as `'correct'` / `'incorrect'` |
+| `updatePhraseInSession(phrase)` | Sync updated phrase into session items |
+| `updateMeaningInSession(meaning)` | Sync updated meaning into session items |
+| `removeByMeaningId(meaningId)` | Remove items for a deleted meaning |
+| `removeByPhraseId(phraseId)` | Remove items with the deleted phrase |
+| `clear()` | Reset the session |
+
+```tsx
+const sessionId = useSessionStore(s => s.sessionId);
+const items = useSessionStore(s => s.items);
+const evaluatedMap = useSessionStore(s => s.evaluatedMap);
+
+useSessionStore.getState().generate();
+```
+
+---
+
+## `useUIStore` — UI state
+
+```ts
+import { useUIStore } from '../../services/store';
+```
+
+```tsx
+const editableMeaning = useUIStore(s => s.editableMeaning);
+const setEditableMeaning = useUIStore(s => s.setEditableMeaning);
+const importModalOpen = useUIStore(s => s.importModalOpen);
+const setImportModalOpen = useUIStore(s => s.setImportModalOpen);
 ```
