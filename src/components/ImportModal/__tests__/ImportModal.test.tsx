@@ -216,4 +216,77 @@ describe('parseImportText', () => {
       expect(result.meanings[0].cefrLevel).toBe(level);
     }
   });
+
+  describe('description block with = markers', () => {
+    test('parses block with single-line description', () => {
+      const input = `run\nбегать\nverb|A1\n=\nbasic meaning\n=\nI run --- Я бегу`;
+
+      const result = parseImportText(input);
+
+      expect(result.errors).toHaveLength(0);
+      expect(result.meanings).toHaveLength(1);
+      expect(result.meanings[0].description).toBe('basic meaning');
+      expect(result.meanings[0].examples).toHaveLength(1);
+    });
+
+    test('parses block with multi-line description preserving blank lines', () => {
+      const input = `run\nбегать\nverb|A1\n=\nline 1\n\n\nline 3\n=\nI run --- Я бегу`;
+
+      const result = parseImportText(input);
+
+      expect(result.errors).toHaveLength(0);
+      expect(result.meanings[0].description).toBe('line 1\n\n\nline 3');
+    });
+
+    test('parses block with multiple examples after description', () => {
+      const input = `run\nбегать\nverb|A1\n=\ndesc\n=\nI run --- Я бегу\nHe runs --- Он бегает`;
+
+      const result = parseImportText(input);
+
+      expect(result.errors).toHaveLength(0);
+      expect(result.meanings[0].description).toBe('desc');
+      expect(result.meanings[0].examples).toHaveLength(2);
+    });
+
+    test('backward compatible: block without description still works', () => {
+      const input = `run\nбегать\nverb|A1\nI run --- Я бегу`;
+
+      const result = parseImportText(input);
+
+      expect(result.errors).toHaveLength(0);
+      expect(result.meanings[0].description).toBeUndefined();
+    });
+
+    test('preserves raw text in errors with restored = markers', () => {
+      const input = `run\nбегать\nverbz|A1\n=\ndesc\n=\nI run --- Я бегу`;
+
+      const result = parseImportText(input);
+
+      expect(result.errors).toHaveLength(1);
+      expect(result.errors[0].rawText).toContain('=');
+      expect(result.errors[0].rawText).toContain('desc');
+    });
+
+    test('mixed blocks: some with description, some without', () => {
+      const input = `run\nбегать\nverb|A1\nI run --- Я бегу\n\nbig\nбольшой\nadjective|A2\n=\nlarge size\n=\nBig house --- Большой дом`;
+
+      const result = parseImportText(input);
+
+      expect(result.errors).toHaveLength(0);
+      expect(result.meanings).toHaveLength(2);
+      expect(result.meanings[0].description).toBeUndefined();
+      expect(result.meanings[1].description).toBe('large size');
+    });
+
+    test('ignores = with extra characters (not a standalone marker)', () => {
+      const input = `run\nбегать\nverb|A1\n= some text --- перевод\nI run --- Я бегу`;
+
+      const result = parseImportText(input);
+
+      expect(result.errors).toHaveLength(0);
+      expect(result.meanings[0].description).toBeUndefined();
+      expect(result.meanings[0].examples).toHaveLength(2);
+      expect(result.meanings[0].examples[0].text).toBe('= some text');
+    });
+  });
 });

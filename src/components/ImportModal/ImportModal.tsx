@@ -56,6 +56,7 @@ export function ImportModal() {
             id: crypto.randomUUID(),
             lemma: m.lemma,
             translation: m.translation,
+            description: m.description,
             pos: m.pos,
             cefrLevel: m.cefrLevel,
             exampleIds: phraseIds,
@@ -149,7 +150,7 @@ export function ImportModal() {
         className="import-modal__textarea"
         value={text}
         onChange={setText}
-        placeholder={`lemma\ntranslation\npos|cefrLevel\nexample phrase --- translation\n\nlemma\ntranslation\npos|cefrLevel\nexample phrase --- translation`}
+        placeholder={`lemma\ntranslation\npos|cefrLevel\nexample --- translation\n\nlemma\ntranslation\npos|cefrLevel\n=\ndescription\n=\nexample --- translation`}
         standard
       />
     </Modal>
