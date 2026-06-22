@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { Modal, Button, InputText } from '@shared/components';
 import type { InputTextHandle } from '@shared/components';
 import { useUIStore } from '../../services/store/uiStore';
@@ -22,6 +22,10 @@ export function ImportModal() {
   const [text, setText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const inputRef = useRef<InputTextHandle>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   const handleClose = useCallback(() => {
     setImportModalOpen(false);
